@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Testing
+coverage/
+
+# Production
+build/
+dist/
+
+# Misc
+.DS_Store
+.env
+.npm
+*.log
+
+# CSVs (Optional: Keep this commented out if you WANT to commit the data)
+# *.csv
+
+# IDEs
+.vscode/
+.idea/

@@ -1,0 +1,18 @@
+{
+  "name": "cincy-soccer-root",
+  "version": "1.0.0",
+  "description": "Root project for Cincinnati Soccer Scraper and Website",
+  "scripts": {
+    "setup": "npm install && cd cincy-soccer-scraper && npm install && cd ../cincy-soccer-website && npm install",
+    "scrape": "cd cincy-soccer-scraper && node scrape.js && node harvest.js && node clean.js",
+    "build": "cp cincy-soccer-scraper/clean_teams.csv cincy-soccer-website/ && cd cincy-soccer-website && node build.js",
+    "full-publish": "./publish.sh",
+    "quick-rebuild": "./rebuild.sh"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^8.0.0"
+  }
+}
