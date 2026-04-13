@@ -24,6 +24,6 @@ node build.js
 
 # 4. DEPLOY (Optional - Uncomment when ready)
 # echo "☁️ Deploying..."
-# npx wrangler pages deploy dist --project-name cincinnati-soccer
+# npx wrangler pages deploy dist --project-name cincinnati-soccer --commit-dirty=true
 
 echo "✅ DONE! Website is ready in 'cincy-soccer-website/dist'"

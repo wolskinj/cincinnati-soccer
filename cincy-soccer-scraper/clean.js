@@ -7,7 +7,17 @@ const OUTPUT_FILE = 'clean_teams.csv';
 
 // === THE SMART DICTIONARY (Loaded from JSON) ===
 // format: "Official Name": ["Nickname 1", "Nickname 2", "Code"]
+// format: "Official Name": ["Nickname 1", "Nickname 2", "Code"]
 const CLUB_MAPPINGS = require('./club_mappings.json');
+
+const sortedAliases = [];
+for (const [officialName, aliases] of Object.entries(CLUB_MAPPINGS)) {
+    for (const alias of aliases) {
+        sortedAliases.push({ alias: alias.toLowerCase(), officialName });
+    }
+}
+// Sort descending by length so longer specific aliases match before shorter subsets.
+sortedAliases.sort((a, b) => b.alias.length - a.alias.length);
 
 const allTeams = [];
 const seenSignatures = new Set(); // <--- THE BOUNCER (Tracks unique teams)
@@ -36,17 +46,12 @@ fs.createReadStream(INPUT_FILE)
         let teamName = row.TEAM_NAME;
         let clubName = "Independent";
 
-        let matchFound = false;
-        for (const [officialName, aliases] of Object.entries(CLUB_MAPPINGS)) {
-            for (const alias of aliases) {
-                // Check if the alias is inside the team name
-                if (teamName.toLowerCase().includes(alias.toLowerCase())) {
-                    clubName = officialName;
-                    matchFound = true;
-                    break;
-                }
+        const lowerTeamName = teamName.toLowerCase();
+        for (const { alias, officialName } of sortedAliases) {
+            if (lowerTeamName.includes(alias)) {
+                clubName = officialName;
+                break;
             }
-            if (matchFound) break;
         }
 
         // 3. FALLBACK GUESS (If not in our dictionary)

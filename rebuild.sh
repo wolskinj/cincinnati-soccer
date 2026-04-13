@@ -19,6 +19,6 @@ node build.js
 
 # 4. DEPLOY
 echo "☁️ [3/3] Deploying..."
-npx wrangler pages deploy dist --project-name cincinnati-soccer
+npx wrangler pages deploy dist --project-name cincinnati-soccer --commit-dirty=true
 
 echo "✅ DONE! Site updated without scraping."
