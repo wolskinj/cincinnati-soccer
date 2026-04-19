@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%- title %> | cincinnati.soccer</title>
+
+    <meta name="theme-color" content="#002147">
+    <link rel="preconnect" href="https://pagead2.googlesyndication.com" crossorigin>
+
+    <meta name="description" content="<%- description %>">
+
+    <!-- Open Graph / Social -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="<%- canonicalUrl %>">
+    <meta property="og:title" content="<%- title %> | cincinnati.soccer">
+    <meta property="og:description" content="<%- description %>">
+    <meta property="og:image" content="<%- domain %>/assets/logo.webp">
+
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SportsTeam",
+      "name": "<%- title %>",
+      "sport": "Soccer",
+      <% if (teamRows.length > 0 && teamRows[0].CLUB && teamRows[0].CLUB !== 'Independent') { %>
+      "memberOf": {
+        "@type": "SportsOrganization",
+        "name": "<%- teamRows[0].CLUB %>"
+      },
+      <% } %>
+      "location": {
+        "@type": "Place",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Cincinnati",
+          "addressRegion": "OH"
+        }
+      },
+      "url": "<%- canonicalUrl %>",
+      "description": "<%- description.replace(/"/g, '\\"') %>"
+    }
+    </script>
+
+    <style>
+        :root {
+            --primary: #002147;
+            --primary-dark: #001F3F;
+            --accent: #E31837;
+            --accent-hover: #C41230;
+            --white: #FFFFFF;
+
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #002147;
+            --text-light: #475569;
+            --border: #e2e8f0;
+
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            background-color: var(--bg);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 0 15px;
+        }
+
+        .nav-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            color: var(--text-light);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: var(--accent);
+        }
+
+        .back-link span {
+            margin-right: 5px;
+            font-size: 1.2rem;
+        }
+
+        .mini-brand {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .mini-logo-img {
+            height: 24px;
+            width: auto;
+        }
+
+        .mini-logo-text {
+            font-weight: 800;
+            color: var(--primary);
+            font-size: 1.1rem;
+            text-transform: lowercase;
+            letter-spacing: -0.5px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            color: var(--primary);
+            font-size: clamp(2rem, 6vw, 3.5rem);
+            font-weight: 900;
+            margin: 0 0 10px 0;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+        }
+
+        .club-subtitle {
+            font-size: 1.25rem;
+            color: var(--text-light);
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .club-subtitle a {
+            color: var(--primary);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .club-subtitle a:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+
+        .league-participation {
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .participation-card {
+            background: var(--card-bg);
+            border: none;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); /* Tonal lift */
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+            text-align: left;
+        }
+
+        .participation-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .participation-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: var(--primary);
+        }
+
+        .participation-league {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: var(--primary);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            letter-spacing: -0.02em;
+        }
+
+        .participation-league a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .participation-league a:hover {
+            text-decoration: underline;
+        }
+
+        .participation-division {
+            font-size: 1.15rem;
+            color: var(--text-light);
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .participation-division a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .participation-division a:hover {
+            text-decoration: underline;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            text-align: center;
+            padding: 20px 24px;
+            background: var(--accent);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 1.15rem;
+            font-weight: 800;
+            transition: background 0.2s, transform 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn:hover {
+            background: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 80px;
+            padding: 60px 20px;
+            background: var(--primary);
+            color: #cbd5e1;
+            font-size: 0.9rem;
+        }
+    </style>
+
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+
+    <link rel="canonical" href="<%- canonicalUrl %>" />
+    <meta property="og:site_name" content="cincinnati.soccer">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="<%- title %> | cincinnati.soccer">
+    <meta name="twitter:description" content="<%- description %>">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <nav class="nav-bar">
+            <!-- Intelligent backlink based on first team row -->
+            <% if (teamRows.length > 0 && teamRows[0].CLUB && teamRows[0].CLUB !== 'Independent') { %>
+            <a href="club-<%- makeFilename(teamRows[0].CLUB) %>" class="back-link"><span>←</span> Back to <%- teamRows[0].CLUB %></a>
+            <% } else { %>
+            <a href="index.html" class="back-link"><span>←</span> Home</a>
+            <% } %>
+
+            <a href="index.html" class="mini-brand">
+                <img src="assets/logo.webp" alt="logo" class="mini-logo-img" width="24" height="24" fetchpriority="high">
+                <span class="mini-logo-text">cincinnati.soccer</span>
+            </a>
+        </nav>
+
+        <main>
+            <header>
+                <h1><%- title %></h1>
+                <% if (teamRows.length > 0 && teamRows[0].CLUB && teamRows[0].CLUB !== 'Independent') { %>
+                <div class="club-subtitle">
+                    Affiliated with <a href="club-<%- makeFilename(teamRows[0].CLUB) %>"><%- teamRows[0].CLUB %></a>
+                </div>
+                <% } else if (teamRows.length > 0) { %>
+                <div class="club-subtitle">
+                    Independent Team
+                </div>
+                <% } %>
+            </header>
+
+            <div class="league-participation">
+                <% teamRows.forEach(function(row) { 
+                    const divInfo = normalizeDivision(row.DIVISION);
+                    const ageUrl = `${divInfo.gender.toLowerCase()}-${divInfo.age.toLowerCase().replace(/[^a-z0-9]/g, '-')}.html`;
+                    const leagueUrl = `league-${makeFilename(row.LEAGUE)}`;
+                    
+                    const leagueConfig = leaguesConfig.find(l => l.id === row.LEAGUE);
+                    const fullLeagueName = leagueConfig ? leagueConfig.name : row.LEAGUE;
+                %>
+                <div class="participation-card">
+                    <div class="participation-league">
+                        <span aria-hidden="true">🏆</span> <a href="<%- leagueUrl %>"><%- fullLeagueName %></a>
+                    </div>
+                    <div class="participation-division">
+                        <span aria-hidden="true">📅</span> <a href="<%- ageUrl %>"><%- row.DIVISION %></a>
+                    </div>
+                    <div style="margin-top: 25px;">
+                        <a href="<%- row.SCHEDULE_LINK %>" class="btn" target="_blank">View Schedule & Standings ➜</a>
+                    </div>
+                </div>
+                <% }); %>
+            </div>
+
+        </main>
+
+    </div>
+
+    <footer>
+        <p>Updated for the current season. Not affiliated with CPL, BPYSL, or individual clubs.<br>
+            Built by parents and players for parents and players. <strong>Last verified: <%- lastUpdated %></strong></p>
+        <p style="margin-top: 15px; font-size: 0.8rem;"><a href="/privacy-policy.html"
+                style="color: inherit; text-decoration: underline;">Privacy Policy</a> | <a href="/cookie-policy.html"
+                style="color: inherit; text-decoration: underline;">Cookie Policy</a></p>
+        <p style="margin-top: 10px; font-size: 0.8rem;"><a href="https://cincinnati.soccer"
+                style="color: inherit; text-decoration: underline;">cincinnati.soccer</a> © 2026 by <a
+                href="https://cincinnati.soccer"
+                style="color: inherit; text-decoration: underline;">cincinnati.soccer</a> is
+            licensed under <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/"
+                style="color: inherit; text-decoration: underline;">CC BY-NC-ND 4.0</a></p>
+    </footer>
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7915021068737339"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>

@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>cincinnati.soccer | Youth Standings & Schedules</title>
+    <meta name="description"
+        content="The centralized directory for Cincinnati youth soccer schedules, standings, and team rankings. Track CPL, BPYSL, and club teams in one place.">
+    <meta name="theme-color" content="#002147">
+    <link rel="preconnect" href="https://pagead2.googlesyndication.com" crossorigin>
+
+    <!-- Open Graph / Social -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="<%- domain %>/">
+    <meta property="og:title" content="cincinnati.soccer | Youth Standings & Schedules">
+    <meta property="og:description"
+        content="The centralized directory for Cincinnati youth soccer schedules, standings, and team rankings. Track CPL, BPYSL, and club teams in one place.">
+    <meta property="og:image" content="<%- domain %>/assets/logo.webp">
+
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "cincinnati.soccer",
+      "url": "<%- domain %>/",
+      "description": "Cincinnati youth soccer schedules, standings, and team rankings.",
+      "dateModified": "<%- isoDate %>"
+    }
+    </script>
+
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+
+
+    <style>
+        :root {
+            /* NEW PALETTE */
+            --primary: #002147;
+            /* Primary Navy */
+            --primary-dark: #001F3F;
+            /* Deep Navy */
+            --accent: #E31837;
+            /* Primary Red */
+            --accent-hover: #C41230;
+            /* Deep Red */
+            --white: #FFFFFF;
+            /* Pure White */
+
+            --bg: #f8fafc;
+            /* Light Cool Grey (keeps white cards visible) */
+            --border: #e2e8f0;
+            --text-main: #002147;
+            /* Navy Text (High Contrast) */
+            --text-light: #475569;
+            /* Slate for secondary text */
+        }
+
+        /* RESET: This stops padding from breaking the layout */
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            /* The Native Performance Stack */
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            background: var(--bg);
+            color: var(--text-main);
+            margin: 0;
+        }
+
+        /* HERO SECTION */
+        .hero {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+            padding: 80px 20px 100px;
+            /* Extra padding at bottom for overlap */
+            text-align: center;
+            position: relative;
+            border-bottom: 8px solid var(--accent);
+            /* The Red Stripe */
+        }
+
+        .hero-brand {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .hero-logo {
+            height: clamp(2.5rem, 6vw, 4.5rem);
+            width: auto;
+            filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3));
+            /* Makes logo pop on navy */
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 8vw, 4.5rem);
+            font-weight: 900;
+            margin: 0;
+            letter-spacing: -2px;
+            line-height: 1;
+            text-transform: lowercase;
+            text-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: #cbd5e1;
+            /* Light grey text on Navy */
+            margin-top: 15px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            font-weight: 500;
+        }
+
+        /* SEO TEXT BLOCK */
+        .seo-intro {
+            background: var(--white);
+            max-width: 800px;
+            margin: -50px auto 40px;
+            /* Increased overlap for depth */
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+
+        .seo-intro h2 {
+            font-size: 1.1rem;
+            color: var(--accent);
+            margin-top: 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 800;
+        }
+
+        .seo-intro p {
+            font-size: 0.95rem;
+            color: var(--text-light);
+            line-height: 1.6;
+            margin-bottom: 0;
+        }
+
+        /* DASHBOARD CONTAINER */
+        .dashboard {
+            max-width: 1000px;
+            margin: 0 auto 60px;
+            padding: 0 20px;
+        }
+
+        /* TABS */
+        .tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: var(--white);
+            border: 1px solid var(--border);
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-weight: 700;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .tab-btn:hover {
+            background: #f1f5f9;
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: var(--white);
+            border-color: var(--primary);
+            box-shadow: 0 4px 10px rgba(0, 33, 71, 0.3);
+            /* Navy glow */
+        }
+
+        /* FILTER BAR */
+        .filter-input {
+            width: 100%;
+            max-width: 400px;
+
+            /* THE FIX: Combined shorthand */
+            /* 0 = Top, auto = Left/Right, 40px = Bottom */
+            margin: 0 auto 40px auto;
+
+            display: block;
+            box-sizing: border-box;
+            text-align: left;
+            /* Keep text inside the box readable */
+
+            padding: 15px 20px;
+            border-radius: 50px;
+            border: 2px solid var(--border);
+            font-size: 1rem;
+            font-family: inherit;
+            transition: border-color 0.2s;
+            background: var(--white);
+        }
+
+        .filter-input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        /* CONTENT GRIDS */
+        .content-section {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        .link-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        /* LINKS */
+        a.group-link {
+            display: block;
+            padding: 15px;
+            background: var(--white);
+            color: var(--primary);
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 700;
+            border: 1px solid var(--border);
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        a.group-link:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent);
+            color: var(--accent);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        /* LEAGUE CARDS */
+        .league-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        a.league-card {
+            display: block;
+            background: var(--white);
+            padding: 30px;
+            border-radius: 12px;
+            text-decoration: none;
+            border: 1px solid var(--border);
+            border-left: 6px solid var(--accent);
+            /* Red Stripe */
+            transition: transform 0.2s;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        a.league-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .league-name {
+            display: block;
+            font-size: 1.4rem;
+            font-weight: 900;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* FOOTER */
+        footer {
+            text-align: center;
+            margin-top: 80px;
+            padding: 60px 20px;
+            background: var(--primary);
+            color: #cbd5e1;
+            font-size: 0.9rem;
+        }
+    </style>
+    <link rel="canonical" href="https://cincinnati.soccer/" />
+
+
+</head>
+
+<body>
+
+    <header class="hero">
+        <div class="hero-brand">
+            <img src="assets/logo.webp" alt="Cincinnati Soccer Logo" class="hero-logo" width="250" height="250"
+                fetchpriority="high">
+            <h1>cincinnati.soccer</h1>
+        </div>
+        <p>The central hub for local schedules & standings.</p>
+    </header>
+    <main>
+        <div class="seo-intro">
+            <h2>The Ultimate Hub for Cincinnati Youth Soccer</h2>
+            <p>Navigating the Greater Cincinnati youth soccer landscape shouldn't be a full-time job.</p>
+            <p style="margin-top: 15px;">Whether you're a parent managing weekend travel or a coach scouting the
+                competition, <strong>cincinnati.soccer</strong> is your centralized directory for the latest schedules,
+                standings, and team rankings.</p>
+            <p style="margin-top: 15px;">We pull together data across the region's premier platforms—including the CPL,
+                BPYSL, and OSSL—bringing hundreds of local club teams into one searchable dashboard.</p>
+            <p style="margin-top: 15px;">From grassroots U8 divisions to highly competitive High School showcases, find
+                your team's schedule, track their progress, and stay connected to the Cincinnati soccer community all
+                season long.</p>
+        </div>
+
+        <div class="dashboard">
+            <div class="tabs" role="tablist">
+                <button class="tab-btn active" role="tab" aria-selected="true" aria-controls="leagues" id="tab-leagues"
+                    onclick="switchTab('leagues', this)">Leagues</button>
+                <button class="tab-btn" role="tab" aria-selected="false" aria-controls="teams" id="tab-teams"
+                    onclick="switchTab('teams', this)">Teams</button>
+                <button class="tab-btn" role="tab" aria-selected="false" aria-controls="boys" id="tab-boys"
+                    onclick="switchTab('boys', this)">Boys Divisions</button>
+                <button class="tab-btn" role="tab" aria-selected="false" aria-controls="girls" id="tab-girls"
+                    onclick="switchTab('girls', this)">Girls Divisions</button>
+                <button class="tab-btn" role="tab" aria-selected="false" aria-controls="clubs" id="tab-clubs"
+                    onclick="switchTab('clubs', this)">Club Directory</button>
+            </div>
+
+            <div class="filter-bar" id="filter-container">
+                <input type="text" id="filter-input" class="filter-input" aria-label="Filter teams and divisions"
+                    placeholder="Type to filter...">
+            </div>
+
+            <div id="leagues" role="tabpanel" aria-labelledby="tab-leagues" class="content-section active">
+                <div class="league-grid">
+                    <% leaguesData.forEach(function(l) { const seasonLabel=l.info.season ? `<span
+                        style="font-size:0.7em; color:#666; display:block;">${l.info.season}</span>` : '';
+                        %>
+                        <a href="league-<%- makeFilename(l.info.id) %>" class="league-card">
+                            <span class="league-name"><%- l.info.name %></span>
+                            <%- seasonLabel %>
+                        </a>
+                        <% }); %>
+                </div>
+            </div>
+
+            <div id="teams" role="tabpanel" aria-labelledby="tab-teams" class="content-section">
+                <div class="link-grid">
+                    <% teams.forEach(function(t) { %>
+                        <a href="team-<%- makeFilename(t) %>" class="group-link"><%- t %></a>
+                    <% }); %>
+                </div>
+            </div>
+
+            <div id="boys" role="tabpanel" aria-labelledby="tab-boys" class="content-section">
+                <div class="link-grid">
+                    <% boysGroups.forEach(function(g) { const parts=g.split(' ');
+                        const p0 = parts[0].toLowerCase();
+                        const p1 = parts[1].toLowerCase().replace(/[^a-z0-9]/g, ' -'); const url=`${p0}-${p1}.html`; %>
+                        <a href="<%- url %>" class="group-link"><%- g %></a>
+                        <% }); %>
+                </div>
+            </div>
+
+            <div id="girls" role="tabpanel" aria-labelledby="tab-girls" class="content-section">
+                <div class="link-grid">
+                    <% girlsGroups.forEach(function(g) { const parts=g.split(' ');
+                        const p0 = parts[0].toLowerCase();
+                        const p1 = parts[1].toLowerCase().replace(/[^a-z0-9]/g, ' -'); const url=`${p0}-${p1}.html`; %>
+                        <a href="<%- url %>" class="group-link"><%- g %></a>
+                        <% }); %>
+                </div>
+            </div>
+
+            <div id="clubs" role="tabpanel" aria-labelledby="tab-clubs" class="content-section">
+                <div class="link-grid">
+                    <% clubsGroups.forEach(function(c) { %>
+                        <a href="club-<%- makeFilename(c) %>" class="group-link"><%- c %></a>
+                        <% }); %>
+                </div>
+            </div>
+        </div>
+    </main>
+    <footer>
+        <p>Updated for the current season. Not affiliated with CPL, BPYSL, or individual clubs.<br>
+            Built by parents and players for parents and players. <strong>Last verified: <%- lastUpdated %></strong></p>
+        <p style="margin-top: 15px; font-size: 0.8rem;"><a href="/privacy-policy.html"
+                style="color: inherit; text-decoration: underline;">Privacy Policy</a> | <a href="/cookie-policy.html"
+                style="color: inherit; text-decoration: underline;">Cookie Policy</a></p>
+        <p style="margin-top: 10px; font-size: 0.8rem;"><a href="https://cincinnati.soccer"
+                style="color: inherit; text-decoration: underline;">cincinnati.soccer</a> © 2026 by <a
+                href="https://cincinnati.soccer"
+                style="color: inherit; text-decoration: underline;">cincinnati.soccer</a> is
+            licensed under <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/"
+                style="color: inherit; text-decoration: underline;">CC BY-NC-ND 4.0</a><img src="/assets/cc.svg" alt=""
+                width="16" height="16" style="max-width: 1em;max-height:1em;margin-left: .2em;" loading="lazy"><img
+                src="/assets/by.svg" alt="" width="16" height="16"
+                style="max-width: 1em;max-height:1em;margin-left: .2em;" loading="lazy"><img src="/assets/nc.svg" alt=""
+                width="16" height="16" style="max-width: 1em;max-height:1em;margin-left: .2em;" loading="lazy"><img
+                src="/assets/nd.svg" alt="" width="16" height="16"
+                style="max-width: 1em;max-height:1em;margin-left: .2em;" loading="lazy"></p>
+    </footer>
+
+    <script>
+        let filterTimeout;
+        const searchInput = document.getElementById('filter-input');
+        
+        searchInput.addEventListener('input', (e) => {
+            clearTimeout(filterTimeout);
+            filterTimeout = setTimeout(() => {
+                filterList(e.target.value.toLowerCase());
+            }, 150);
+        });
+
+        function switchTab(tabId, clickedBtn) {
+            document.querySelectorAll('.content-section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.classList.remove('active');
+                el.setAttribute('aria-selected', 'false');
+            });
+
+            document.getElementById(tabId).classList.add('active');
+
+            if (clickedBtn) {
+                clickedBtn.classList.add('active');
+                clickedBtn.setAttribute('aria-selected', 'true');
+            }
+
+            searchInput.value = '';
+            searchInput.focus();
+            filterList('');
+        }
+
+        function filterList(query) {
+            if (query === undefined) {
+                query = searchInput.value.toLowerCase();
+            }
+            
+            const activeSection = document.querySelector('.content-section.active');
+            if (!activeSection) return;
+            
+            const links = activeSection.querySelectorAll('a');
+            
+            requestAnimationFrame(() => {
+                links.forEach(link => {
+                    // Use textContent instead of innerText for much better performance
+                    if (!link.dataset.searchInfo) {
+                        link.dataset.searchInfo = link.textContent.toLowerCase();
+                    }
+                    
+                    if (link.dataset.searchInfo.includes(query)) {
+                        link.style.display = ""; // falls back to the stylesheet default (e.g. block or flex)
+                    } else {
+                        link.style.display = "none";
+                    }
+                });
+            });
+        }
+    </script>
+    <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7915021068737339"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>
