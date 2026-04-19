@@ -5,9 +5,9 @@
   "scripts": {
     "setup": "npm install && cd cincy-soccer-scraper && npm install && cd ../cincy-soccer-website && npm install",
     "scrape": "cd cincy-soccer-scraper && node scrape.js && node harvest.js && node clean.js",
-    "build": "cp cincy-soccer-scraper/clean_teams.csv cincy-soccer-website/ && cd cincy-soccer-website && node build.js",
-    "full-publish": "./publish.sh",
-    "quick-rebuild": "./rebuild.sh"
+    "build": "cd cincy-soccer-website && node build.js",
+    "deploy": "npx wrangler pages deploy cincy-soccer-website/dist --project-name cincinnati-soccer --commit-dirty=true",
+    "publish-all": "npm run scrape && npm run build && npm run deploy"
   },
   "keywords": [],
   "author": "",

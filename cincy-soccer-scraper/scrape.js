@@ -1,9 +1,10 @@
 const puppeteer = require('puppeteer');
 const createCsvWriter = require('csv-writer').createObjectCsvWriter;
+const path = require('path');
 
 // 1. CONFIGURATION: The List of Leagues
 // LOOK UP ONE LEVEL (../) to find leagues.js
-const LEAGUES = require('../leagues.js');
+const LEAGUES = require(path.join(__dirname, '../data/leagues.js'));
 
 async function startRobot() {
     console.log("🤖 Scout Robot (Multi-League Edition) starting...");
@@ -63,7 +64,7 @@ async function startRobot() {
 
     // 3. SAVE THE MASTER MAP
     const csvWriter = createCsvWriter({
-        path: 'scraped_divisions.csv',
+        path: path.join(__dirname, '../data/scraped_divisions.csv'),
         header: [
             {id: 'league', title: 'LEAGUE'},       // New Column!
             {id: 'name', title: 'DIVISION_NAME'},

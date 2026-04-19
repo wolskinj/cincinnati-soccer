@@ -1,21 +1,22 @@
 const fs = require('fs-extra');
 const csv = require('csv-parser');
 const ejs = require('ejs');
+const path = require('path');
 
 // 1. CONFIGURATION & PATHS
-const TEAMS_FILE = 'clean_teams.csv';
-const TEMPLATE_FILE = 'template.ejs';
-const HOMEPAGE_TEMPLATE = 'index_template.ejs';
-const TEAM_TEMPLATE = 'team_template.ejs';
-const OUTPUT_DIR = 'dist';
+const TEAMS_FILE = path.join(__dirname, '../data/clean_teams.csv');
+const TEMPLATE_FILE = path.join(__dirname, 'template.ejs');
+const HOMEPAGE_TEMPLATE = path.join(__dirname, 'index_template.ejs');
+const TEAM_TEMPLATE = path.join(__dirname, 'team_template.ejs');
+const OUTPUT_DIR = path.join(__dirname, 'dist');
 const DOMAIN = 'https://cincinnati.soccer';
 
 const d = new Date();
 const formattedDate = d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 const isoDate = d.toISOString();
 
-const LEAGUES_CONFIG = require('../leagues.js');
-const CLUBS_CONFIG = require('../clubs.js');
+const LEAGUES_CONFIG = require(path.join(__dirname, '../data/leagues.js'));
+const CLUBS_CONFIG = require(path.join(__dirname, '../data/clubs.js'));
 
 // TRACKER FOR SITEMAP
 const sitemapUrls = [];
@@ -54,27 +55,32 @@ async function buildSite() {
     fs.ensureDirSync(OUTPUT_DIR);
 
     // 1. COPY STATIC ASSETS
-    if (fs.existsSync('assets')) {
-        fs.copySync('assets', `${OUTPUT_DIR}/assets`);
+    const assetsDir = path.join(__dirname, 'assets');
+    if (fs.existsSync(assetsDir)) {
+        fs.copySync(assetsDir, path.join(OUTPUT_DIR, 'assets'));
         console.log("🖼️  Assets copied.");
     }
 
     // 2. COPY 404 PAGE
-    if (fs.existsSync('404.html')) {
-        fs.copyFileSync('404.html', `${OUTPUT_DIR}/404.html`);
+    const notFoundPage = path.join(__dirname, '404.html');
+    if (fs.existsSync(notFoundPage)) {
+        fs.copyFileSync(notFoundPage, path.join(OUTPUT_DIR, '404.html'));
     }
 
-    if (fs.existsSync('cookie-policy.html')) {
-        fs.copyFileSync('cookie-policy.html', `${OUTPUT_DIR}/cookie-policy.html`);
+    const cookiePolicy = path.join(__dirname, 'cookie-policy.html');
+    if (fs.existsSync(cookiePolicy)) {
+        fs.copyFileSync(cookiePolicy, path.join(OUTPUT_DIR, 'cookie-policy.html'));
     }
 
-    if (fs.existsSync('privacy-policy.html')) {
-        fs.copyFileSync('privacy-policy.html', `${OUTPUT_DIR}/privacy-policy.html`);
+    const privacyPolicy = path.join(__dirname, 'privacy-policy.html');
+    if (fs.existsSync(privacyPolicy)) {
+        fs.copyFileSync(privacyPolicy, path.join(OUTPUT_DIR, 'privacy-policy.html'));
     }
 
     // 2b. COPY ADS.TXT
-    if (fs.existsSync('ads.txt')) {
-        fs.copyFileSync('ads.txt', `${OUTPUT_DIR}/ads.txt`);
+    const adsTxt = path.join(__dirname, 'ads.txt');
+    if (fs.existsSync(adsTxt)) {
+        fs.copyFileSync(adsTxt, path.join(OUTPUT_DIR, 'ads.txt'));
     }
 
     // Reset Sitemap (add homepage first)

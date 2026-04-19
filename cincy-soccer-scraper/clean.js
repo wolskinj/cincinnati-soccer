@@ -1,14 +1,14 @@
 const fs = require('fs');
 const csv = require('csv-parser');
 const createCsvWriter = require('csv-writer').createObjectCsvWriter;
+const path = require('path');
 
-const INPUT_FILE = 'all_teams.csv';
-const OUTPUT_FILE = 'clean_teams.csv';
+const INPUT_FILE = path.join(__dirname, '../data/all_teams.csv');
+const OUTPUT_FILE = path.join(__dirname, '../data/clean_teams.csv');
 
 // === THE SMART DICTIONARY (Loaded from JSON) ===
 // format: "Official Name": ["Nickname 1", "Nickname 2", "Code"]
-// format: "Official Name": ["Nickname 1", "Nickname 2", "Code"]
-const CLUB_MAPPINGS = require('./club_mappings.json');
+const CLUB_MAPPINGS = require(path.join(__dirname, 'club_mappings.json'));
 
 const sortedAliases = [];
 for (const [officialName, aliases] of Object.entries(CLUB_MAPPINGS)) {

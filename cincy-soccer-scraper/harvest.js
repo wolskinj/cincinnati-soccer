@@ -2,13 +2,14 @@ const puppeteer = require('puppeteer');
 const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 const csv = require('csv-parser');
 const fs = require('fs');
+const path = require('path');
 
 // CONFIGURATION
 const BATCH_SIZE = 10; // Only do 10 pages at a time to keep Chromebook cool
 
 // 1. SETUP: CSV Writer
 const csvWriter = createCsvWriter({
-    path: 'all_teams.csv',
+    path: path.join(__dirname, '../data/all_teams.csv'),
     header: [
         {id: 'league', title: 'LEAGUE'},
         {id: 'division', title: 'DIVISION'},
@@ -27,7 +28,7 @@ async function startHarvester() {
     // 2. READ: Load the map
     const divisions = [];
     await new Promise((resolve) => {
-        fs.createReadStream('scraped_divisions.csv')
+        fs.createReadStream(path.join(__dirname, '../data/scraped_divisions.csv'))
             .pipe(csv())
             .on('data', (row) => divisions.push(row))
             .on('end', () => resolve());
@@ -39,7 +40,7 @@ async function startHarvester() {
     
     // Switch to "Append Mode" so we can add rows in chunks
     const appendWriter = createCsvWriter({
-        path: 'all_teams.csv',
+        path: path.join(__dirname, '../data/all_teams.csv'),
         header: [
             {id: 'league', title: 'LEAGUE'},
             {id: 'division', title: 'DIVISION'},
