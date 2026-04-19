@@ -22,3 +22,5 @@ dist/
 # IDEs
 .vscode/
 .idea/
+
+cincy-soccer-website/*.csv
