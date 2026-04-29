@@ -24,29 +24,69 @@
 
         <!-- JSON-LD Structured Data -->
         <% if (type==='club' ) { %>
-            <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "SportsOrganization",
-      "name": "<%- title %>",
-      "sport": "Soccer",
-      "areaServed": "Cincinnati",
-      "url": "<%- canonicalUrl %>",
-      "description": "<%- metaDesc %>"
-    }
-    </script>
-            <% } else { %>
-                <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "CollectionPage",
-      "name": "<%- title %>",
-      "url": "<%- canonicalUrl %>",
-      "description": "<%- metaDesc %>",
-      "dateModified": "<%- isoDate %>"
-    }
-    </script>
-                <% } %>
+        <script type="application/ld+json">
+        [
+          {
+            "@context": "https://schema.org",
+            "@type": "SportsOrganization",
+            "name": "<%- title %>",
+            "sport": "Soccer",
+            "areaServed": "Cincinnati",
+            "url": "<%- canonicalUrl %>",
+            "description": "<%- metaDesc %>"
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "<%- domain %>/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "<%- title %>",
+                "item": "<%- canonicalUrl %>"
+              }
+            ]
+          }
+        ]
+        </script>
+        <% } else { %>
+        <script type="application/ld+json">
+        [
+          {
+            "@context": "https://schema.org",
+            "@type": "CollectionPage",
+            "name": "<%- title %>",
+            "url": "<%- canonicalUrl %>",
+            "description": "<%- metaDesc %>",
+            "dateModified": "<%- isoDate %>"
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "<%- domain %>/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "<%- title %>",
+                "item": "<%- canonicalUrl %>"
+              }
+            ]
+          }
+        ]
+        </script>
+        <% } %>
 
                     <style>
                         :root {
@@ -90,70 +130,140 @@
                             padding: 0 15px;
                         }
 
-                        /* NAVIGATION BAR */
-                        .nav-bar {
-                            display: flex;
-                            align-items: center;
-                            justify-content: space-between;
+                        /* COMPACT HERO & SEARCH SECTION */
+                        .compact-hero {
+                            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+                            color: var(--white);
+                            padding: 20px 20px 40px;
+                            border-bottom: 4px solid var(--accent);
+                            position: relative;
                             margin-bottom: 30px;
-                            padding-bottom: 15px;
-                            border-bottom: 1px solid var(--border);
                         }
 
-                        .back-link {
-                            display: inline-flex;
+                        .compact-hero-top {
+                            display: flex;
+                            justify-content: space-between;
                             align-items: center;
-                            color: var(--text-light);
-                            text-decoration: none;
-                            font-weight: 600;
-                            font-size: 0.95rem;
-                            transition: color 0.2s;
+                            max-width: 1000px;
+                            margin: 0 auto 30px;
+                            gap: 20px;
+                            flex-wrap: wrap;
                         }
 
-                        .back-link:hover {
-                            color: var(--accent);
-                        }
-
-                        .back-link span {
-                            margin-right: 5px;
-                            font-size: 1.2rem;
-                        }
-
-                        .mini-brand {
+                        .compact-logo {
                             display: flex;
                             align-items: center;
-                            gap: 8px;
+                            gap: 10px;
                             text-decoration: none;
-                        }
-
-                        .mini-logo-img {
-                            height: 24px;
-                            width: auto;
-                        }
-
-                        .mini-logo-text {
+                            color: var(--white);
                             font-weight: 800;
-                            color: var(--primary);
-                            font-size: 1.1rem;
-                            text-transform: lowercase;
+                            font-size: 1.2rem;
                             letter-spacing: -0.5px;
                         }
 
-                        /* HEADERS */
-                        header {
-                            text-align: center;
-                            margin-bottom: 30px;
+                        .compact-logo img {
+                            height: 40px;
+                            width: auto;
+                            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
                         }
 
-                        h1 {
-                            color: var(--primary);
-                            font-size: clamp(1.5rem, 5vw, 2.5rem);
+                        .compact-search-container {
+                            position: relative;
+                            flex-grow: 1;
+                            max-width: 500px;
+                            z-index: 50;
+                        }
+
+                        .compact-search-input {
+                            width: 100%;
+                            padding: 12px 20px;
+                            border-radius: 50px;
+                            border: none;
+                            font-size: 1rem;
+                            font-family: inherit;
+                            background: rgba(255, 255, 255, 0.1);
+                            color: var(--white);
+                            border: 1px solid rgba(255, 255, 255, 0.2);
+                            transition: all 0.2s;
+                        }
+
+                        .compact-search-input::placeholder {
+                            color: rgba(255, 255, 255, 0.6);
+                        }
+
+                        .compact-search-input:focus {
+                            outline: none;
+                            background: var(--white);
+                            color: var(--text-main);
+                            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 0 0 3px rgba(227, 24, 55, 0.3);
+                        }
+
+                        .compact-hero-bottom {
+                            max-width: 1000px;
+                            margin: 0 auto;
+                            text-align: center;
+                        }
+
+                        .compact-hero-bottom h1 {
+                            font-size: 2.2rem;
                             font-weight: 800;
-                            margin: 0 0 10px 0;
-                            letter-spacing: -0.02em;
-                            line-height: 1.1;
-                            overflow-wrap: break-word;
-                            word-wrap: break-word;
+                            margin: 0;
+                            letter-spacing: -0.5px;
+                            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+                            color: var(--white);
+                        }
+
+                        /* SEARCH RESULTS BOX */
+                        .search-results {
+                            position: absolute;
+                            top: calc(100% + 10px);
+                            left: 0;
+                            right: 0;
+                            background: var(--white);
+                            border-radius: 16px;
+                            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+                            max-height: 400px;
+                            overflow-y: auto;
+                            display: none;
+                            text-align: left;
+                            border: 1px solid var(--border);
+                        }
+
+                        .search-results.active {
+                            display: block;
+                        }
+
+                        .search-item {
+                            padding: 15px 20px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: space-between;
+                            text-decoration: none;
+                            color: var(--text-main);
+                            border-bottom: 1px solid var(--border);
+                            transition: background 0.2s;
+                        }
+
+                        .search-item:last-child {
+                            border-bottom: none;
+                        }
+
+                        .search-item:hover {
+                            background: #f1f5f9;
+                        }
+
+                        .search-item-title {
+                            font-weight: 700;
+                            font-size: 1.1rem;
+                        }
+
+                        .search-item-meta {
+                            font-size: 0.85rem;
+                            color: var(--text-light);
+                            background: var(--bg);
+                            padding: 4px 10px;
+                            border-radius: 20px;
+                            border: 1px solid var(--border);
                         }
 
                         /* NEW: FILTER BAR STYLES */
@@ -390,31 +500,31 @@
 
     <div class="container">
 
-        <nav class="nav-bar">
-            <a href="index.html" class="back-link"><span>←</span> Home</a>
-            <a href="index.html" class="mini-brand">
-                <img src="assets/logo.webp" alt="logo" class="mini-logo-img" width="24" height="24"
-                    fetchpriority="high">
-                <span class="mini-logo-text">cincinnati.soccer</span>
+    <header class="compact-hero">
+        <div class="compact-hero-top">
+            <a href="index.html" class="compact-logo">
+                <img src="assets/logo.webp" alt="Cincinnati Soccer Logo" width="40" height="40" fetchpriority="high">
+                <span>cincinnati.soccer</span>
             </a>
-        </nav>
-
-        <main>
-            <header>
-                <h1><%- title %></h1>
-                <% if (typeof clubAbout !=='undefined' && clubAbout) { %>
-                    <p
-                        style="font-size: 1.05rem; line-height: 1.6; color: var(--text-light); max-width: 800px; margin: 15px auto 30px auto; text-align: center;">
-                        <%- clubAbout %>
-                    </p>
-                    <% } %>
-                        <% if (typeof divisionAbout !=='undefined' && divisionAbout) { %>
-                            <p
-                                style="font-size: 1.05rem; line-height: 1.6; color: var(--text-light); max-width: 800px; margin: 15px auto 30px auto; text-align: center;">
-                                <%- divisionAbout %>
-                            </p>
-                            <% } %>
-            </header>
+            <div class="compact-search-container">
+                <input type="search" id="global-search" class="compact-search-input" placeholder="Search for a team, club, or division..." autocomplete="off">
+                <div id="search-results" class="search-results"></div>
+            </div>
+        </div>
+        <div class="compact-hero-bottom">
+            <h1><%- title %></h1>
+            <% if (typeof clubAbout !=='undefined' && clubAbout) { %>
+                <p style="font-size: 1.05rem; line-height: 1.6; color: rgba(255,255,255,0.8); max-width: 800px; margin: 15px auto 0 auto; text-align: center;">
+                    <%- clubAbout %>
+                </p>
+            <% } %>
+            <% if (typeof divisionAbout !=='undefined' && divisionAbout) { %>
+                <p style="font-size: 1.05rem; line-height: 1.6; color: rgba(255,255,255,0.8); max-width: 800px; margin: 15px auto 0 auto; text-align: center;">
+                    <%- divisionAbout %>
+                </p>
+            <% } %>
+        </div>
+    </header>
 
             <div class="filter-bar">
                 <input type="text" id="team-filter" class="filter-input"
@@ -452,7 +562,7 @@
                             ageUrl=`${divInfo.gender.toLowerCase()}-${divInfo.age.toLowerCase().replace(/[^a-z0-9]/g, '-'
                             )}.html`; const leagueUrl=`league-${makeFilename(team.LEAGUE)}`; %>
                             <div class="team-card">
-                                <div class="team-name"><a href="team-<%- makeFilename(team.TEAM_NAME) %>"><%- team.TEAM_NAME %></a></div>
+                                <h3 class="team-name"><a href="team-<%- makeFilename(team.TEAM_NAME) %>"><%- team.TEAM_NAME %></a></h3>
                                 <div class="tags-row">
                                     <a href="<%- ageUrl %>" class="tag division-tag"><span aria-hidden="true">📅</span>
                                         <%- divInfo.label %></a>
@@ -512,6 +622,55 @@
                 }
             });
         }
+
+        // Global Search Logic
+        document.addEventListener('DOMContentLoaded', () => {
+            const searchInput = document.getElementById('global-search');
+            const searchResults = document.getElementById('search-results');
+            let searchIndex = null;
+
+            if (searchInput) {
+                fetch('/search-index.json')
+                    .then(response => response.json())
+                    .then(data => {
+                        searchIndex = data;
+                    })
+                    .catch(err => console.error("Failed to load search index:", err));
+
+                searchInput.addEventListener('input', (e) => {
+                    const query = e.target.value.toLowerCase().trim();
+                    
+                    if (!query || query.length < 2 || !searchIndex) {
+                        searchResults.classList.remove('active');
+                        return;
+                    }
+
+                    const matches = searchIndex.filter(item => {
+                        return item.name.toLowerCase().includes(query) || 
+                               (item.club && item.club.toLowerCase().includes(query));
+                    }).slice(0, 10);
+
+                    if (matches.length > 0) {
+                        searchResults.innerHTML = matches.map(item => `
+                            <a href="${item.url}" class="search-item">
+                                <span class="search-item-title">${item.name}</span>
+                                <span class="search-item-meta">${item.type.toUpperCase()}</span>
+                            </a>
+                        `).join('');
+                        searchResults.classList.add('active');
+                    } else {
+                        searchResults.innerHTML = `<div class="search-item"><span class="search-item-title" style="color: #64748b; font-weight: normal;">No teams found for "${query}"</span></div>`;
+                        searchResults.classList.add('active');
+                    }
+                });
+
+                document.addEventListener('click', (e) => {
+                    if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+                        searchResults.classList.remove('active');
+                    }
+                });
+            }
+        });
     </script>
 
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7915021068737339"

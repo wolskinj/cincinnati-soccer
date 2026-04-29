@@ -20,28 +20,85 @@
 
     <!-- JSON-LD Structured Data -->
     <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "SportsTeam",
-      "name": "<%- title %>",
-      "sport": "Soccer",
-      <% if (teamRows.length > 0 && teamRows[0].CLUB && teamRows[0].CLUB !== 'Independent') { %>
-      "memberOf": {
-        "@type": "SportsOrganization",
-        "name": "<%- teamRows[0].CLUB %>"
+    [
+      {
+        "@context": "https://schema.org",
+        "@type": "SportsTeam",
+        "name": "<%- teamName %>",
+        "sport": "Soccer",
+        <% 
+          let members = [];
+          if (teamRows.length > 0 && teamRows[0].CLUB && teamRows[0].CLUB !== 'Independent') {
+            members.push(`{"@type": "SportsOrganization", "name": "${teamRows[0].CLUB}"}`);
+          }
+          if (teamRows.length > 0 && teamRows[0].LEAGUE) {
+            members.push(`{"@type": "SportsOrganization", "name": "${teamRows[0].LEAGUE}"}`);
+          }
+        %>
+        "memberOf": [
+          <%- members.join(',') %>
+        ],
+        "location": {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Cincinnati",
+            "addressRegion": "OH"
+          }
+        },
+        "url": "<%- canonicalUrl %>",
+        "description": "<%- description.replace(/"/g, '\\"') %>"
       },
-      <% } %>
-      "location": {
-        "@type": "Place",
-        "address": {
-          "@type": "PostalAddress",
-          "addressLocality": "Cincinnati",
-          "addressRegion": "OH"
-        }
-      },
-      "url": "<%- canonicalUrl %>",
-      "description": "<%- description.replace(/"/g, '\\"') %>"
-    }
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "<%- domain %>/"
+          },
+          <% if (teamRows.length > 0 && teamRows[0].CLUB && teamRows[0].CLUB !== 'Independent') { %>
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "<%- teamRows[0].CLUB %>",
+            "item": "<%- domain %>/club-<%- makeFilename(teamRows[0].CLUB) %>"
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "name": "<%- teamName %>",
+            "item": "<%- canonicalUrl %>"
+          }
+          <% } else if (teamRows.length > 0 && teamRows[0].DIVISION) { 
+             const divInfo = normalizeDivision(teamRows[0].DIVISION);
+             const ageUrl = `${domain}/${divInfo.gender.toLowerCase()}-${divInfo.age.toLowerCase().replace(/[^a-z0-9]/g, '-')}.html`;
+          %>
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "<%- teamRows[0].DIVISION %>",
+            "item": "<%- ageUrl %>"
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "name": "<%- teamName %>",
+            "item": "<%- canonicalUrl %>"
+          }
+          <% } else { %>
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "<%- teamName %>",
+            "item": "<%- canonicalUrl %>"
+          }
+          <% } %>
+        ]
+      }
+    ]
     </script>
 
     <style>
@@ -81,86 +138,158 @@
             padding: 0 15px;
         }
 
-        .nav-bar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+        /* COMPACT HERO & SEARCH SECTION */
+        .compact-hero {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+            padding: 20px 20px 40px;
+            border-bottom: 4px solid var(--accent);
+            position: relative;
             margin-bottom: 30px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid var(--border);
         }
 
-        .back-link {
-            display: inline-flex;
+        .compact-hero-top {
+            display: flex;
+            justify-content: space-between;
             align-items: center;
-            color: var(--text-light);
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 0.95rem;
-            transition: color 0.2s;
+            max-width: 1000px;
+            margin: 0 auto 30px;
+            gap: 20px;
+            flex-wrap: wrap;
         }
 
-        .back-link:hover {
-            color: var(--accent);
-        }
-
-        .back-link span {
-            margin-right: 5px;
-            font-size: 1.2rem;
-        }
-
-        .mini-brand {
+        .compact-logo {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
             text-decoration: none;
-        }
-
-        .mini-logo-img {
-            height: 24px;
-            width: auto;
-        }
-
-        .mini-logo-text {
+            color: var(--white);
             font-weight: 800;
-            color: var(--primary);
-            font-size: 1.1rem;
-            text-transform: lowercase;
+            font-size: 1.2rem;
             letter-spacing: -0.5px;
         }
 
-        header {
+        .compact-logo img {
+            height: 40px;
+            width: auto;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+        }
+
+        .compact-search-container {
+            position: relative;
+            flex-grow: 1;
+            max-width: 500px;
+            z-index: 50;
+        }
+
+        .compact-search-input {
+            width: 100%;
+            padding: 12px 20px;
+            border-radius: 50px;
+            border: none;
+            font-size: 1rem;
+            font-family: inherit;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--white);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.2s;
+        }
+
+        .compact-search-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .compact-search-input:focus {
+            outline: none;
+            background: var(--white);
+            color: var(--text-main);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 0 0 3px rgba(227, 24, 55, 0.3);
+        }
+
+        .compact-hero-bottom {
+            max-width: 1000px;
+            margin: 0 auto;
             text-align: center;
-            margin-bottom: 40px;
         }
 
-        h1 {
-            color: var(--primary);
-            font-size: clamp(2rem, 6vw, 3.5rem);
-            font-weight: 900;
-            margin: 0 0 10px 0;
-            letter-spacing: -0.02em;
-            line-height: 1.1;
-            overflow-wrap: break-word;
-            word-wrap: break-word;
+        .compact-hero-bottom h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin: 0;
+            letter-spacing: -0.5px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            color: var(--white);
         }
 
-        .club-subtitle {
-            font-size: 1.25rem;
-            color: var(--text-light);
-            font-weight: 600;
-            margin-bottom: 20px;
+        .compact-hero-bottom .tags-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 15px;
         }
 
-        .club-subtitle a {
-            color: var(--primary);
+        .tag {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--white);
+            padding: 5px 12px;
+            border-radius: 6px;
             text-decoration: none;
-            transition: color 0.2s;
+            font-size: 0.9rem;
+            font-weight: 600;
         }
 
-        .club-subtitle a:hover {
-            color: var(--accent);
-            text-decoration: underline;
+        /* SEARCH RESULTS BOX */
+        .search-results {
+            position: absolute;
+            top: calc(100% + 10px);
+            left: 0;
+            right: 0;
+            background: var(--white);
+            border-radius: 16px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+            max-height: 400px;
+            overflow-y: auto;
+            display: none;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+
+        .search-results.active {
+            display: block;
+        }
+
+        .search-item {
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            text-decoration: none;
+            color: var(--text-main);
+            border-bottom: 1px solid var(--border);
+            transition: background 0.2s;
+        }
+
+        .search-item:last-child {
+            border-bottom: none;
+        }
+
+        .search-item:hover {
+            background: #f1f5f9;
+        }
+
+        .search-item-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .search-item-meta {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            background: var(--bg);
+            padding: 4px 10px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
         }
 
         .league-participation {
@@ -268,6 +397,51 @@
             color: #cbd5e1;
             font-size: 0.9rem;
         }
+
+        .breadcrumb {
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+        .breadcrumb ol {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .breadcrumb li {
+            display: flex;
+            align-items: center;
+        }
+        .breadcrumb li:not(:last-child)::after {
+            content: "›";
+            margin: 0 8px;
+            color: #94a3b8;
+        }
+        .breadcrumb a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .intro-text {
+            max-width: 800px;
+            margin: 0 auto 40px auto;
+            color: var(--text-light);
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .section-title {
+            text-align: center;
+            color: var(--primary);
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
     </style>
 
     <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon.png">
@@ -282,36 +456,65 @@
 
 <body>
 
+    <header class="compact-hero">
+        <div class="compact-hero-top">
+            <a href="index.html" class="compact-logo">
+                <img src="assets/logo.webp" alt="Cincinnati Soccer Logo" width="40" height="40" fetchpriority="high">
+                <span>cincinnati.soccer</span>
+            </a>
+            <div class="compact-search-container">
+                <input type="search" id="global-search" class="compact-search-input" placeholder="Search for a team, club, or division..." autocomplete="off">
+                <div id="search-results" class="search-results"></div>
+            </div>
+        </div>
+        <div class="compact-hero-bottom">
+            <h1><%- teamName %></h1>
+            <div class="tags-row">
+                <% if (teamRows.length > 0 && teamRows[0].DIVISION) { 
+                    const divInfo = normalizeDivision(teamRows[0].DIVISION);
+                    const ageUrl = `${divInfo.gender.toLowerCase()}-${divInfo.age.toLowerCase().replace(/[^a-z0-9]/g, '-')}.html`;
+                %>
+                    <a href="<%- ageUrl %>" class="tag division-tag"><span aria-hidden="true">📅</span> <%- divInfo.label %></a>
+                <% } %>
+                
+                <% if (teamRows.length > 0 && teamRows[0].CLUB && teamRows[0].CLUB !== 'Independent') { %>
+                    <a href="club-<%- makeFilename(teamRows[0].CLUB) %>" class="tag club-tag"><span aria-hidden="true">⚽</span> <%- teamRows[0].CLUB %></a>
+                <% } else if (teamRows.length > 0 && teamRows[0].CLUB) { %>
+                    <span class="tag"><span aria-hidden="true">⚽</span> <%- teamRows[0].CLUB %></span>
+                <% } %>
+                
+                <% if (teamRows.length > 0 && teamRows[0].LEAGUE) { 
+                    const leagueUrl = `league-${makeFilename(teamRows[0].LEAGUE)}`;
+                %>
+                    <a href="<%- leagueUrl %>" class="tag league-tag"><span aria-hidden="true">🏆</span> <%- teamRows[0].LEAGUE %></a>
+                <% } %>
+            </div>
+        </div>
+    </header>
+
     <div class="container">
 
-        <nav class="nav-bar">
-            <!-- Intelligent backlink based on first team row -->
-            <% if (teamRows.length > 0 && teamRows[0].CLUB && teamRows[0].CLUB !== 'Independent') { %>
-            <a href="club-<%- makeFilename(teamRows[0].CLUB) %>" class="back-link"><span>←</span> Back to <%- teamRows[0].CLUB %></a>
-            <% } else { %>
-            <a href="index.html" class="back-link"><span>←</span> Home</a>
-            <% } %>
-
-            <a href="index.html" class="mini-brand">
-                <img src="assets/logo.webp" alt="logo" class="mini-logo-img" width="24" height="24" fetchpriority="high">
-                <span class="mini-logo-text">cincinnati.soccer</span>
-            </a>
-        </nav>
-
         <main>
-            <header>
-                <h1><%- title %></h1>
-                <% if (teamRows.length > 0 && teamRows[0].CLUB && teamRows[0].CLUB !== 'Independent') { %>
-                <div class="club-subtitle">
-                    Affiliated with <a href="club-<%- makeFilename(teamRows[0].CLUB) %>"><%- teamRows[0].CLUB %></a>
-                </div>
-                <% } else if (teamRows.length > 0) { %>
-                <div class="club-subtitle">
-                    Independent Team
-                </div>
-                <% } %>
-            </header>
+            <nav aria-label="breadcrumb" class="breadcrumb">
+                <ol>
+                    <li><a href="index.html">Home</a></li>
+                    <% if (teamRows.length > 0 && teamRows[0].CLUB && teamRows[0].CLUB !== 'Independent') { %>
+                    <li><a href="club-<%- makeFilename(teamRows[0].CLUB) %>"><%- teamRows[0].CLUB %></a></li>
+                    <% } else if (teamRows.length > 0 && teamRows[0].DIVISION) { 
+                        const divInfo = normalizeDivision(teamRows[0].DIVISION);
+                        const ageUrl = `${divInfo.gender.toLowerCase()}-${divInfo.age.toLowerCase().replace(/[^a-z0-9]/g, '-')}.html`;
+                    %>
+                    <li><a href="<%- ageUrl %>"><%- teamRows[0].DIVISION %></a></li>
+                    <% } %>
+                    <li aria-current="page"><%- teamName %></li>
+                </ol>
+            </nav>
 
+            <p class="intro-text">
+                <strong><%- teamName %></strong> is a competitive youth soccer team based in Cincinnati, OH<% if (teamRows.length > 0 && teamRows[0].CLUB && teamRows[0].CLUB !== 'Independent') { %>, affiliated with <%- teamRows[0].CLUB %><% } %>. For the current season, they are competing <% if (teamRows.length > 0 && teamRows[0].DIVISION) { %>in the <%- teamRows[0].DIVISION %> bracket<% } %><% if (teamRows.length > 0 && teamRows[0].LEAGUE) { %> within the <%- teamRows[0].LEAGUE %><% } %>.
+            </p>
+
+            <h2 class="section-title">League Participation</h2>
             <div class="league-participation">
                 <% teamRows.forEach(function(row) { 
                     const divInfo = normalizeDivision(row.DIVISION);
@@ -353,8 +556,56 @@
                 style="color: inherit; text-decoration: underline;">CC BY-NC-ND 4.0</a></p>
     </footer>
 
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7915021068737339"
-        crossorigin="anonymous"></script>
-</body>
+    <script>
+        // Global Search Logic
+        document.addEventListener('DOMContentLoaded', () => {
+            const searchInput = document.getElementById('global-search');
+            const searchResults = document.getElementById('search-results');
+            let searchIndex = null;
 
+            if (searchInput) {
+                fetch('/search-index.json')
+                    .then(response => response.json())
+                    .then(data => {
+                        searchIndex = data;
+                    })
+                    .catch(err => console.error("Failed to load search index:", err));
+
+                searchInput.addEventListener('input', (e) => {
+                    const query = e.target.value.toLowerCase().trim();
+                    
+                    if (!query || query.length < 2 || !searchIndex) {
+                        searchResults.classList.remove('active');
+                        return;
+                    }
+
+                    const matches = searchIndex.filter(item => {
+                        return item.name.toLowerCase().includes(query) || 
+                               (item.club && item.club.toLowerCase().includes(query));
+                    }).slice(0, 10);
+
+                    if (matches.length > 0) {
+                        searchResults.innerHTML = matches.map(item => `
+                            <a href="${item.url}" class="search-item">
+                                <span class="search-item-title">${item.name}</span>
+                                <span class="search-item-meta">${item.type.toUpperCase()}</span>
+                            </a>
+                        `).join('');
+                        searchResults.classList.add('active');
+                    } else {
+                        searchResults.innerHTML = `<div class="search-item"><span class="search-item-title" style="color: #64748b; font-weight: normal;">No teams found for "${query}"</span></div>`;
+                        searchResults.classList.add('active');
+                    }
+                });
+
+                document.addEventListener('click', (e) => {
+                    if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+                        searchResults.classList.remove('active');
+                    }
+                });
+            }
+        });
+    </script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7915021068737339" crossorigin="anonymous"></script>
+</body>
 </html>

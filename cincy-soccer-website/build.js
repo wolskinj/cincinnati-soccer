@@ -142,12 +142,31 @@ function generateTeamPages(teamGroups) {
 
     for (const [teamName, rows] of Object.entries(teamGroups)) {
         let filename = `team-${makeFilename(teamName)}`;
-        let description = `View schedule, league, and division information for ${teamName}.`;
+        
+        const firstRow = rows[0] || {};
+        const clubName = firstRow.CLUB && firstRow.CLUB !== 'Independent' ? firstRow.CLUB : '';
+        const divisionInfo = normalizeDivision(firstRow.DIVISION);
+        const leagueName = firstRow.LEAGUE || '';
+        
+        let titleSuffix = '';
+        if (clubName) titleSuffix += ` - ${clubName}`;
+        if (divisionInfo.label && divisionInfo.label !== 'Unknown') titleSuffix += ` ${divisionInfo.label}`;
+        titleSuffix += ` Soccer Team`;
+        let pageTitle = `${teamName}${titleSuffix}`;
+
+        const nameHash = teamName.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+        const descTemplates = [
+            `Follow the ${teamName} youth soccer team${clubName ? ` from ${clubName}` : ''}. View schedules, standings, and game information for their ${firstRow.DIVISION || ''} season in the ${leagueName} in Cincinnati, OH.`,
+            `Get the latest schedules and league updates for the ${teamName} soccer team. Competing in the ${leagueName}${clubName ? ` and representing ${clubName}` : ''} in the Greater Cincinnati area.`,
+            `Official team page for ${teamName}${clubName ? `, a ${clubName} youth squad` : ''}. Explore their ${firstRow.DIVISION || ''} division schedule and standings within the ${leagueName}.`
+        ];
+        let description = descTemplates[nameHash % descTemplates.length];
         
         const canonicalUrl = `${DOMAIN}/${filename}`;
 
-        const pageHtml = ejs.render(template, {
-            title: teamName,
+        const templateData = {
+            title: pageTitle,
+            teamName: teamName, // Pass original teamName for H1
             type: 'team',
             description: description,
             canonicalUrl: canonicalUrl,
@@ -158,9 +177,11 @@ function generateTeamPages(teamGroups) {
             makeFilename: makeFilename,
             normalizeDivision: normalizeDivision,
             leaguesConfig: LEAGUES_CONFIG
-        });
+        };
 
+        const pageHtml = ejs.render(template, templateData);
         fs.writeFileSync(`${OUTPUT_DIR}/${filename}`, pageHtml);
+        
         sitemapUrls.push(filename);
     }
     console.log(`✅ TEAM pages generated.`);
@@ -347,7 +368,7 @@ function generatePages(groups, type) {
 
         const canonicalUrl = `${DOMAIN}/${filename}`;
 
-        const pageHtml = ejs.render(template, {
+        const templateData = {
             title: groupName,
             type: type,
             description: description,
@@ -364,9 +385,11 @@ function generatePages(groups, type) {
             divisionAbout: divisionAbout,
             makeFilename: makeFilename,
             normalizeDivision: normalizeDivision
-        });
+        };
 
+        const pageHtml = ejs.render(template, templateData);
         fs.writeFileSync(`${OUTPUT_DIR}/${filename}`, pageHtml);
+        
         sitemapUrls.push(filename);
     }
     console.log(`✅ ${type.toUpperCase()} pages generated.`);
@@ -388,7 +411,7 @@ function generateLeaguePages(leagueGroups) {
 
         const canonicalUrl = `${DOMAIN}/${filename}`;
 
-        const pageHtml = ejs.render(template, {
+        const templateData = {
             title: leagueName,
             type: 'league',
             description: description,
@@ -405,9 +428,11 @@ function generateLeaguePages(leagueGroups) {
             divisionAbout: null,
             makeFilename: makeFilename,
             normalizeDivision: normalizeDivision
-        });
+        };
 
+        const pageHtml = ejs.render(template, templateData);
         fs.writeFileSync(`${OUTPUT_DIR}/${filename}`, pageHtml);
+        
         sitemapUrls.push(filename);
     }
     console.log("✅ LEAGUE pages generated.");
@@ -445,6 +470,49 @@ function generateHomepage(ageGroups, clubGroups, leagueGroups, teamGroups) {
 
     fs.writeFileSync(`${OUTPUT_DIR}/index.html`, finalHtml);
     console.log("✅ Homepage updated!");
+
+    // === GENERATE DIRECTORY PAGES & SEARCH INDEX ===
+    try {
+        let clubsTemplate = fs.readFileSync(path.join(__dirname, 'clubs_template.ejs'), 'utf8');
+        fs.writeFileSync(`${OUTPUT_DIR}/clubs.html`, ejs.render(clubsTemplate, { clubsGroups, makeFilename, lastUpdated: formattedDate, isoDate, domain: DOMAIN }));
+
+        let agesTemplate = fs.readFileSync(path.join(__dirname, 'ages_template.ejs'), 'utf8');
+        fs.writeFileSync(`${OUTPUT_DIR}/ages.html`, ejs.render(agesTemplate, { boysGroups, girlsGroups, makeFilename, lastUpdated: formattedDate, isoDate, domain: DOMAIN }));
+
+        let leaguesTemplate = fs.readFileSync(path.join(__dirname, 'leagues_template.ejs'), 'utf8');
+        fs.writeFileSync(`${OUTPUT_DIR}/leagues.html`, ejs.render(leaguesTemplate, { leaguesData, makeFilename, lastUpdated: formattedDate, isoDate, domain: DOMAIN }));
+
+        console.log("✅ Directory Pages updated!");
+
+        // Build Search Index JSON
+        let searchIndex = [];
+        
+        // Add Clubs
+        clubsGroups.forEach(c => searchIndex.push({name: c, type: 'club', url: `/club-${makeFilename(c)}`}));
+        
+        // Add Leagues
+        leaguesData.forEach(l => searchIndex.push({name: l.info.name, type: 'league', url: `/league-${makeFilename(l.info.id)}`}));
+        
+        // Add Divisions
+        [...boysGroups, ...girlsGroups].forEach(g => {
+            const parts = g.split(' ');
+            const p0 = parts[0].toLowerCase();
+            const p1 = parts[1].toLowerCase().replace(/[^a-z0-9]/g, '-'); 
+            searchIndex.push({name: g, type: 'division', url: `/${p0}-${p1}.html`});
+        });
+        
+        // Add Teams
+        Object.entries(teamGroups).forEach(([teamName, rows]) => {
+            const clubName = rows[0] && rows[0].CLUB ? rows[0].CLUB : '';
+            searchIndex.push({name: teamName, type: 'team', url: `/team-${makeFilename(teamName)}`, club: clubName});
+        });
+
+        fs.writeFileSync(`${OUTPUT_DIR}/search-index.json`, JSON.stringify(searchIndex));
+        
+        console.log(`✅ Search index created with ${searchIndex.length} entries.`);
+    } catch (e) {
+        console.warn("⚠️ Skipping directory/search index generation (error).", e.message);
+    }
 }
 
 // === SITEMAP GENERATOR ===
@@ -494,7 +562,7 @@ Sitemap: ${DOMAIN}/sitemap.xml
 function generateHeaders() {
     console.log("🛡️ Generating Cloudflare _headers...");
     // A strict CSP optimized for a static site with Google AdSense
-    const csp = `default-src 'self'; script-src 'self' 'unsafe-inline' https://pagead2.googlesyndication.com https://static.cloudflareinsights.com https://fundingchoicesmessages.google.com https://*.adtrafficquality.google; connect-src 'self' https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net https://stats.g.doubleclick.net https://cloudflareinsights.com https://fundingchoicesmessages.google.com https://*.adtrafficquality.google; frame-src 'self' https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://www.google.com https://fundingchoicesmessages.google.com https://*.adtrafficquality.google; img-src 'self' data: https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://www.google.com https://mirrors.creativecommons.org https://*.adtrafficquality.google; style-src 'self' 'unsafe-inline'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; require-trusted-types-for 'script';`;
+    const csp = `default-src 'self'; script-src 'self' 'unsafe-inline' https://pagead2.googlesyndication.com https://static.cloudflareinsights.com https://fundingchoicesmessages.google.com https://*.adtrafficquality.google; connect-src 'self' https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net https://stats.g.doubleclick.net https://cloudflareinsights.com https://fundingchoicesmessages.google.com https://*.adtrafficquality.google; frame-src 'self' https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://www.google.com https://fundingchoicesmessages.google.com https://*.adtrafficquality.google; img-src 'self' data: https://images.unsplash.com https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://www.google.com https://mirrors.creativecommons.org https://*.adtrafficquality.google; style-src 'self' 'unsafe-inline'; base-uri 'self'; form-action 'self'; frame-ancestors 'self';`;
 
     // Cloudflare Edge Headers Definition
     const content = `/*
@@ -502,6 +570,9 @@ function generateHeaders() {
   X-Frame-Options: SAMEORIGIN
   Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
   Cross-Origin-Opener-Policy: same-origin-allow-popups
+
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
 `;
     fs.writeFileSync(`${OUTPUT_DIR}/_headers`, content);
     console.log("✅ _headers created.");

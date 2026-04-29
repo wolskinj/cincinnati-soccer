@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>cincinnati.soccer | Youth Standings & Schedules</title>
+    <title>Age Divisions | cincinnati.soccer</title>
     <meta name="description"
         content="The centralized directory for Cincinnati youth soccer schedules, standings, and team rankings. Track CPL, BPYSL, and club teams in one place.">
     <meta name="theme-color" content="#002147">
@@ -46,64 +46,84 @@
             scroll-behavior: smooth;
         }
 
-        /* HERO & SEARCH SECTION */
-        .hero {
+        /* COMPACT HERO & SEARCH SECTION */
+        .compact-hero {
             background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             color: var(--white);
-            padding: 80px 20px 100px;
-            text-align: center;
-            border-bottom: 8px solid var(--accent);
+            padding: 20px 20px 40px;
+            border-bottom: 4px solid var(--accent);
             position: relative;
         }
 
-        .hero-logo {
-            height: 60px;
-            width: auto;
-            margin-bottom: 20px;
-            filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3));
+        .compact-hero-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1000px;
+            margin: 0 auto 30px;
+            gap: 20px;
+            flex-wrap: wrap;
         }
 
-        .hero h1 {
-            font-size: clamp(2rem, 6vw, 4rem);
-            font-weight: 900;
-            margin: 0;
-            letter-spacing: -1px;
-            text-transform: lowercase;
-            text-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-        }
-
-        .hero p {
+        .compact-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--white);
+            font-weight: 800;
             font-size: 1.2rem;
-            color: #cbd5e1;
-            margin: 15px auto 40px;
-            max-width: 600px;
-            font-weight: 500;
+            letter-spacing: -0.5px;
         }
 
-        /* AUTOCOMPLETE SEARCH BAR */
-        .search-container {
+        .compact-logo img {
+            height: 40px;
+            width: auto;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+        }
+
+        .compact-search-container {
             position: relative;
-            max-width: 700px;
-            margin: 0 auto;
+            flex-grow: 1;
+            max-width: 500px;
             z-index: 50;
         }
 
-        .search-input {
+        .compact-search-input {
             width: 100%;
-            padding: 22px 30px;
+            padding: 12px 20px;
             border-radius: 50px;
             border: none;
-            font-size: 1.25rem;
+            font-size: 1rem;
             font-family: inherit;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--white);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             transition: all 0.2s;
-            background: var(--white);
-            color: var(--text-main);
         }
 
-        .search-input:focus {
+        .compact-search-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .compact-search-input:focus {
             outline: none;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 0 0 4px rgba(227, 24, 55, 0.3);
+            background: var(--white);
+            color: var(--text-main);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 0 0 3px rgba(227, 24, 55, 0.3);
+        }
+
+        .compact-hero-bottom {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .compact-hero-bottom h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin: 0;
+            letter-spacing: -0.5px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
 
         .search-results {
@@ -303,39 +323,57 @@
 
 <body>
 
-    <header class="hero">
-        <img src="assets/logo.webp" alt="Cincinnati Soccer Logo" class="hero-logo" width="250" height="250" fetchpriority="high">
-        <h1>cincinnati.soccer</h1>
-        <p>The smartest way to find Cincinnati youth soccer schedules.</p>
-        
-        <div class="search-container">
-            <input type="search" id="global-search" class="search-input" placeholder="Search for a team, club, or division..." autocomplete="off">
-            <div id="search-results" class="search-results">
-                <!-- Javascript will inject results here -->
+    <header class="compact-hero">
+        <div class="compact-hero-top">
+            <a href="index.html" class="compact-logo">
+                <img src="assets/logo.webp" alt="Cincinnati Soccer Logo" width="40" height="40" fetchpriority="high">
+                <span>cincinnati.soccer</span>
+            </a>
+            <div class="compact-search-container">
+                <input type="search" id="global-search" class="compact-search-input" placeholder="Search for a team, club, or division..." autocomplete="off">
+                <div id="search-results" class="search-results">
+                    <!-- Javascript will inject results here -->
+                </div>
             </div>
+        </div>
+        <div class="compact-hero-bottom">
+            <h1>Age Divisions</h1>
         </div>
     </header>
 
     <main>
-        <!-- THE HUB CARDS -->
-        <div class="hub-container">
-            <div class="hub-grid">
-                <a href="clubs.html" class="hub-card">
-                    <img src="https://images.unsplash.com/photo-1579952363873-27f3bade9f55?q=80&w=800&auto=format&fit=crop" alt="Soccer Ball" loading="lazy">
-                    <h2>Browse by Club</h2>
-                </a>
-                <a href="ages.html" class="hub-card">
-                    <img src="https://images.unsplash.com/photo-1526232761682-d26e03ac148e?q=80&w=800&auto=format&fit=crop" alt="Kids playing soccer" loading="lazy">
-                    <h2>Browse by Age</h2>
-                </a>
-                <a href="leagues.html" class="hub-card">
-                    <img src="https://images.unsplash.com/photo-1604651684573-05470013b3b9?q=80&w=800&auto=format&fit=crop" alt="Youth soccer players" loading="lazy">
-                    <h2>Browse by League</h2>
-                </a>
+
+
+            <div id="age-section" class="directory-section">
+                <h3>Age Divisions</h3>
+                <h4 style="color: var(--text-light); margin-top: 0;">Boys</h4>
+                <div class="link-grid" style="margin-bottom: 30px;">
+                    <% boysGroups.forEach(function(g) { 
+                        const parts=g.split(' ');
+                        const p0 = parts[0].toLowerCase();
+                        const p1 = parts[1].toLowerCase().replace(/[^a-z0-9]/g, '-'); 
+                        const url=`${p0}-${p1}.html`; 
+                    %>
+                        <a href="<%- url %>" class="dir-link"><%- g %></a>
+                    <% }); %>
+                </div>
+
+                <h4 style="color: var(--text-light); margin-top: 0;">Girls</h4>
+                <div class="link-grid">
+                    <% girlsGroups.forEach(function(g) { 
+                        const parts=g.split(' ');
+                        const p0 = parts[0].toLowerCase();
+                        const p1 = parts[1].toLowerCase().replace(/[^a-z0-9]/g, '-'); 
+                        const url=`${p0}-${p1}.html`; 
+                    %>
+                        <a href="<%- url %>" class="dir-link"><%- g %></a>
+                    <% }); %>
+                </div>
             </div>
+
+
+
         </div>
-
-
     </main>
 
     <footer>
