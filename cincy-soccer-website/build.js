@@ -135,6 +135,7 @@ async function buildSite() {
             generateRobotsTxt();
             generateHeaders();
             generateRedirects();
+            generateWorker();
         });
 }
 
@@ -594,6 +595,25 @@ https://www.cincinnati.soccer/* https://cincinnati.soccer/:splat 301
 `;
     fs.writeFileSync(`${OUTPUT_DIR}/_redirects`, content);
     console.log("✅ _redirects created (301 Permanent Redirects to https://cincinnati.soccer).");
+}
+
+// === CLOUDFLARE PAGES EDGE WORKER GENERATOR ===
+function generateWorker() {
+    console.log("⚡ Generating Cloudflare Pages _worker.js Edge Redirect...");
+    const content = `export default {
+    async fetch(request, env, ctx) {
+        const url = new URL(request.url);
+        if (url.hostname === 'cincinnati-soccer.pages.dev' || url.hostname === 'www.cincinnati.soccer') {
+            url.hostname = 'cincinnati.soccer';
+            url.protocol = 'https:';
+            return Response.redirect(url.toString(), 301);
+        }
+        return env.ASSETS.fetch(request);
+    }
+};
+`;
+    fs.writeFileSync(`${OUTPUT_DIR}/_worker.js`, content);
+    console.log("✅ _worker.js created (Cloudflare Edge Worker 301 Redirect for pages.dev & www).");
 }
 
 buildSite();
