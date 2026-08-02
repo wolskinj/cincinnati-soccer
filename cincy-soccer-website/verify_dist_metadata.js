@@ -27,6 +27,9 @@ function checkFileMetadata(filePath) {
     if (!html.includes('<link rel="apple-touch-icon"')) issues.push('Missing apple-touch-icon link');
     if (!html.includes('<link rel="manifest"')) issues.push('Missing site.webmanifest link');
 
+    // Check Data Discovery Link
+    if (!html.includes('<link rel="alternate" type="application/json"')) issues.push('Missing search-index.json discovery link');
+
     // Check Canonical URL
     if (!html.includes('<link rel="canonical"')) issues.push('Missing canonical link');
 
