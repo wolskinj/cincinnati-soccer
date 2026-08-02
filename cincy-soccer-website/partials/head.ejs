@@ -1,32 +1,58 @@
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title><%- title %> | cincinnati.soccer</title>
-
 <% 
+let metaTitle = typeof title !== 'undefined' && title ? title : 'cincinnati.soccer';
+if (!metaTitle.includes('cincinnati.soccer')) {
+    metaTitle = metaTitle + ' | cincinnati.soccer';
+}
+
 let metaDesc = typeof description !== 'undefined' ? description : '';
 if (typeof clubAbout !== 'undefined' && clubAbout) metaDesc = clubAbout;
 if (typeof divisionAbout !== 'undefined' && divisionAbout) metaDesc = divisionAbout;
 if (typeof leagueAbout !== 'undefined' && leagueAbout) metaDesc = leagueAbout;
-metaDesc = metaDesc.replace(/<[^>]*>?/gm, '');
+metaDesc = metaDesc.replace(/<[^>]*>?/gm, '').trim();
+if (!metaDesc) {
+    metaDesc = "The centralized directory for Cincinnati youth soccer schedules, standings, and team rankings. Track CPL, BPYSL, and club teams in one place.";
+}
+
+let currentUrl = typeof canonicalUrl !== 'undefined' && canonicalUrl ? canonicalUrl : (domain + '/');
+let defaultOgImage = domain + '/assets/social-share-og.jpg';
+let shareImage = typeof ogImage !== 'undefined' && ogImage ? ogImage : defaultOgImage;
+let shareImageAlt = typeof ogImageAlt !== 'undefined' && ogImageAlt ? ogImageAlt : (metaTitle + " - Cincinnati Youth Soccer");
 %>
-<meta name="theme-color" content="#002147">
-<link rel="preconnect" href="https://pagead2.googlesyndication.com" crossorigin>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title><%- metaTitle %></title>
 
 <meta name="description" content="<%- metaDesc %>">
-<link rel="canonical" href="<%- canonicalUrl %>">
+<link rel="canonical" href="<%- currentUrl %>">
+<meta name="theme-color" content="#002147">
 
-<!-- Open Graph / Social -->
+<!-- Favicons & Web App Manifest -->
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/assets/site.webmanifest">
+
+<!-- Open Graph / Social Media Meta Tags -->
+<meta property="og:site_name" content="cincinnati.soccer">
+<meta property="og:locale" content="en_US">
 <meta property="og:type" content="website">
-<meta property="og:url" content="<%- canonicalUrl %>">
-<meta property="og:title" content="<%- title %> | cincinnati.soccer">
+<meta property="og:url" content="<%- currentUrl %>">
+<meta property="og:title" content="<%- metaTitle %>">
 <meta property="og:description" content="<%- metaDesc %>">
-<meta property="og:image" content="<%- domain %>/assets/logo.webp">
+<meta property="og:image" content="<%- shareImage %>">
+<meta property="og:image:secure_url" content="<%- shareImage %>">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="<%- shareImageAlt %>">
 
-<!-- Twitter Card -->
+<!-- Twitter Card Meta Tags -->
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="<%- title %> | cincinnati.soccer">
+<meta name="twitter:title" content="<%- metaTitle %>">
 <meta name="twitter:description" content="<%- metaDesc %>">
-<meta name="twitter:image" content="<%- domain %>/assets/logo.webp">
+<meta name="twitter:image" content="<%- shareImage %>">
+<meta name="twitter:image:alt" content="<%- shareImageAlt %>">
+
+<link rel="preconnect" href="https://pagead2.googlesyndication.com" crossorigin>
 
 <!-- JSON-LD Structured Data -->
 <% if (typeof type !== 'undefined' && type === 'team') { %>
@@ -36,7 +62,7 @@ metaDesc = metaDesc.replace(/<[^>]*>?/gm, '');
   "@type": "SportsTeam",
   "name": "<%- typeof teamName !== 'undefined' ? teamName : title %>",
   "sport": "Soccer",
-  "url": "<%- canonicalUrl %>",
+  "url": "<%- currentUrl %>",
   "description": "<%- metaDesc %>",
   "location": {
     "@type": "Place",
@@ -53,7 +79,7 @@ metaDesc = metaDesc.replace(/<[^>]*>?/gm, '');
     "name": "<%- title %>",
     "sport": "Soccer",
     "areaServed": "Cincinnati",
-    "url": "<%- canonicalUrl %>",
+    "url": "<%- currentUrl %>",
     "description": "<%- metaDesc %>"
   },
   {
@@ -70,7 +96,7 @@ metaDesc = metaDesc.replace(/<[^>]*>?/gm, '');
         "@type": "ListItem",
         "position": 2,
         "name": "<%- title %>",
-        "item": "<%- canonicalUrl %>"
+        "item": "<%- currentUrl %>"
       }
     ]
   }
@@ -83,7 +109,7 @@ metaDesc = metaDesc.replace(/<[^>]*>?/gm, '');
     "@context": "https://schema.org",
     "@type": "CollectionPage",
     "name": "<%- title %>",
-    "url": "<%- canonicalUrl %>",
+    "url": "<%- currentUrl %>",
     "description": "<%- metaDesc %>",
     "dateModified": "<%- typeof isoDate !== 'undefined' ? isoDate : new Date().toISOString() %>"
   },
@@ -101,7 +127,7 @@ metaDesc = metaDesc.replace(/<[^>]*>?/gm, '');
         "@type": "ListItem",
         "position": 2,
         "name": "<%- title %>",
-        "item": "<%- canonicalUrl %>"
+        "item": "<%- currentUrl %>"
       }
     ]
   }

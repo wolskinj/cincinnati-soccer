@@ -1,0 +1,21 @@
+{
+  "name": "cincinnati.soccer",
+  "short_name": "cincinnati.soccer",
+  "description": "Cincinnati youth soccer standings, schedules, and team directory.",
+  "icons": [
+    {
+      "src": "/assets/favicon.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#002147",
+  "theme_color": "#002147"
+}

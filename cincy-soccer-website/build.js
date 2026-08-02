@@ -77,10 +77,15 @@ async function buildSite() {
         fs.copyFileSync(privacyPolicy, path.join(OUTPUT_DIR, 'privacy-policy.html'));
     }
 
-    // 2b. COPY ADS.TXT
+    // 2b. COPY ADS.TXT & MANIFEST
     const adsTxt = path.join(__dirname, 'ads.txt');
     if (fs.existsSync(adsTxt)) {
         fs.copyFileSync(adsTxt, path.join(OUTPUT_DIR, 'ads.txt'));
+    }
+
+    const manifestFile = path.join(__dirname, 'assets', 'site.webmanifest');
+    if (fs.existsSync(manifestFile)) {
+        fs.copyFileSync(manifestFile, path.join(OUTPUT_DIR, 'site.webmanifest'));
     }
 
     // Reset Sitemap (add homepage first)
@@ -460,6 +465,10 @@ function generateHomepage(ageGroups, clubGroups, leagueGroups, teamGroups) {
     const teams = Object.keys(teamGroups).sort();
 
     const finalHtml = ejs.render(homeTemplate, {
+        title: "cincinnati.soccer | Youth Standings & Schedules",
+        description: "The centralized directory for Cincinnati youth soccer schedules, standings, and team rankings. Track CPL, BPYSL, and club teams in one place.",
+        canonicalUrl: `${DOMAIN}/`,
+        type: "website",
         boysGroups: boysGroups,
         girlsGroups: girlsGroups,
         clubsGroups: clubsGroups,
@@ -478,15 +487,33 @@ function generateHomepage(ageGroups, clubGroups, leagueGroups, teamGroups) {
     try {
         const clubsPath = path.join(__dirname, 'clubs_template.ejs');
         let clubsTemplate = fs.readFileSync(clubsPath, 'utf8');
-        fs.writeFileSync(`${OUTPUT_DIR}/clubs.html`, ejs.render(clubsTemplate, { clubsGroups, makeFilename, lastUpdated: formattedDate, isoDate, domain: DOMAIN }, { filename: clubsPath }));
+        fs.writeFileSync(`${OUTPUT_DIR}/clubs.html`, ejs.render(clubsTemplate, { 
+            title: "Club Directory | cincinnati.soccer",
+            description: "Explore all youth soccer clubs in the Greater Cincinnati area, including team counts and league affiliations.",
+            canonicalUrl: `${DOMAIN}/clubs.html`,
+            type: "website",
+            clubsGroups, makeFilename, lastUpdated: formattedDate, isoDate, domain: DOMAIN 
+        }, { filename: clubsPath }));
 
         const agesPath = path.join(__dirname, 'ages_template.ejs');
         let agesTemplate = fs.readFileSync(agesPath, 'utf8');
-        fs.writeFileSync(`${OUTPUT_DIR}/ages.html`, ejs.render(agesTemplate, { boysGroups, girlsGroups, makeFilename, lastUpdated: formattedDate, isoDate, domain: DOMAIN }, { filename: agesPath }));
+        fs.writeFileSync(`${OUTPUT_DIR}/ages.html`, ejs.render(agesTemplate, { 
+            title: "Age Divisions Directory | cincinnati.soccer",
+            description: "Browse youth soccer divisions by age group and gender across Cincinnati.",
+            canonicalUrl: `${DOMAIN}/ages.html`,
+            type: "website",
+            boysGroups, girlsGroups, makeFilename, lastUpdated: formattedDate, isoDate, domain: DOMAIN 
+        }, { filename: agesPath }));
 
         const leaguesPath = path.join(__dirname, 'leagues_template.ejs');
         let leaguesTemplate = fs.readFileSync(leaguesPath, 'utf8');
-        fs.writeFileSync(`${OUTPUT_DIR}/leagues.html`, ejs.render(leaguesTemplate, { leaguesData, makeFilename, lastUpdated: formattedDate, isoDate, domain: DOMAIN }, { filename: leaguesPath }));
+        fs.writeFileSync(`${OUTPUT_DIR}/leagues.html`, ejs.render(leaguesTemplate, { 
+            title: "Leagues Directory | cincinnati.soccer",
+            description: "Discover local and regional youth soccer leagues operating in Greater Cincinnati, including CPL, BPYSL, OSSL, and CvC.",
+            canonicalUrl: `${DOMAIN}/leagues.html`,
+            type: "website",
+            leaguesData, makeFilename, lastUpdated: formattedDate, isoDate, domain: DOMAIN 
+        }, { filename: leaguesPath }));
 
         console.log("✅ Directory Pages updated!");
 
