@@ -54,7 +54,10 @@ let shareImageAlt = typeof ogImageAlt !== 'undefined' && ogImageAlt ? ogImageAlt
 <meta name="twitter:image" content="<%- shareImage %>">
 <meta name="twitter:image:alt" content="<%- shareImageAlt %>">
 
+<!-- Google AdSense & Speed Connection Hints -->
 <link rel="preconnect" href="https://pagead2.googlesyndication.com" crossorigin>
+<link rel="dns-prefetch" href="https://googleads.g.doubleclick.net">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7915021068737339" crossorigin="anonymous"></script>
 
 <!-- JSON-LD Structured Data -->
 <% if (typeof type !== 'undefined' && type === 'team') { %>

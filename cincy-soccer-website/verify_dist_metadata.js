@@ -30,6 +30,9 @@ function checkFileMetadata(filePath) {
     // Check Canonical URL
     if (!html.includes('<link rel="canonical"')) issues.push('Missing canonical link');
 
+    // Check Google AdSense
+    if (!html.includes('ca-pub-7915021068737339')) issues.push('Missing Google AdSense client script');
+
     return { relPath, issues };
 }
 
