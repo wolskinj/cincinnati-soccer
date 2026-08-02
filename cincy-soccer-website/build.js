@@ -52,7 +52,7 @@ function normalizeDivision(divisionString) {
 // === MAIN FACTORY ===
 async function buildSite() {
     console.log("🏭 Website Factory (Polished) starting...");
-    fs.ensureDirSync(OUTPUT_DIR);
+    fs.emptyDirSync(OUTPUT_DIR);
 
     // 1. COPY STATIC ASSETS
     const assetsDir = path.join(__dirname, 'assets');
@@ -156,6 +156,9 @@ async function buildSite() {
             generateHeaders();
             generateRedirects();
             generateWorker();
+
+            // 5. VERIFY METADATA & FAVICONS ACROSS ALL GENERATED PAGES
+            require('./verify_dist_metadata.js');
         });
 }
 
