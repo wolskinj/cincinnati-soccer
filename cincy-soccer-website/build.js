@@ -88,6 +88,21 @@ async function buildSite() {
         fs.copyFileSync(manifestFile, path.join(OUTPUT_DIR, 'site.webmanifest'));
     }
 
+    const faviconIco = path.join(__dirname, 'assets', 'favicon.ico');
+    if (fs.existsSync(faviconIco)) {
+        fs.copyFileSync(faviconIco, path.join(OUTPUT_DIR, 'favicon.ico'));
+    }
+
+    const faviconPng = path.join(__dirname, 'assets', 'favicon.png');
+    if (fs.existsSync(faviconPng)) {
+        fs.copyFileSync(faviconPng, path.join(OUTPUT_DIR, 'favicon.png'));
+    }
+
+    const appleIcon = path.join(__dirname, 'assets', 'apple-touch-icon.png');
+    if (fs.existsSync(appleIcon)) {
+        fs.copyFileSync(appleIcon, path.join(OUTPUT_DIR, 'apple-touch-icon.png'));
+    }
+
     // Reset Sitemap (add homepage first)
     sitemapUrls.length = 0;
     sitemapUrls.push(''); // Empty string = homepage
