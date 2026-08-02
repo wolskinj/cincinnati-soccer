@@ -4,28 +4,12 @@ const csv = require('csv-parser');
 const fs = require('fs');
 const path = require('path');
 
-// CONFIGURATION
-const BATCH_SIZE = 10; // Only do 10 pages at a time to keep Chromebook cool
-
-// 1. SETUP: CSV Writer
-const csvWriter = createCsvWriter({
-    path: path.join(__dirname, '../data/all_teams.csv'),
-    header: [
-        {id: 'league', title: 'LEAGUE'},
-        {id: 'division', title: 'DIVISION'},
-        {id: 'team', title: 'TEAM_NAME'},
-        {id: 'link', title: 'SCHEDULE_LINK'}
-    ],
-    append: false // We will overwrite the file initially
-});
-
-// Helper: Sleep function
+const BATCH_SIZE = 10;
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
 async function startHarvester() {
-    console.log("🚜 Harvester Robot (Batch Mode) starting...");
+    console.log("🚜 Harvester Robot (Resource Optimized & Batch Mode) starting...");
 
-    // 2. READ: Load the map
     const divisions = [];
     await new Promise((resolve) => {
         fs.createReadStream(path.join(__dirname, '../data/scraped_divisions.csv'))
@@ -35,10 +19,18 @@ async function startHarvester() {
     });
     console.log(`🗺️ Loaded map with ${divisions.length} divisions.`);
 
-    // Initialize the file (creates a blank file with headers)
-    await csvWriter.writeRecords([]); 
+    const initWriter = createCsvWriter({
+        path: path.join(__dirname, '../data/all_teams.csv'),
+        header: [
+            {id: 'league', title: 'LEAGUE'},
+            {id: 'division', title: 'DIVISION'},
+            {id: 'team', title: 'TEAM_NAME'},
+            {id: 'link', title: 'SCHEDULE_LINK'}
+        ],
+        append: false
+    });
+    await initWriter.writeRecords([]); 
     
-    // Switch to "Append Mode" so we can add rows in chunks
     const appendWriter = createCsvWriter({
         path: path.join(__dirname, '../data/all_teams.csv'),
         header: [
@@ -47,71 +39,81 @@ async function startHarvester() {
             {id: 'team', title: 'TEAM_NAME'},
             {id: 'link', title: 'SCHEDULE_LINK'}
         ],
-        append: true // Important! Add to the bottom of the file
+        append: true
     });
 
-    // 3. LOOP: Process in CHUNKS
     for (let i = 0; i < divisions.length; i += BATCH_SIZE) {
-        // Get the next batch (e.g., items 0-9, then 10-19)
         const batch = divisions.slice(i, i + BATCH_SIZE);
-        console.log(`\n📦 Processing Batch ${i / BATCH_SIZE + 1} (Items ${i} to ${i + batch.length})...`);
+        console.log(`\n📦 Processing Batch ${Math.floor(i / BATCH_SIZE) + 1} (Items ${i + 1} to ${i + batch.length})...`);
         
-        // Launch a FRESH browser for every batch
         const browser = await puppeteer.launch({
             args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
             protocolTimeout: 60000,
         });
         const page = await browser.newPage();
+
+        // RESOURCE OPTIMIZATION: Block unneeded assets
+        await page.setRequestInterception(true);
+        page.on('request', (req) => {
+            const resourceType = req.resourceType();
+            if (['image', 'stylesheet', 'font', 'media'].includes(resourceType)) {
+                req.abort();
+            } else {
+                req.continue();
+            }
+        });
         
         const batchResults = [];
 
-        // Loop through the small batch
         for (const division of batch) {
             console.log(`   Visiting: [${division.LEAGUE}] ${division.DIVISION_NAME}`);
             
-            try {
-                await page.goto(division.LINK_URL, { waitUntil: 'domcontentloaded', timeout: 45000 });
+            let success = false;
+            let attempt = 0;
 
-                const teamsOnPage = await page.evaluate((currentDiv, currentLeague) => {
-                    const uniqueTeams = new Map();
-                    const links = document.querySelectorAll('td a[href*="team="]');
+            while (attempt < 2 && !success) {
+                attempt++;
+                try {
+                    await page.goto(division.LINK_URL, { waitUntil: 'domcontentloaded', timeout: 30000 });
 
-                    links.forEach(link => {
-                        const teamUrl = link.href;
-                        const teamName = link.innerText.trim();
-                        if (!uniqueTeams.has(teamUrl)) {
-                            uniqueTeams.set(teamUrl, {
-                                league: currentLeague, 
-                                division: currentDiv,
-                                team: teamName,
-                                link: teamUrl
-                            });
-                        }
-                    });
-                    return Array.from(uniqueTeams.values());
-                }, division.DIVISION_NAME, division.LEAGUE);
+                    const teamsOnPage = await page.evaluate((currentDiv, currentLeague) => {
+                        const uniqueTeams = new Map();
+                        const links = document.querySelectorAll('td a[href*="team="]');
 
-                console.log(`      -> Found ${teamsOnPage.length} teams.`);
-                batchResults.push(...teamsOnPage);
+                        links.forEach(link => {
+                            const teamUrl = link.href;
+                            const teamName = link.innerText.trim();
+                            if (teamName && !uniqueTeams.has(teamUrl)) {
+                                uniqueTeams.set(teamUrl, {
+                                    league: currentLeague, 
+                                    division: currentDiv,
+                                    team: teamName,
+                                    link: teamUrl
+                                });
+                            }
+                        });
+                        return Array.from(uniqueTeams.values());
+                    }, division.DIVISION_NAME, division.LEAGUE);
 
-                // Short rest
-                await sleep(500); 
+                    console.log(`      -> Found ${teamsOnPage.length} teams.`);
+                    batchResults.push(...teamsOnPage);
+                    success = true;
+                    await sleep(250); 
 
-            } catch (error) {
-                console.log(`      ❌ Skipped (Error): ${error.message}`);
+                } catch (error) {
+                    console.log(`      ⚠️ Attempt ${attempt} failed for ${division.DIVISION_NAME}: ${error.message}`);
+                }
             }
         }
 
-        // Save this batch immediately
         if (batchResults.length > 0) {
             await appendWriter.writeRecords(batchResults);
             console.log(`   💾 Saved ${batchResults.length} teams from this batch.`);
         }
 
-        // KILL the browser to free memory
         await browser.close();
         console.log("   ♻️  Browser recycled. Cooling down...");
-        await sleep(1000); // Wait 1 second before starting next batch
+        await sleep(500);
     }
 
     console.log("\n✅ ALL DONE! 'all_teams.csv' is complete.");

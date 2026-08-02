@@ -14,6 +14,7 @@ dist/
 .DS_Store
 .env
 .npm
+.wrangler/
 *.log
 
 # CSVs (Optional: Keep this commented out if you WANT to commit the data)

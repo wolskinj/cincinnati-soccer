@@ -138,7 +138,7 @@ async function buildSite() {
 }
 
 function generateTeamPages(teamGroups) {
-    let template = fs.readFileSync(TEAM_TEMPLATE, 'utf8');
+    const compiledTemplate = ejs.compile(fs.readFileSync(TEAM_TEMPLATE, 'utf8'), { filename: TEAM_TEMPLATE });
 
     for (const [teamName, rows] of Object.entries(teamGroups)) {
         let filename = `team-${makeFilename(teamName)}`;
@@ -179,7 +179,7 @@ function generateTeamPages(teamGroups) {
             leaguesConfig: LEAGUES_CONFIG
         };
 
-        const pageHtml = ejs.render(template, templateData);
+        const pageHtml = compiledTemplate(templateData);
         fs.writeFileSync(`${OUTPUT_DIR}/${filename}`, pageHtml);
         
         sitemapUrls.push(filename);
@@ -188,7 +188,7 @@ function generateTeamPages(teamGroups) {
 }
 
 function generatePages(groups, type) {
-    let template = fs.readFileSync(TEMPLATE_FILE, 'utf8');
+    const compiledTemplate = ejs.compile(fs.readFileSync(TEMPLATE_FILE, 'utf8'), { filename: TEMPLATE_FILE });
 
     for (const [groupName, teams] of Object.entries(groups)) {
         let filename;
@@ -387,7 +387,7 @@ function generatePages(groups, type) {
             normalizeDivision: normalizeDivision
         };
 
-        const pageHtml = ejs.render(template, templateData);
+        const pageHtml = compiledTemplate(templateData);
         fs.writeFileSync(`${OUTPUT_DIR}/${filename}`, pageHtml);
         
         sitemapUrls.push(filename);
@@ -396,7 +396,7 @@ function generatePages(groups, type) {
 }
 
 function generateLeaguePages(leagueGroups) {
-    let template = fs.readFileSync(TEMPLATE_FILE, 'utf8');
+    const compiledTemplate = ejs.compile(fs.readFileSync(TEMPLATE_FILE, 'utf8'), { filename: TEMPLATE_FILE });
 
     for (const [leagueId, data] of Object.entries(leagueGroups)) {
         const leagueName = data.info.name;
@@ -430,7 +430,7 @@ function generateLeaguePages(leagueGroups) {
             normalizeDivision: normalizeDivision
         };
 
-        const pageHtml = ejs.render(template, templateData);
+        const pageHtml = compiledTemplate(templateData);
         fs.writeFileSync(`${OUTPUT_DIR}/${filename}`, pageHtml);
         
         sitemapUrls.push(filename);
@@ -440,7 +440,8 @@ function generateLeaguePages(leagueGroups) {
 
 function generateHomepage(ageGroups, clubGroups, leagueGroups, teamGroups) {
     console.log("🏠 Building Dashboard Homepage...");
-    let homeTemplate = fs.readFileSync(HOMEPAGE_TEMPLATE, 'utf8');
+    const homeTemplatePath = HOMEPAGE_TEMPLATE;
+    const homeTemplate = fs.readFileSync(homeTemplatePath, 'utf8');
 
     // AGE Links
     const keys = Object.keys(ageGroups);
@@ -466,21 +467,24 @@ function generateHomepage(ageGroups, clubGroups, leagueGroups, teamGroups) {
         lastUpdated: formattedDate,
         isoDate: isoDate,
         domain: DOMAIN
-    });
+    }, { filename: homeTemplatePath });
 
     fs.writeFileSync(`${OUTPUT_DIR}/index.html`, finalHtml);
     console.log("✅ Homepage updated!");
 
     // === GENERATE DIRECTORY PAGES & SEARCH INDEX ===
     try {
-        let clubsTemplate = fs.readFileSync(path.join(__dirname, 'clubs_template.ejs'), 'utf8');
-        fs.writeFileSync(`${OUTPUT_DIR}/clubs.html`, ejs.render(clubsTemplate, { clubsGroups, makeFilename, lastUpdated: formattedDate, isoDate, domain: DOMAIN }));
+        const clubsPath = path.join(__dirname, 'clubs_template.ejs');
+        let clubsTemplate = fs.readFileSync(clubsPath, 'utf8');
+        fs.writeFileSync(`${OUTPUT_DIR}/clubs.html`, ejs.render(clubsTemplate, { clubsGroups, makeFilename, lastUpdated: formattedDate, isoDate, domain: DOMAIN }, { filename: clubsPath }));
 
-        let agesTemplate = fs.readFileSync(path.join(__dirname, 'ages_template.ejs'), 'utf8');
-        fs.writeFileSync(`${OUTPUT_DIR}/ages.html`, ejs.render(agesTemplate, { boysGroups, girlsGroups, makeFilename, lastUpdated: formattedDate, isoDate, domain: DOMAIN }));
+        const agesPath = path.join(__dirname, 'ages_template.ejs');
+        let agesTemplate = fs.readFileSync(agesPath, 'utf8');
+        fs.writeFileSync(`${OUTPUT_DIR}/ages.html`, ejs.render(agesTemplate, { boysGroups, girlsGroups, makeFilename, lastUpdated: formattedDate, isoDate, domain: DOMAIN }, { filename: agesPath }));
 
-        let leaguesTemplate = fs.readFileSync(path.join(__dirname, 'leagues_template.ejs'), 'utf8');
-        fs.writeFileSync(`${OUTPUT_DIR}/leagues.html`, ejs.render(leaguesTemplate, { leaguesData, makeFilename, lastUpdated: formattedDate, isoDate, domain: DOMAIN }));
+        const leaguesPath = path.join(__dirname, 'leagues_template.ejs');
+        let leaguesTemplate = fs.readFileSync(leaguesPath, 'utf8');
+        fs.writeFileSync(`${OUTPUT_DIR}/leagues.html`, ejs.render(leaguesTemplate, { leaguesData, makeFilename, lastUpdated: formattedDate, isoDate, domain: DOMAIN }, { filename: leaguesPath }));
 
         console.log("✅ Directory Pages updated!");
 

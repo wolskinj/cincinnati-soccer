@@ -1,0 +1,110 @@
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title><%- title %> | cincinnati.soccer</title>
+
+<% 
+let metaDesc = typeof description !== 'undefined' ? description : '';
+if (typeof clubAbout !== 'undefined' && clubAbout) metaDesc = clubAbout;
+if (typeof divisionAbout !== 'undefined' && divisionAbout) metaDesc = divisionAbout;
+if (typeof leagueAbout !== 'undefined' && leagueAbout) metaDesc = leagueAbout;
+metaDesc = metaDesc.replace(/<[^>]*>?/gm, '');
+%>
+<meta name="theme-color" content="#002147">
+<link rel="preconnect" href="https://pagead2.googlesyndication.com" crossorigin>
+
+<meta name="description" content="<%- metaDesc %>">
+<link rel="canonical" href="<%- canonicalUrl %>">
+
+<!-- Open Graph / Social -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="<%- canonicalUrl %>">
+<meta property="og:title" content="<%- title %> | cincinnati.soccer">
+<meta property="og:description" content="<%- metaDesc %>">
+<meta property="og:image" content="<%- domain %>/assets/logo.webp">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="<%- title %> | cincinnati.soccer">
+<meta name="twitter:description" content="<%- metaDesc %>">
+<meta name="twitter:image" content="<%- domain %>/assets/logo.webp">
+
+<!-- JSON-LD Structured Data -->
+<% if (typeof type !== 'undefined' && type === 'team') { %>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SportsTeam",
+  "name": "<%- typeof teamName !== 'undefined' ? teamName : title %>",
+  "sport": "Soccer",
+  "url": "<%- canonicalUrl %>",
+  "description": "<%- metaDesc %>",
+  "location": {
+    "@type": "Place",
+    "name": "Cincinnati, OH"
+  }
+}
+</script>
+<% } else if (typeof type !== 'undefined' && type === 'club') { %>
+<script type="application/ld+json">
+[
+  {
+    "@context": "https://schema.org",
+    "@type": "SportsOrganization",
+    "name": "<%- title %>",
+    "sport": "Soccer",
+    "areaServed": "Cincinnati",
+    "url": "<%- canonicalUrl %>",
+    "description": "<%- metaDesc %>"
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "<%- domain %>/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "<%- title %>",
+        "item": "<%- canonicalUrl %>"
+      }
+    ]
+  }
+]
+</script>
+<% } else { %>
+<script type="application/ld+json">
+[
+  {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "<%- title %>",
+    "url": "<%- canonicalUrl %>",
+    "description": "<%- metaDesc %>",
+    "dateModified": "<%- typeof isoDate !== 'undefined' ? isoDate : new Date().toISOString() %>"
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "<%- domain %>/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "<%- title %>",
+        "item": "<%- canonicalUrl %>"
+      }
+    ]
+  }
+]
+</script>
+<% } %>

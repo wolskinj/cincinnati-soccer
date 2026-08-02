@@ -4,8 +4,9 @@
   "description": "Root project for Cincinnati Soccer Scraper and Website",
   "scripts": {
     "setup": "npm install && cd cincy-soccer-scraper && npm install && cd ../cincy-soccer-website && npm install",
+    "test": "cd cincy-soccer-website && npm test",
     "scrape": "cd cincy-soccer-scraper && node scrape.js && node harvest.js && node clean.js",
-    "build": "cd cincy-soccer-website && node build.js",
+    "build": "cd cincy-soccer-website && npm run build",
     "deploy": "npx wrangler pages deploy cincy-soccer-website/dist --project-name cincinnati-soccer --commit-dirty=true",
     "publish-all": "npm run scrape && npm run build && npm run deploy"
   },
