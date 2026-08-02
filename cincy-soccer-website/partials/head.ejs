@@ -1,7 +1,20 @@
 <% 
-let metaTitle = typeof title !== 'undefined' && title ? title : 'cincinnati.soccer';
+let rawTitle = typeof title !== 'undefined' && title ? title : 'cincinnati.soccer';
+let metaTitle = rawTitle;
+const BRAND = ' | cincinnati.soccer';
+const MAX_TITLE_LEN = 59;
+
 if (!metaTitle.includes('cincinnati.soccer')) {
-    metaTitle = metaTitle + ' | cincinnati.soccer';
+    const avail = MAX_TITLE_LEN - BRAND.length;
+    if (metaTitle.length > avail) {
+        let truncated = metaTitle.substring(0, avail - 3);
+        const lastSpace = truncated.lastIndexOf(' ');
+        if (lastSpace > 12) {
+            truncated = truncated.substring(0, lastSpace);
+        }
+        metaTitle = truncated.trim() + '...';
+    }
+    metaTitle = metaTitle + BRAND;
 }
 
 let metaDesc = typeof description !== 'undefined' ? description : '';

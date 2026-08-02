@@ -33,6 +33,14 @@ function checkFileMetadata(filePath) {
     // Check Google AdSense
     if (!html.includes('ca-pub-7915021068737339')) issues.push('Missing Google AdSense client script');
 
+    // Check Title Length (Bing Webmaster Rule 50: Max 60 chars)
+    const titleMatch = html.match(/<title>(.*?)<\/title>/i);
+    if (!titleMatch) {
+        issues.push('Missing <title> tag');
+    } else if (titleMatch[1].length > 60) {
+        issues.push(`Title tag too long (${titleMatch[1].length} chars > 60)`);
+    }
+
     return { relPath, issues };
 }
 

@@ -162,6 +162,44 @@ async function buildSite() {
         });
 }
 
+function formatTeamTitle(teamName, clubName, divisionInfo) {
+    let clean = (teamName || '').trim();
+
+    // 1. Remove duplicate prefix if teamName repeats clubName
+    if (clubName && clubName.length >= 4) {
+        const escapedClub = clubName.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+        const pattern = new RegExp(`^${escapedClub}\\s+`, 'i');
+        if (pattern.test(clean)) {
+            const stripped = clean.replace(pattern, '').trim();
+            if (stripped.length >= 5) {
+                clean = stripped;
+            }
+        }
+    }
+
+    const MAX_TEAM_TITLE_LEN = 38;
+
+    // 2. Short team names: append division info if it fits
+    if (clean.length <= 24 && divisionInfo && divisionInfo.label && divisionInfo.label !== 'Unknown') {
+        const candidate = `${clean} (${divisionInfo.label})`;
+        if (candidate.length <= MAX_TEAM_TITLE_LEN) {
+            return candidate;
+        }
+    }
+
+    if (clean.length <= MAX_TEAM_TITLE_LEN) {
+        return clean;
+    }
+
+    // 3. Truncate long team names at word boundary
+    let truncated = clean.substring(0, MAX_TEAM_TITLE_LEN - 3);
+    const lastSpace = truncated.lastIndexOf(' ');
+    if (lastSpace > 12) {
+        truncated = truncated.substring(0, lastSpace);
+    }
+    return `${truncated.trim()}...`;
+}
+
 function generateTeamPages(teamGroups) {
     const compiledTemplate = ejs.compile(fs.readFileSync(TEAM_TEMPLATE, 'utf8'), { filename: TEAM_TEMPLATE });
 
@@ -173,11 +211,7 @@ function generateTeamPages(teamGroups) {
         const divisionInfo = normalizeDivision(firstRow.DIVISION);
         const leagueName = firstRow.LEAGUE || '';
         
-        let titleSuffix = '';
-        if (clubName) titleSuffix += ` - ${clubName}`;
-        if (divisionInfo.label && divisionInfo.label !== 'Unknown') titleSuffix += ` ${divisionInfo.label}`;
-        titleSuffix += ` Soccer Team`;
-        let pageTitle = `${teamName}${titleSuffix}`;
+        let pageTitle = formatTeamTitle(teamName, clubName, divisionInfo);
 
         const nameHash = teamName.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
         const descTemplates = [
@@ -483,7 +517,7 @@ function generateHomepage(ageGroups, clubGroups, leagueGroups, teamGroups) {
     const teams = Object.keys(teamGroups).sort();
 
     const finalHtml = ejs.render(homeTemplate, {
-        title: "cincinnati.soccer | Youth Standings & Schedules",
+        title: "Cincinnati Youth Soccer Directory",
         description: "The centralized directory for Cincinnati youth soccer schedules, standings, and team rankings. Track CPL, BPYSL, and club teams in one place.",
         canonicalUrl: `${DOMAIN}/`,
         type: "website",
@@ -506,7 +540,7 @@ function generateHomepage(ageGroups, clubGroups, leagueGroups, teamGroups) {
         const clubsPath = path.join(__dirname, 'clubs_template.ejs');
         let clubsTemplate = fs.readFileSync(clubsPath, 'utf8');
         fs.writeFileSync(`${OUTPUT_DIR}/clubs.html`, ejs.render(clubsTemplate, { 
-            title: "Club Directory | cincinnati.soccer",
+            title: "Cincinnati Soccer Clubs",
             description: "Explore all youth soccer clubs in the Greater Cincinnati area, including team counts and league affiliations.",
             canonicalUrl: `${DOMAIN}/clubs.html`,
             type: "website",
@@ -516,7 +550,7 @@ function generateHomepage(ageGroups, clubGroups, leagueGroups, teamGroups) {
         const agesPath = path.join(__dirname, 'ages_template.ejs');
         let agesTemplate = fs.readFileSync(agesPath, 'utf8');
         fs.writeFileSync(`${OUTPUT_DIR}/ages.html`, ejs.render(agesTemplate, { 
-            title: "Age Divisions Directory | cincinnati.soccer",
+            title: "Cincinnati Soccer Divisions",
             description: "Browse youth soccer divisions by age group and gender across Cincinnati.",
             canonicalUrl: `${DOMAIN}/ages.html`,
             type: "website",
@@ -526,7 +560,7 @@ function generateHomepage(ageGroups, clubGroups, leagueGroups, teamGroups) {
         const leaguesPath = path.join(__dirname, 'leagues_template.ejs');
         let leaguesTemplate = fs.readFileSync(leaguesPath, 'utf8');
         fs.writeFileSync(`${OUTPUT_DIR}/leagues.html`, ejs.render(leaguesTemplate, { 
-            title: "Leagues Directory | cincinnati.soccer",
+            title: "Cincinnati Soccer Leagues",
             description: "Discover local and regional youth soccer leagues operating in Greater Cincinnati, including CPL, BPYSL, OSSL, and CvC.",
             canonicalUrl: `${DOMAIN}/leagues.html`,
             type: "website",
