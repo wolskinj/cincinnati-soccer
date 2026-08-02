@@ -134,6 +134,7 @@ async function buildSite() {
             generateSitemap();
             generateRobotsTxt();
             generateHeaders();
+            generateRedirects();
         });
 }
 
@@ -580,6 +581,19 @@ function generateHeaders() {
 `;
     fs.writeFileSync(`${OUTPUT_DIR}/_headers`, content);
     console.log("✅ _headers created.");
+}
+
+// === CLOUDFLARE REDIRECTS GENERATOR ===
+function generateRedirects() {
+    console.log("🔀 Generating Cloudflare _redirects...");
+    const content = `https://cincinnati-soccer.pages.dev/* https://cincinnati.soccer/:splat 301
+http://cincinnati-soccer.pages.dev/* https://cincinnati.soccer/:splat 301
+http://cincinnati.soccer/* https://cincinnati.soccer/:splat 301
+http://www.cincinnati.soccer/* https://cincinnati.soccer/:splat 301
+https://www.cincinnati.soccer/* https://cincinnati.soccer/:splat 301
+`;
+    fs.writeFileSync(`${OUTPUT_DIR}/_redirects`, content);
+    console.log("✅ _redirects created (301 Permanent Redirects to https://cincinnati.soccer).");
 }
 
 buildSite();
