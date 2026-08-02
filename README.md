@@ -22,6 +22,8 @@ If you just cloned this repo to a new computer, run this to install all dependen
 npm run setup
 ```
 
+*Note for Windows users*: Ensure Git is installed and `C:\Program Files\Git\cmd` is added to your Windows System `PATH` environment variable so `git` is available directly in PowerShell/cmd terminals.
+
 ### 2. Update the Data (Scraping)
 To run the web scraper and fetch the latest schedules and teams. This will output the fresh data to `data/clean_teams.csv`.
 ```bash

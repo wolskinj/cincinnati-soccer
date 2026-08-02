@@ -19,6 +19,10 @@ This repository contains a full data scraping pipeline and static site generator
 - `npm run deploy`: Deploys `dist/` to Cloudflare Pages via Wrangler (`cincinnati-soccer`).
 - `npm run publish-all`: Executes scrape, build, and deploy in one continuous pipeline.
 
+## Environment & System Notes (Windows)
+- **Git Location**: On Windows, if `git` is not in the system `PATH`, Git is located at `C:\Program Files\Git\cmd\git.exe`. Ensure `C:\Program Files\Git\cmd` is added to the system `PATH` environment variable.
+- **PowerShell Scripting**: For multi-line tasks or script execution in PowerShell, use temporary `.ps1` files or standard Node.js scripts instead of complex inline quoted shell commands to prevent string escaping errors.
+
 ## Formatting & Development Guidelines
 - Always verify website builds with `npm run build` after modifying EJS templates (`template.ejs`, `team_template.ejs`, etc.) or `build.js`.
-- Preserve generated assets and SEO files (`sitemap.xml`, `robots.txt`, `_headers`, `search_index.json`).
+- Preserve generated assets and SEO files (`sitemap.xml`, `robots.txt`, `_headers`, `search_index.json`, `site.webmanifest`).
