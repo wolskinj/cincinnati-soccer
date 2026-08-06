@@ -16,7 +16,7 @@ const formattedDate = d.toLocaleDateString('en-US', { year: 'numeric', month: 'l
 const isoDate = d.toISOString();
 
 const LEAGUES_CONFIG = require(path.join(__dirname, '../data/leagues.js'));
-const CLUBS_CONFIG = require(path.join(__dirname, '../data/clubs.js'));
+const CLUBS_CONFIG = require(path.join(__dirname, '../data/clubs.json'));
 
 // TRACKER FOR SITEMAP
 const sitemapUrls = [];
@@ -367,7 +367,7 @@ function generatePages(groups, type) {
             description = `Complete team directory and schedules for ${groupName} in Cincinnati, including CPL and BPYSL affiliations.`;
 
             const lowerGroup = groupName.toLowerCase();
-            const clubConfig = CLUBS_CONFIG.find(c => c.name.toLowerCase() === lowerGroup || (c.aliases && c.aliases.includes(lowerGroup)));
+            const clubConfig = CLUBS_CONFIG.find(c => c.name.toLowerCase() === lowerGroup);
 
             if (clubConfig && clubConfig.about) {
                 clubAbout = clubConfig.about;

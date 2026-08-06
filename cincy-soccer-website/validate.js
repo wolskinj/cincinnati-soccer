@@ -7,7 +7,7 @@ const CLEAN_TEAMS_PATH = path.join(DATA_DIR, 'clean_teams.csv');
 const SCRAPED_DIVISIONS_PATH = path.join(DATA_DIR, 'scraped_divisions.csv');
 const ALL_TEAMS_PATH = path.join(DATA_DIR, 'all_teams.csv');
 const LEAGUES_PATH = path.join(DATA_DIR, 'leagues.js');
-const CLUBS_PATH = path.join(DATA_DIR, 'clubs.js');
+const CLUBS_PATH = path.join(DATA_DIR, 'clubs.json');
 
 let errors = [];
 let warnings = [];

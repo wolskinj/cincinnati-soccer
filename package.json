@@ -5,7 +5,9 @@
   "scripts": {
     "setup": "npm install && cd cincy-soccer-scraper && npm install && cd ../cincy-soccer-website && npm install",
     "test": "cd cincy-soccer-website && npm test",
-    "scrape": "cd cincy-soccer-scraper && node scrape.js && node harvest.js && node clean.js",
+    "scrape": "cd cincy-soccer-scraper && node scrape.js && node harvest.js && node ai-mapper.js && node clean.js",
+    "map-teams": "cd cincy-soccer-scraper && npm run map-teams",
+    "generate-clubs": "cd cincy-soccer-scraper && npm run generate-clubs",
     "build": "cd cincy-soccer-website && npm run build",
     "deploy": "npx wrangler pages deploy cincy-soccer-website/dist --project-name cincinnati-soccer --commit-dirty=true",
     "publish-all": "npm run scrape && npm run build && npm run deploy"

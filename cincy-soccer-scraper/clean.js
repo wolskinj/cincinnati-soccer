@@ -6,70 +6,86 @@ const path = require('path');
 const INPUT_FILE = path.join(__dirname, '../data/all_teams.csv');
 const OUTPUT_FILE = path.join(__dirname, '../data/clean_teams.csv');
 
-// === THE SMART DICTIONARY (Loaded from JSON) ===
-// format: "Official Name": ["Nickname 1", "Nickname 2", "Code"]
+// === AI MAPPINGS ===
+const AI_MAPPINGS_FILE = path.join(__dirname, '../data/ai_team_mappings.json');
+let aiMappings = {};
+if (fs.existsSync(AI_MAPPINGS_FILE)) {
+    try {
+        aiMappings = JSON.parse(fs.readFileSync(AI_MAPPINGS_FILE, 'utf-8'));
+    } catch (e) {
+        console.warn("Could not parse AI mappings, falling back to basic matching.");
+    }
+}
+
+// === THE SMART DICTIONARY (Fallback) ===
 const CLUB_MAPPINGS = require(path.join(__dirname, 'club_mappings.json'));
 
 const sortedAliases = [];
 for (const [officialName, aliases] of Object.entries(CLUB_MAPPINGS)) {
     for (const alias of aliases) {
-        sortedAliases.push({ alias: alias.toLowerCase(), officialName });
+        // Use word boundaries for better regex fallback matching
+        sortedAliases.push({ 
+            alias: alias,
+            regex: new RegExp('\\b' + alias.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'i'), 
+            officialName 
+        });
     }
 }
-// Sort descending by length so longer specific aliases match before shorter subsets.
+// Sort descending by length so longer specific aliases (e.g. "Northwest Cincy SC") match before shorter subsets (e.g. "Cincy SC")
 sortedAliases.sort((a, b) => b.alias.length - a.alias.length);
 
 const allTeams = [];
-const seenSignatures = new Set(); // <--- THE BOUNCER (Tracks unique teams)
+const seenSignatures = new Set(); // Tracks unique teams
 
-console.log("🧼 Smart Refinery (with Deduplication & Enhanced Dictionary) starting...");
+console.log("🧼 Smart Refinery (with AI Deduplication & Dictionary) starting...");
 
 fs.createReadStream(INPUT_FILE)
     .pipe(csv())
     .on('data', (row) => {
-        // SAFETY: Skip empty rows
         if (!row.TEAM_NAME) return;
 
-        // 1. DE-DUPLICATION CHECK ("The Bouncer")
-        // Create a unique fingerprint for this team
-        const signature = `${row.TEAM_NAME}|${row.DIVISION}|${row.LEAGUE}`;
+        let originalName = row.TEAM_NAME.trim();
+        let teamName = originalName;
+        let clubName = "Independent";
 
-        // If we've seen this exact team before, SKIP IT
+        // 1. AI MATCHING (Primary)
+        if (aiMappings[originalName]) {
+            teamName = aiMappings[originalName].cleanName || teamName;
+            clubName = aiMappings[originalName].clubName || clubName;
+        } else {
+            // 2. FALLBACK SMART MATCHING
+            for (const { regex, officialName } of sortedAliases) {
+                if (regex.test(teamName)) {
+                    clubName = officialName;
+                    break;
+                }
+            }
+
+            if (clubName === "Independent") {
+                const words = teamName.split(' ');
+                if (words.length >= 2) {
+                    clubName = `${words[0]} ${words[1]}`;
+                } else {
+                    clubName = words[0];
+                }
+            }
+        }
+
+        // 3. DE-DUPLICATION CHECK (Using Cleaned Name)
+        const signature = `${teamName}|${row.DIVISION}|${row.LEAGUE}`;
+
         if (seenSignatures.has(signature)) {
             return;
         }
 
-        // Otherwise, remember it and proceed
         seenSignatures.add(signature);
 
-        // 2. SMART MATCHING
-        let teamName = row.TEAM_NAME;
-        let clubName = "Independent";
-
-        const lowerTeamName = teamName.toLowerCase();
-        for (const { alias, officialName } of sortedAliases) {
-            if (lowerTeamName.includes(alias)) {
-                clubName = officialName;
-                break;
-            }
-        }
-
-        // 3. FALLBACK GUESS (If not in our dictionary)
-        if (clubName === "Independent") {
-            const words = teamName.split(' ');
-            if (words.length >= 2) {
-                clubName = `${words[0]} ${words[1]}`;
-            } else {
-                clubName = words[0];
-            }
-        }
-
-        // 4. Add Club to row
+        // 4. Update row
+        row.TEAM_NAME = teamName;
         row.CLUB = clubName;
         allTeams.push(row);
     })
     .on('end', async () => {
-
         const csvWriter = createCsvWriter({
             path: OUTPUT_FILE,
             header: [
@@ -82,5 +98,5 @@ fs.createReadStream(INPUT_FILE)
         });
 
         await csvWriter.writeRecords(allTeams);
-        console.log(`✨ Cleaned & Deduplicated using Enhanced Dictionary. Final count: ${allTeams.length} unique teams.`);
+        console.log(`✨ Cleaned & Deduplicated. Final count: ${allTeams.length} unique teams.`);
     });

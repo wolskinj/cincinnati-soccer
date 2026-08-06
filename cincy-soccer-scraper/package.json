@@ -4,14 +4,20 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "scrape": "node scrape.js && node harvest.js && node ai-mapper.js && node clean.js",
+    "map-teams": "node ai-mapper.js && node clean.js",
+    "generate-clubs": "node generate-clubs.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@google/genai": "^2.15.0",
+    "@google/generative-ai": "^0.24.1",
     "csv-parser": "^3.2.0",
     "csv-writer": "^1.6.0",
+    "dotenv": "^17.4.2",
     "puppeteer": "^24.36.0"
   }
 }
