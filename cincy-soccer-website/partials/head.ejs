@@ -32,29 +32,34 @@ let shareImage = typeof ogImage !== 'undefined' && ogImage ? ogImage : defaultOg
 let shareImageAlt = typeof ogImageAlt !== 'undefined' && ogImageAlt ? ogImageAlt : (metaTitle + " - Cincinnati Youth Soccer");
 let modDate = typeof isoDate !== 'undefined' && isoDate ? isoDate : new Date().toISOString();
 %>
+<!-- 1. Critical Character Encoding & Viewport -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title><%- metaTitle %></title>
 
+<!-- 2. Primary Title & SEO Metadata -->
+<title><%- metaTitle %></title>
 <meta name="description" content="<%- metaDesc %>">
 <link rel="canonical" href="<%- currentUrl %>">
 <meta name="theme-color" content="#002147">
 
-<!-- Data Freshness & AI Search Signals -->
-<meta property="article:modified_time" content="<%- modDate %>">
-<meta property="og:updated_time" content="<%- modDate %>">
+<!-- 3. Early Network Resource Hints & Asynchronous External Scripts -->
+<link rel="preconnect" href="https://pagead2.googlesyndication.com" crossorigin>
+<link rel="dns-prefetch" href="https://googleads.g.doubleclick.net">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7915021068737339" crossorigin="anonymous"></script>
 
-<!-- Favicons & Web App Manifest -->
+<!-- 4. Favicons & Web App Manifest -->
 <link rel="icon" type="image/x-icon" href="/favicon.ico">
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png">
 <link rel="shortcut icon" href="/assets/favicon.png">
 <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
 <link rel="manifest" href="/assets/site.webmanifest">
 
-<!-- Machine-Readable Data Discovery -->
+<!-- 5. Resource Discovery Feeds & Data Freshness Signals -->
 <link rel="alternate" type="application/json" title="Cincinnati Soccer Directory Search Index" href="/search-index.json">
+<meta property="article:modified_time" content="<%- modDate %>">
+<meta property="og:updated_time" content="<%- modDate %>">
 
-<!-- Open Graph / Social Media Meta Tags -->
+<!-- 6. Open Graph Social Media Meta Tags -->
 <meta property="og:site_name" content="cincinnati.soccer">
 <meta property="og:locale" content="en_US">
 <meta property="og:type" content="website">
@@ -68,19 +73,14 @@ let modDate = typeof isoDate !== 'undefined' && isoDate ? isoDate : new Date().t
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="<%- shareImageAlt %>">
 
-<!-- Twitter Card Meta Tags -->
+<!-- 7. Twitter Card Meta Tags -->
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="<%- metaTitle %>">
 <meta name="twitter:description" content="<%- metaDesc %>">
 <meta name="twitter:image" content="<%- shareImage %>">
 <meta name="twitter:image:alt" content="<%- shareImageAlt %>">
 
-<!-- Google AdSense & Speed Connection Hints -->
-<link rel="preconnect" href="https://pagead2.googlesyndication.com" crossorigin>
-<link rel="dns-prefetch" href="https://googleads.g.doubleclick.net">
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7915021068737339" crossorigin="anonymous"></script>
-
-<!-- JSON-LD Structured Data -->
+<!-- 8. JSON-LD Structured Data (Schema.org) -->
 <% if (typeof type !== 'undefined' && type === 'team') { %>
 <script type="application/ld+json">
 {
