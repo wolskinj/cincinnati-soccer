@@ -15,6 +15,8 @@ const d = new Date();
 const formattedDate = d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 const isoDate = d.toISOString();
 
+const CONFIG = require(path.join(__dirname, '../data/config.js'));
+const CURRENT_SEASON = CONFIG.currentSeason;
 const LEAGUES_CONFIG = require(path.join(__dirname, '../data/leagues.js'));
 const CLUBS_CONFIG = require(path.join(__dirname, '../data/clubs.json'));
 
@@ -233,6 +235,7 @@ function generateTeamPages(teamGroups) {
             domain: DOMAIN,
             lastUpdated: formattedDate,
             isoDate: isoDate,
+            currentSeason: CURRENT_SEASON,
             teamRows: rows,
             makeFilename: makeFilename,
             normalizeDivision: normalizeDivision,
@@ -436,6 +439,7 @@ function generatePages(groups, type) {
             domain: DOMAIN,
             lastUpdated: formattedDate,
             isoDate: isoDate,
+            currentSeason: CURRENT_SEASON,
             teams: teams,
             seasonInfo: null, // Only used for leagues
             seasonLink: null, // Only used for leagues
@@ -479,6 +483,7 @@ function generateLeaguePages(leagueGroups) {
             domain: DOMAIN,
             lastUpdated: formattedDate,
             isoDate: isoDate,
+            currentSeason: CURRENT_SEASON,
             teams: teams,
             seasonInfo: `${season} Listing includes ${teams.length} teams found in our latest scan.`,
             seasonLink: seasonLink,
@@ -530,6 +535,7 @@ function generateHomepage(ageGroups, clubGroups, leagueGroups, teamGroups) {
         makeFilename: makeFilename,
         lastUpdated: formattedDate,
         isoDate: isoDate,
+        currentSeason: CURRENT_SEASON,
         domain: DOMAIN
     }, { filename: homeTemplatePath });
 

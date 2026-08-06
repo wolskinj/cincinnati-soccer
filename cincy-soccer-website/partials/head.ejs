@@ -31,6 +31,7 @@ let defaultOgImage = domain + '/assets/social-share-og.jpg';
 let shareImage = typeof ogImage !== 'undefined' && ogImage ? ogImage : defaultOgImage;
 let shareImageAlt = typeof ogImageAlt !== 'undefined' && ogImageAlt ? ogImageAlt : (metaTitle + " - Cincinnati Youth Soccer");
 let modDate = typeof isoDate !== 'undefined' && isoDate ? isoDate : new Date().toISOString();
+let activeSeason = typeof currentSeason !== 'undefined' && currentSeason ? currentSeason : 'Fall 2026';
 %>
 <!-- 1. Critical Character Encoding & Viewport -->
 <meta charset="UTF-8">
@@ -133,10 +134,10 @@ if (typeof type !== 'undefined' && type === 'team') {
 
     faqEntities.push({
         "@type": "Question",
-        "name": `What league and division does ${rawName} play in for Fall 2026?`,
+        "name": `What league and division does ${rawName} play in for ${activeSeason}?`,
         "acceptedAnswer": {
             "@type": "Answer",
-            "text": `${rawName} competes in the ${teamLeague || 'local youth soccer league'}${teamDiv ? ` within the ${teamDiv} division` : ''} for the Fall 2026 season in Greater Cincinnati.`
+            "text": `${rawName} competes in the ${teamLeague || 'local youth soccer league'}${teamDiv ? ` within the ${teamDiv} division` : ''} for the ${activeSeason} season in Greater Cincinnati.`
         }
     });
 
@@ -170,7 +171,7 @@ if (typeof type !== 'undefined' && type === 'team') {
         "name": `What youth soccer teams belong to ${clubN} in Cincinnati?`,
         "acceptedAnswer": {
             "@type": "Answer",
-            "text": `${clubN} fields ${teamCount > 0 ? teamCount : 'multiple'} active team roster(s) across CPL and BPYSL leagues in Greater Cincinnati for Fall 2026.`
+            "text": `${clubN} fields ${teamCount > 0 ? teamCount : 'multiple'} active team roster(s) across CPL and BPYSL leagues in Greater Cincinnati for ${activeSeason}.`
         }
     });
 
@@ -212,10 +213,10 @@ if (typeof type !== 'undefined' && type === 'team') {
 
     faqEntities.push({
         "@type": "Question",
-        "name": `How many teams are registered in ${leagueN} for Fall 2026?`,
+        "name": `How many teams are registered in ${leagueN} for ${activeSeason}?`,
         "acceptedAnswer": {
             "@type": "Answer",
-            "text": `${leagueN} currently has ${teamCount} registered teams indexed on cincinnati.soccer for the Fall 2026 season.`
+            "text": `${leagueN} currently has ${teamCount} registered teams indexed on cincinnati.soccer for the ${activeSeason} season.`
         }
     });
 
@@ -228,7 +229,7 @@ if (typeof type !== 'undefined' && type === 'team') {
         "name": `Which youth soccer teams compete in ${divN} in Cincinnati?`,
         "acceptedAnswer": {
             "@type": "Answer",
-            "text": `${divN} features ${teamCount} active teams competing across local leagues in Southwestern Ohio for Fall 2026.`
+            "text": `${divN} features ${teamCount} active teams competing across local leagues in Southwestern Ohio for ${activeSeason}.`
         }
     });
 
