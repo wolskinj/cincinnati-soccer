@@ -30,6 +30,7 @@ let currentUrl = typeof canonicalUrl !== 'undefined' && canonicalUrl ? canonical
 let defaultOgImage = domain + '/assets/social-share-og.jpg';
 let shareImage = typeof ogImage !== 'undefined' && ogImage ? ogImage : defaultOgImage;
 let shareImageAlt = typeof ogImageAlt !== 'undefined' && ogImageAlt ? ogImageAlt : (metaTitle + " - Cincinnati Youth Soccer");
+let modDate = typeof isoDate !== 'undefined' && isoDate ? isoDate : new Date().toISOString();
 %>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -38,6 +39,10 @@ let shareImageAlt = typeof ogImageAlt !== 'undefined' && ogImageAlt ? ogImageAlt
 <meta name="description" content="<%- metaDesc %>">
 <link rel="canonical" href="<%- currentUrl %>">
 <meta name="theme-color" content="#002147">
+
+<!-- Data Freshness & AI Search Signals -->
+<meta property="article:modified_time" content="<%- modDate %>">
+<meta property="og:updated_time" content="<%- modDate %>">
 
 <!-- Favicons & Web App Manifest -->
 <link rel="icon" type="image/x-icon" href="/favicon.ico">
@@ -85,6 +90,7 @@ let shareImageAlt = typeof ogImageAlt !== 'undefined' && ogImageAlt ? ogImageAlt
   "sport": "Soccer",
   "url": "<%- currentUrl %>",
   "description": "<%- metaDesc %>",
+  "dateModified": "<%- modDate %>",
   "location": {
     "@type": "Place",
     "name": "Cincinnati, OH"
@@ -101,7 +107,8 @@ let shareImageAlt = typeof ogImageAlt !== 'undefined' && ogImageAlt ? ogImageAlt
     "sport": "Soccer",
     "areaServed": "Cincinnati",
     "url": "<%- currentUrl %>",
-    "description": "<%- metaDesc %>"
+    "description": "<%- metaDesc %>",
+    "dateModified": "<%- modDate %>"
   },
   {
     "@context": "https://schema.org",
@@ -132,7 +139,29 @@ let shareImageAlt = typeof ogImageAlt !== 'undefined' && ogImageAlt ? ogImageAlt
     "name": "<%- title %>",
     "url": "<%- currentUrl %>",
     "description": "<%- metaDesc %>",
-    "dateModified": "<%- typeof isoDate !== 'undefined' ? isoDate : new Date().toISOString() %>"
+    "dateModified": "<%- modDate %>"
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What youth soccer leagues operate in Greater Cincinnati?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "cincinnati.soccer indexes schedules, standings, and team rosters for Cardinal Premier League (CPL), Buckeye Premier Youth Soccer League (BPYSL), Ohio Soccer State League (OSSL), and Club v Club (CvC)."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Where can I find schedules and standings for Cincinnati youth soccer teams?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "cincinnati.soccer is the centralized directory for youth soccer schedules, standings, and team rankings across Southwestern Ohio, indexing over 1,380 active teams."
+        }
+      }
+    ]
   },
   {
     "@context": "https://schema.org",

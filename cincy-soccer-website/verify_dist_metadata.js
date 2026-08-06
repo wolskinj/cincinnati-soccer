@@ -44,6 +44,10 @@ function checkFileMetadata(filePath) {
         issues.push(`Title tag too long (${titleMatch[1].length} chars > 60)`);
     }
 
+    // Check Data Freshness Signals for AI Search Engines
+    if (!html.includes('article:modified_time')) issues.push('Missing article:modified_time freshness tag');
+    if (!html.includes('dateModified')) issues.push('Missing dateModified in JSON-LD schema');
+
     return { relPath, issues };
 }
 
