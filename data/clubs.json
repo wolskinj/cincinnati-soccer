@@ -1,132 +1,517 @@
 [
     {
-        "name": "Butler United Soccer Club",
-        "website": "https://www.butlerunitedsoccer.com",
-        "about": "Butler United Soccer Club serves northern Greater Cincinnati and Dayton-area youth with a strong focus on individual technical growth and team dynamics. The club fosters a supportive, family-friendly environment designed to build character and a lifelong love for the sport. Players of all skill levels benefit from structured coaching and community-centered values."
-    },
-    {
         "name": "Academia Ole",
         "website": "https://www.academiaole.com",
-        "about": "Academia Ole specializes in futsal and technical soccer training aimed at building highly creative and confident players across Greater Cincinnati. Their unique curriculum emphasizes quick decision-making, foot skills, and tight space maneuvering. Parents love the high-energy, encouraging environment that accelerates individual player mastery."
+        "about": "Academia Olé focuses on skill acquisition, futsal, and individual player development through European and South American training methodologies. Located in Southwestern Ohio, they offer specialized training programs designed to build technical proficiency and tactical intelligence for players of all ages."
     },
     {
         "name": "Alliance Community Soccer Club",
-        "website": "https://www.alliancecincinnati.com",
-        "about": "Alliance Community Soccer Club, widely known as Alliance Cincinnati, offers comprehensive soccer pathways for players across the tri-state area. The club balances competitive excellence with character development, sportsmanship, and teamwork. Their experienced coaching staff focuses on progressive skill building from grassroots to high-school levels."
+        "website": null,
+        "about": "Alliance Community Soccer Club provides local youth with accessible competitive and recreational soccer opportunities. Their programs focus on fundamental ball skills, sportsmanship, and encouraging teamwork in a supportive environment."
+    },
+    {
+        "name": "Bellbrook Soccer",
+        "website": null,
+        "about": "Serving the Bellbrook and Sugarcreek Township community, Bellbrook Soccer provides recreational and competitive soccer opportunities for local youth. Their programs emphasize teamwork, sportsmanship, and foundational skill building in a supportive environment."
+    },
+    {
+        "name": "Bellbrook Soccer Association",
+        "website": "https://www.bellbrooksoccer.org",
+        "about": "Bellbrook Soccer Association is a community-driven organization dedicated to serving youth soccer players in the Bellbrook and surrounding areas. They offer structured recreational and competitive leagues aimed at fostering a lifelong love for the game while developing technical skills and character."
+    },
+    {
+        "name": "Butler Fury",
+        "website": null,
+        "about": "Butler Fury offers competitive soccer programming designed to elevate young athletes in Butler County and surrounding Southwestern Ohio communities. The club prioritizes technical development, team unity, and positive mentorship to help players reach their full potential."
+    },
+    {
+        "name": "Butler Fury Soccer Club",
+        "website": "https://www.butlerfury.com",
+        "about": "Butler Fury Soccer Club is a competitive club based in Southwestern Ohio committed to comprehensive player development. Through professional coaching and structured league play, they focus on building strong technical foundations and tactical understanding."
+    },
+    {
+        "name": "Butler United Soccer Club",
+        "website": "https://www.butlerunitedsc.com",
+        "about": "Butler United Soccer Club serves players in the Vandalia-Butler area, offering competitive soccer focused on player progression and positive sportsmanship. Their dedicated coaching staff works to cultivate both individual skills and a strong sense of team camaraderie."
     },
     {
         "name": "Campbell Soccer Club",
         "website": null,
-        "about": "Campbell Soccer Club offers accessible and supportive youth soccer programming focused on grassroots development and community connection. The club creates a positive atmosphere where young athletes can learn fundamental skills, active teamwork, and fair play. It is an ideal home for local families seeking a fun, beginner-friendly soccer environment."
+        "about": "Campbell Soccer Club provides youth in the Greater Cincinnati and Northern Kentucky region with accessible soccer programs. Focused on foundational mechanics, sportsmanship, and fun, the club provides a welcoming environment for players starting or continuing their soccer journey."
     },
     {
-        "name": "Cincinnati West Soccer Club",
-        "website": "https://www.cincinnatiwestsc.com",
-        "about": "Cincinnati West Soccer Club has long served families on the west side of Cincinnati with top-quality competitive soccer options. The club prides itself on developing well-rounded athletes through structured tactical training, technical skill mastery, and strong community roots. Parents appreciate their focus on sportsmanship and player retention."
+        "name": "Cincinnati Elite",
+        "website": "https://www.cincyelitesc.net",
+        "about": "Cincinnati Elite SC is a premier youth soccer organization serving the Greater Cincinnati area with a focus on comprehensive player development. Through professional coaching, competitive league play, and a holistic training curriculum, the club prepares athletes for high school, collegiate, and lifelong success."
+    },
+    {
+        "name": "Cincinnati Grand",
+        "website": null,
+        "about": "Cincinnati Grand provides youth athletes with structured soccer training aimed at advancing individual technical ability and tactical awareness. Their supportive environment encourages hard work, discipline, and team success."
+    },
+    {
+        "name": "Cincinnati Grand Futbol",
+        "website": null,
+        "about": "Cincinnati Grand Futbol is dedicated to providing high-quality soccer instruction and competitive play for local youth. Their developmental framework prioritizes ball mastery, tactical understanding, and a healthy passion for the sport."
     },
     {
         "name": "Cincinnati United",
         "website": "https://www.cincinnatiunitedsc.com",
-        "about": "Cincinnati United is one of the premier and largest youth soccer organizations in the region, featuring elite competitive platforms including CUP, MLS NEXT, and Girls Academy. They provide tailored player pathways from foundational grassroot leagues up to national college-preparatory competitions. The club's dedicated staff focuses on elite skill acquisition, leadership, and athletic growth."
+        "about": "Cincinnati United SC is one of the premier and largest youth soccer organizations in Southwestern Ohio, offering competitive and elite developmental pathways including CUP and CUSA. With high-level coaching and extensive facilities, the club caters to players ranging from beginners to national-level competitors."
+    },
+    {
+        "name": "Cincinnati West Soccer Club",
+        "website": "https://www.cincinnatiwestsc.com",
+        "about": "Cincinnati West Soccer Club has long served families on the west side of Cincinnati by delivering quality competitive soccer programs. Their developmental emphasis centers on strong fundamentals, effort, respect, and community values."
+    },
+    {
+        "name": "Cincy Galaxy",
+        "website": null,
+        "about": "Cincy Galaxy offers competitive youth soccer opportunities designed to nurture talented athletes across Warren County and Greater Cincinnati. The club emphasizes technical growth, tactical awareness, and fostering a positive team culture."
+    },
+    {
+        "name": "Cincy Galaxy SC",
+        "website": "https://www.cincygalaxysc.com",
+        "about": "Cincy Galaxy SC is dedicated to developing skilled, confident, and resilient youth soccer players in Southwestern Ohio. Their structured coaching framework combines rigorous technical instruction with an emphasis on sportsmanship and personal growth."
+    },
+    {
+        "name": "Cincy SC",
+        "website": "https://www.cincysc.com",
+        "about": "Cincy SC is a community-focused soccer club based on the east side of Cincinnati, known for its player-first philosophy and positive club culture. They offer professional coaching in a supportive environment that balances competitive excellence with character development."
+    },
+    {
+        "name": "Clinton Massie",
+        "website": null,
+        "about": "Serving the Clinton-Massie area, this organization offers local youth an engaging and encouraging environment to learn and enjoy soccer. Programs emphasize teamwork, physical fitness, and fundamental athletic skills."
+    },
+    {
+        "name": "Club Ohio",
+        "website": "https://www.clubohiosoccer.com",
+        "about": "Club Ohio is a highly respected competitive club with a strong presence in Southwestern Ohio and the central region. They deliver elite coaching, comprehensive player pathways, and national tournament exposure for ambitious youth soccer players."
+    },
+    {
+        "name": "Club X",
+        "website": "https://www.clubxsoccer.com",
+        "about": "Based in Xenia, Ohio, Club X Soccer provides competitive and developmental opportunities for youth players in Greene County and surrounding areas. The club focuses on technical skill refinement, teamwork, and personal growth on and off the pitch."
+    },
+    {
+        "name": "Dayton Futbol Academy",
+        "website": "https://www.daytonfutbolacademy.com",
+        "about": "Dayton Futbol Academy is dedicated to delivering elite technical training and competitive play for youth in the Greater Dayton area. Their structured curriculum focuses on developing high-level soccer intelligence, technique, and athletic discipline."
+    },
+    {
+        "name": "Dayton Kroc SC",
+        "website": null,
+        "about": "Operating out of the Salvation Army Kroc Center in Dayton, Dayton Kroc SC offers inclusive youth soccer programming focused on community, wellness, and basic sports instruction. They provide a safe and constructive environment for young athletes to grow."
+    },
+    {
+        "name": "Dayton Titans",
+        "website": null,
+        "about": "Dayton Titans provides competitive soccer experiences for youth in the Miami Valley region. The organization emphasizes skill building, competitive drive, and good sportsmanship."
+    },
+    {
+        "name": "Dynamo FC",
+        "website": null,
+        "about": "Dynamo FC focuses on developing passionate young soccer players through technical training and structured match play. The club creates an encouraging environment where athletes can refine their skills and foster a passion for the sport."
+    },
+    {
+        "name": "Eclipse FC",
+        "website": null,
+        "about": "Eclipse FC offers a player-centric development model designed to build solid soccer foundations and technical proficiency. Serving local families, the club focuses on positive coaching, teamwork, and competitive growth."
+    },
+    {
+        "name": "Edgewood Premier",
+        "website": null,
+        "about": "Edgewood Premier offers local youth soccer opportunities with a focus on fundamental skill building and team unity. The program provides a positive atmosphere for players looking to advance their game."
+    },
+    {
+        "name": "Edgewood Premier FC",
+        "website": null,
+        "about": "Edgewood Premier FC serves the Trenton and Butler County communities by offering competitive youth soccer opportunities. Their programs focus on skill development, sportsmanship, and helping players excel in a supportive team environment."
+    },
+    {
+        "name": "Elevate FC",
+        "website": "https://www.elevatefc.org",
+        "about": "Elevate FC is a competitive youth soccer club serving Southwestern Ohio with a focus on holistic player development. They emphasize technical mastery, character growth, and creating top-tier developmental pathways for young athletes."
+    },
+    {
+        "name": "FC Dayton",
+        "website": "https://www.fcdayton.org",
+        "about": "FC Dayton is a premier youth soccer organization in the Miami Valley, providing top-tier training and competition pathways from recreational through elite platforms. The club prioritizes comprehensive athletic, tactical, and personal development under professional leadership."
+    },
+    {
+        "name": "FC Dem Kanam",
+        "website": null,
+        "about": "FC Dem Kanam is a community-oriented soccer organization in Southwestern Ohio committed to promoting youth development, diversity, and cultural unity through soccer. Their programs offer engaging training and competitive opportunities for players of all backgrounds."
+    },
+    {
+        "name": "FC Storm",
+        "website": "https://www.fcstorm.org",
+        "about": "FC Storm serves families in the Loveland and northeastern Cincinnati area, offering competitive youth soccer programs centered on player growth. The club emphasizes ball mastery, positive character, and a fun, supportive atmosphere."
+    },
+    {
+        "name": "Fairfield Optimist",
+        "website": "https://www.fairfieldoptimist.org",
+        "about": "Fairfield Optimist Soccer Club provides recreational and competitive youth soccer leagues in Butler County. Backed by the local Optimist organization, they focus on positive youth development, community building, and fundamental sports skills."
+    },
+    {
+        "name": "First Capital FC",
+        "website": "https://www.firstcapitalfc.com",
+        "about": "First Capital FC offers structured youth soccer instruction and competitive league play for players in Southern and Southwestern Ohio. The club is dedicated to improving player mechanics, tactical awareness, and teamwork."
+    },
+    {
+        "name": "Forest Hills FC",
+        "website": "https://www.foresthillsfc.org",
+        "about": "Forest Hills FC serves the Anderson Township and east Cincinnati community, offering competitive soccer development for youth players. Their focus is on building technical expertise, athletic fitness, and sportsmanship in a positive community setting."
+    },
+    {
+        "name": "Franklin Youth",
+        "website": null,
+        "about": "Franklin Youth soccer programming introduces local children to the fundamentals of soccer through engaging and positive coaching. The program fosters teamwork, physical activity, and fundamental skill development."
+    },
+    {
+        "name": "Franklin Youth Soccer Association",
+        "website": "https://www.franklinyouthsoccer.org",
+        "about": "Franklin Youth Soccer Association provides community-focused soccer programs for children in the Franklin area. They emphasize physical wellness, fundamental skill learning, and positive sportsmanship in a fun, family-friendly environment."
+    },
+    {
+        "name": "Fusion FC",
+        "website": null,
+        "about": "Fusion FC provides competitive soccer opportunities for young athletes in Southwestern Ohio, emphasizing individual skill progression and tactical growth. The club strives to create a dynamic and supportive environment for players looking to elevate their game."
+    },
+    {
+        "name": "Greene County Cosmos",
+        "website": null,
+        "about": "Greene County Cosmos is a long-standing youth soccer organization serving families in Greene County. They focus on accessible soccer education, teamwork, and technical development across all youth age groups."
     },
     {
         "name": "ISC Storm Soccer Club",
         "website": null,
-        "about": "ISC Storm Soccer Club provides local youth with positive, structured soccer experiences aimed at fostering skill, confidence, and camaraderie. The organization prioritizes constructive coaching methods that help players understand game fundamentals while enjoying the sport. Families value the club's emphasis on local community engagement and sportsmanship."
+        "about": "ISC Storm Soccer Club provides structured youth soccer instruction and competitive league play for players in the tri-state area. Their mission is to build individual technical skills and teamwork in an encouraging, competitive environment."
     },
     {
-        "name": "Dayton Futbol Academy",
+        "name": "Impact GFC",
         "website": null,
-        "about": "Dayton Futbol Academy delivers focused technical and tactical development for ambitious youth players in the Dayton and North Cincinnati regions. Their training philosophy emphasizes high work ethic, physical literacy, and intelligent decision-making on the field. The club offers a challenging yet encouraging environment for players striving to elevate their game."
+        "about": "Impact GFC is dedicated to empowering youth soccer players through targeted skill development and competitive game experience. Their programs emphasize athletic growth, team dynamics, and building confidence on the field."
     },
     {
         "name": "Independence Soccer Club",
         "website": null,
-        "about": "Independence Soccer Club offers community-based youth soccer programs tailored for families in Northern Kentucky. The club focuses on creating a fun, healthy space where players learn basic technical fundamentals, physical fitness, and teamwork. It remains a welcoming option for young athletes beginning their soccer journey."
+        "about": "Independence Soccer Club offers recreational and competitive soccer options for youth in the tri-state region. The club fosters athletic development, team discipline, and a strong sense of community sportsmanship."
     },
     {
-        "name": "Lawrenceburg Greendale Soccer Club",
+        "name": "Inner Cincinnati",
         "website": null,
-        "about": "Lawrenceburg Greendale Soccer Club serves youth in southeastern Indiana and the surrounding Cincinnati border with high-quality community soccer programs. They are dedicated to instilling discipline, athletic improvement, and sportsmanship in every player. The organization provides a friendly, supportive foundation for both recreational and competitive players."
+        "about": "Inner Cincinnati provides urban youth with accessible soccer opportunities, promoting physical fitness, leadership, and healthy lifestyle choices through structured sport programming."
+    },
+    {
+        "name": "Inner Cincinnati SA",
+        "website": null,
+        "about": "Inner Cincinnati Soccer Academy provides urban youth in Cincinnati with access to structured soccer training, mentorship, and competitive play. The organization focuses on personal development, life skills, and athletic progression."
+    },
+    {
+        "name": "Invictus SC",
+        "website": null,
+        "about": "Invictus SC provides competitive soccer training for youth athletes in Southwestern Ohio. Their developmental philosophy focuses on relentless effort, technical proficiency, and character building."
     },
     {
         "name": "Kings Hammer",
-        "website": "https://kingshammer.com",
-        "about": "Kings Hammer is a nationally recognized youth soccer power, maintaining an extensive presence across Greater Cincinnati, Northern Kentucky, and surrounding regions. They offer a complete development pyramid ranging from early learning academies to top national platforms like ECNL. Parents benefit from professional club operations, outstanding facilities, and clear developmental pathways."
-    },
-    {
-        "name": "Lakota FC",
-        "website": "https://www.lakotafc.org",
-        "about": "Lakota FC serves the West Chester and Liberty Township communities by delivering competitive soccer programs tailored for local player growth. The club emphasizes strong ball control, tactical understanding, and preparation for high school level competition. Their family-oriented culture ensures every athlete feels supported and valued."
-    },
-    {
-        "name": "Mockingbird Valley Soccer Club",
-        "website": "https://www.mockingbirdsoccer.net",
-        "about": "Mockingbird Valley Soccer Club provides year-round player development, competitive league play, and specialized training programs. The organization focuses on technical execution, tactical maturity, and building positive athletic habits. With strong facilities and coaching, they offer a well-organized environment for passionate soccer players."
-    },
-    {
-        "name": "Northern Alliance Soccer Club",
-        "website": null,
-        "about": "Northern Alliance Soccer Club brings community-focused youth soccer programming to young athletes seeking skill progression and team play. The club concentrates on instilling fundamental core techniques, effort, and team cooperation. It provides a positive and supportive stepping stone for developing regional players."
-    },
-    {
-        "name": "Total Futbol Academy",
-        "website": "https://www.tfacincinnati.com",
-        "about": "Total Futbol Academy (TFA) is a highly respected competitive club based in Harrison, Ohio, renowned for its strong community spirit and elite player development. TFA emphasizes high technical standards, creative play, and character building across all age groups. Parents appreciate the club's transparent culture and commitment to long-term athletic growth."
-    },
-    {
-        "name": "Cincy SC",
-        "website": "https://cincysc.com",
-        "about": "Cincy SC is known for its strong community culture and player-first approach on Cincinnati's east side. Operating with a distinctive \"Soccer Family\" ethos, the club emphasizes technical skill, sportsmanship, and making soccer genuinely fun for young athletes. Their well-organized training programs foster high player retention and long-term love for the game."
-    },
-    {
-        "name": "Ohio Elite",
-        "website": "https://www.ohioelite.com",
-        "about": "Ohio Elite Soccer Academy is a premier destination club in the Midwest, designed for high-performing athletes seeking elite exposure and college placement pathways. Featuring participation in elite national leagues, the club focuses on advanced tactical awareness, physical conditioning, and mental toughness. Their professional coaching staff brings decades of top-tier developmental experience."
-    },
-    {
-        "name": "Fairfield Optimist",
-        "website": "https://www.fosoccer.com",
-        "about": "Fairfield Optimist Soccer Club (FOSC) has provided competitive soccer opportunities to Butler County and Greater Cincinnati youth for decades. Backed by the civic mission of the Fairfield Optimist Club, FOSC balances player development with community service and character building. The club is dedicated to teaching teamwork, respect, and fundamental soccer skills."
-    },
-    {
-        "name": "Warren County",
-        "website": "https://www.wcsoccer.net",
-        "about": "Warren County Soccer Club (WCSC) offers a full spectrum of recreational and competitive soccer options for youth in Warren County and northeast Cincinnati. The club prioritizes progressive technical training, positive coaching, and healthy personal growth. Families appreciate their organized structure, local fields, and commitment to every player's advancement."
-    },
-    {
-        "name": "Cincinnati Elite",
-        "website": "https://www.cincinnatielitefc.com",
-        "about": "Cincinnati Elite FC provides competitive soccer training tailored to develop confident, skilled, and intelligent players. Their holistic developmental model emphasizes technical proficiency, decision-making on the ball, and positive sportsmanship. Parents value the club's supportive atmosphere and commitment to long-term athletic success."
-    },
-    {
-        "name": "Total Ginga",
-        "website": "https://www.totalginga.com",
-        "about": "Total Ginga Academy focuses heavily on futsal and street-soccer concepts to foster exceptional ball mastery, creativity, and speed of play in young athletes. The academy's training environment encourages players to express themselves on the ball with confidence and poise. It is ideal for families looking to sharply elevate their child's technical capabilities."
-    },
-    {
-        "name": "Mercury Soccer",
-        "website": "https://www.mercurysoccer.com",
-        "about": "Mercury Soccer Club is a well-established Cincinnati organization focusing on accessible, affordable competitive youth soccer. The club emphasizes solid core fundamentals, effort, and sportsmanship in a close-knit environment. Their coaching staff strives to nurture each player's individual potential while building strong, cohesive teams."
+        "website": "https://www.kingshammer.com",
+        "about": "Kings Hammer Soccer Club is one of the premier youth soccer organizations in the Midwest, offering elite training, national platforms, and local competitive programs across Greater Cincinnati. They provide a comprehensive developmental pathway supported by professional coaching and top-tier facilities."
     },
     {
         "name": "Kolping",
         "website": "https://www.kolpingsoccer.org",
-        "about": "Cincinnati Kolping Soccer Club has a storied history in local youth soccer, operating out of their dedicated complex in Mt. Healthy. The club provides a traditional, family-centered atmosphere that combines competitive play with strong community values. Their developmental curriculum focuses on foundational skills, teamwork, and athletic integrity."
+        "about": "Cincinnati Kolping Soccer Club has a rich tradition in Southwestern Ohio youth soccer, offering competitive programs rooted in community and sportsmanship. Based at the historic Kolping Center, the club focuses on player development and team excellence."
     },
     {
-        "name": "STAR SC",
-        "website": "https://www.starsc.org",
-        "about": "STAR SC serves eastern Cincinnati with competitive soccer programs built around structured player development and positive coaching. The club aims to build physical confidence, tactical awareness, and strong sporting values in every athlete. Families enjoy the friendly atmosphere and local focus that STAR SC consistently provides."
+        "name": "LSO United",
+        "website": "https://www.lsoccer.org",
+        "about": "LSO United serves youth players in Liberty Township and Butler County with quality competitive soccer programming. The organization emphasizes skill progression, sportsmanship, and positive community engagement."
     },
     {
-        "name": "Tri-State",
+        "name": "Lakota FC",
+        "website": "https://www.lakotafc.org",
+        "about": "Lakota FC is a long-established competitive youth soccer club serving West Chester, Liberty Township, and surrounding areas. They focus on individual technical growth, tactical awareness, and developing a lifelong appreciation for the game."
+    },
+    {
+        "name": "Lawrenceburg Greendale Soccer Club",
         "website": null,
-        "about": "Tri-State Futbol Alliance offers local youth soccer players structured opportunities to refine their skills and compete in regional leagues. The club concentrates on individual skill mastery, energetic team play, and positive sportsmanship. They provide a practical pathway for players seeking competitive growth in a supportive setting."
+        "about": "Serving the tri-state community near the Ohio border, Lawrenceburg Greendale Soccer Club offers recreational and competitive soccer for local youth. Their programs promote foundational skills, fitness, and teamwork in a positive environment."
+    },
+    {
+        "name": "Little Miami FC",
+        "website": null,
+        "about": "Little Miami FC offers youth soccer opportunities for families in the Little Miami school district and surrounding communities. The club emphasizes player development, team unity, and a fun, healthy sporting experience."
+    },
+    {
+        "name": "Lord's Gym",
+        "website": null,
+        "about": "Lord's Gym provides community-focused soccer and sports programming aimed at empowering youth in Greater Cincinnati. The program uses soccer to foster physical health, positive mentorship, and personal character in a supportive atmosphere."
+    },
+    {
+        "name": "Madeira FC",
+        "website": null,
+        "about": "Madeira FC serves families in the Madeira and Eastside Cincinnati community with a focus on youth skill development, sportsmanship, and teamwork. The club provides a positive environment for players transitioning from recreational soccer to competitive play."
+    },
+    {
+        "name": "Manu Ledesma",
+        "website": null,
+        "about": "Led by former FC Cincinnati fan favorite Emmanuel Ledesma, this program focuses on specialized player development, high-level technical training, and tactical growth. It offers local youth players elite instruction tailored to build confidence and advanced soccer skills."
+    },
+    {
+        "name": "Marauders Premier FC",
+        "website": null,
+        "about": "Marauders Premier FC is dedicated to fostering youth soccer excellence in the Southwestern Ohio region through structured training and character building. The club emphasizes player development, team unity, and a passionate environment for players of various skill levels."
+    },
+    {
+        "name": "Mercury Soccer",
+        "website": null,
+        "about": "Mercury Soccer is a long-standing youth soccer organization in the Greater Cincinnati area known for developing competitive players in a family-oriented atmosphere. The club prioritizes fundamental technique, decision-making, and long-term athletic growth."
+    },
+    {
+        "name": "Mockingbird Valley Soccer Club",
+        "website": "https://www.mockingbirdsoccer.net",
+        "about": "Active in regional competition across the Ohio Valley area, Mockingbird Valley SC offers top-tier soccer instruction, leagues, and year-round training programs. The club focuses on technical mastery, game intelligence, and fostering a lifelong passion for the sport."
+    },
+    {
+        "name": "Monroe Premier",
+        "website": null,
+        "about": "Monroe Premier offers competitive select soccer opportunities for youth athletes in Monroe and the surrounding Butler County communities. The club is committed to building foundational soccer skills, strong sportsmanship, and a collaborative team culture."
+    },
+    {
+        "name": "Monroe Premier FC",
+        "website": null,
+        "about": "Monroe Premier FC provides local players with structured coaching designed to elevate their individual technical abilities and game awareness. The organization fosters a supportive environment that emphasizes community pride and competitive athletic growth."
+    },
+    {
+        "name": "NKY Gunners",
+        "website": null,
+        "about": "Serving Northern Kentucky and the Greater Cincinnati area, NKY Gunners provides competitive youth soccer development focused on individual skill mastery and team success. They foster a positive, hard-working environment designed to elevate each player's game."
+    },
+    {
+        "name": "NKY Gunners Athletic Club",
+        "website": null,
+        "about": "NKY Gunners Athletic Club offers dedicated training and competitive team options for young athletes across the tri-state area. Their developmental curriculum focuses on build-up play, physical fitness, and strong sportsmanship on and off the field."
+    },
+    {
+        "name": "NWC Alliance",
+        "website": null,
+        "about": "NWC Alliance serves youth players across northern Cincinnati and the Dayton corridor with a commitment to progressive player development. The club emphasizes technical training, tactical understanding, and community-driven values."
+    },
+    {
+        "name": "NWC Alliance Soccer Club",
+        "website": null,
+        "about": "NWC Alliance Soccer Club brings together surrounding youth soccer communities to offer higher-level competitive opportunities. The organization focuses on comprehensive player growth, teamwork, and instilling a strong work ethic in every athlete."
+    },
+    {
+        "name": "Nationals FC",
+        "website": null,
+        "about": "Nationals FC focuses on cultivating young athletic talent in a supportive, growth-oriented soccer environment. The club offers player-centered coaching that emphasizes core fundamentals, fitness, and teamwork."
+    },
+    {
+        "name": "New Richmond SC",
+        "website": null,
+        "about": "New Richmond SC serves families in Clermont County by providing recreational and competitive soccer opportunities for young athletes. The organization highlights character development, community pride, and fundamental skill-building."
+    },
+    {
+        "name": "Northern Alliance Soccer Club",
+        "website": null,
+        "about": "Northern Alliance Soccer Club focuses on competitive soccer development for youth in Southwestern Ohio, balancing high-level training with character education. The club strives to help players reach their full potential on and off the pitch."
     },
     {
         "name": "Northwest Cincy Soccer Coalition",
         "website": null,
-        "about": "Northwest Cincy Soccer Coalition works to promote and organize youth soccer participation across communities in northwestern Hamilton County. The coalition focuses on accessible grassroots training, positive coaching, and fostering teamwork among young players. Their programs serve as a wonderful entry point for athletes building a passion for soccer."
+        "about": "Fostering community soccer in Northwest Hamilton County, this coalition unites local families through accessible youth soccer programming. The club focuses on building foundational athletic skills, teamwork, and a fun playing environment."
+    },
+    {
+        "name": "Oak Hills",
+        "website": null,
+        "about": "Oak Hills youth soccer programs provide players on Cincinnati's Westside with high-quality athletic instruction and teamwork experience. The organization emphasizes skill development, physical fitness, and local community pride."
+    },
+    {
+        "name": "Oak Hills Youth Athletics",
+        "website": "https://www.ohyaathletics.org",
+        "about": "Oak Hills Youth Athletics (OHYA) serves youth in the Westside Cincinnati community with comprehensive sports programs, including soccer. OHYA emphasizes fundamental skill building, healthy competition, sportsmanship, and community engagement."
+    },
+    {
+        "name": "Oakwood United",
+        "website": null,
+        "about": "Oakwood United is a community-focused soccer club dedicated to developing skilled, confident youth players in a supportive setting. The club balances competitive league play with character development and strong community involvement."
+    },
+    {
+        "name": "Oakwood United SC",
+        "website": null,
+        "about": "Oakwood United SC offers structured training programs and competitive play for local youth soccer athletes. Their coaching staff prioritizes fundamental technique, tactical decision-making, and a lifelong appreciation for the game."
+    },
+    {
+        "name": "Ohio Elite",
+        "website": "https://www.ohioelite.com",
+        "about": "Ohio Elite Soccer Academy is one of Southwestern Ohio's premier youth soccer organizations, competing on elite national platforms such as the ECNL. Known for high professional coaching standards, the academy focuses on elite player pathways, college recruitment, and comprehensive player development."
+    },
+    {
+        "name": "Ohio Fusion SC",
+        "website": null,
+        "about": "Formed to serve the Miami Valley and Southwestern Ohio areas, Ohio Fusion SC delivers quality select soccer training with a player-first philosophy. The club highlights personal growth, tactical awareness, and competitive success in a positive setting."
+    },
+    {
+        "name": "Ohio Galaxies FC",
+        "website": "https://www.ohiogalaxiesfc.com",
+        "about": "Ohio Galaxies FC is a premier youth soccer club based in the Dayton and Miami Valley region dedicated to high-level player development and college exposure. The club provides elite coaching, competitive league play, and a clear pathway for high school-aged players."
+    },
+    {
+        "name": "Ohio United FC",
+        "website": null,
+        "about": "Ohio United FC offers youth players in Southwestern Ohio a positive, competitive platform to develop technical skills and game strategy. The club emphasizes work ethic, teamwork, and holistic athletic growth."
+    },
+    {
+        "name": "Olimpia USA Soccer",
+        "website": null,
+        "about": "Olimpia USA Soccer provides community youth soccer opportunities designed to build strong technical fundamentals and team camaraderie. The club offers an inclusive environment where young athletes can develop a love for the game."
+    },
+    {
+        "name": "On Goal",
+        "website": null,
+        "about": "On Goal is a faith-based soccer organization in the Greater Cincinnati region that blends quality soccer instruction with character and values training. They offer camps, clinics, and club teams that encourage personal growth alongside athletic development."
+    },
+    {
+        "name": "On Goal Passion FC",
+        "website": null,
+        "about": "On Goal Passion FC is the competitive club branch of On Goal, offering high-level soccer instruction rooted in positive values. Located in the Eastside Cincinnati area, it provides a supportive environment focused on technical growth and team unity."
+    },
+    {
+        "name": "Oxford United",
+        "website": null,
+        "about": "Oxford United serves youth soccer players in Oxford and Butler County with developmental and competitive team opportunities. The club focuses on individual technical growth, tactical discipline, and fostering local community spirit."
+    },
+    {
+        "name": "Oxford United FC",
+        "website": null,
+        "about": "Oxford United FC provides structured coaching for young athletes near Miami University and surrounding areas. The club strives to nurture character, athletic confidence, and core soccer skills in players of all age groups."
+    },
+    {
+        "name": "PC United SC",
+        "website": null,
+        "about": "PC United SC offers youth soccer training designed to build core soccer fundamentals, teamwork, and athletic confidence. The club provides local families with an accessible and structured environment for young players."
+    },
+    {
+        "name": "Panthers FC",
+        "website": null,
+        "about": "Panthers FC is a community soccer organization dedicated to training young athletes in soccer fundamentals and sportsmanship. The club focuses on creating a positive, encouraging environment for player progression."
+    },
+    {
+        "name": "Passion FC",
+        "website": null,
+        "about": "Passion FC delivers structured soccer training focused on technical excellence and character development. Operating out of the Cincinnati area, it emphasizes a supportive culture built on positive values and competitive growth."
+    },
+    {
+        "name": "Pleasant Ridge Football Club",
+        "website": null,
+        "about": "Pleasant Ridge Football Club serves the local Cincinnati neighborhood with community-centered youth soccer programs. The club emphasizes healthy physical activity, basic skill development, and bringing local families together through sport."
+    },
+    {
+        "name": "Real Soccer FC",
+        "website": null,
+        "about": "Real Soccer FC provides dedicated coaching and player development programs tailored to young soccer enthusiasts in Southwestern Ohio. The club emphasizes technical mastery, tactical understanding, and a passionate playing style."
+    },
+    {
+        "name": "STAR SC",
+        "website": null,
+        "about": "STAR Soccer Club serves families in the Greater Cincinnati region by delivering high-quality, player-centered soccer instruction. The club focuses on individual technical excellence, sportsmanship, and personal growth on and off the field."
+    },
+    {
+        "name": "Shelby County Youth Soccer",
+        "website": null,
+        "about": "Shelby County Youth Soccer provides youth in Shelby County and surrounding communities with accessible recreational and competitive soccer leagues. The organization focuses on teaching basic skills, teamwork, and promoting active, healthy lifestyles."
+    },
+    {
+        "name": "Shelby Youth Soccer",
+        "website": null,
+        "about": "Shelby Youth Soccer fosters a love for the game among young players by offering structured, family-friendly soccer programming. The club emphasizes foundational skill-building, fair play, and positive community engagement."
+    },
+    {
+        "name": "SouthStars SC",
+        "website": null,
+        "about": "SouthStars SC is an established youth soccer club in Southwestern Ohio specializing in developing young female athletes. The club emphasizes high-level technical coaching, team unity, and helping players advance to high school and collegiate levels."
+    },
+    {
+        "name": "Southwest SC",
+        "website": null,
+        "about": "Southwest SC serves youth in the Southwestern Ohio border region, delivering structured soccer programming that balances skill building with competitive play. The club is committed to fostering sportsmanship, player fitness, and community involvement."
+    },
+    {
+        "name": "Springboro Force SC",
+        "website": null,
+        "about": "Springboro Force SC offers competitive youth soccer opportunities in the Springboro community, focusing on progressive player development. The club emphasizes technical proficiency, game intelligence, and strong team dynamics."
+    },
+    {
+        "name": "Springfield Thunder",
+        "website": null,
+        "about": "Springfield Thunder provides select soccer opportunities for youth athletes in Clark County and nearby areas. The club is dedicated to improving player mechanics, tactical knowledge, and team camaraderie."
+    },
+    {
+        "name": "Springfield Thunder SC",
+        "website": null,
+        "about": "Springfield Thunder SC offers competitive youth soccer programming designed to elevate player skills and foster a passion for the sport. Their coaching staff emphasizes discipline, sportsmanship, and continuous individual development."
+    },
+    {
+        "name": "Taylor Creek",
+        "website": null,
+        "about": "Taylor Creek youth soccer programs serve players on Cincinnati's Westside with grassroots athletic development and team play. The organization focuses on teaching basic skills, physical health, and community involvement."
+    },
+    {
+        "name": "Taylor Creek Youth Organization",
+        "website": null,
+        "about": "Taylor Creek Youth Organization (TCYO) serves Cincinnati's Westside community with grassroots and select youth athletic programs, including soccer. TCYO focuses on fun, foundational skill development, and fostering sportsmanship among local youth."
+    },
+    {
+        "name": "Tempest FC",
+        "website": null,
+        "about": "Tempest FC provides select youth soccer training in Southwestern Ohio, emphasizing high standards of player development and sportsmanship. The club focuses on individual skill mastery, athletic conditioning, and team success."
+    },
+    {
+        "name": "Tipp City Youth Soccer",
+        "website": null,
+        "about": "Tipp City Youth Soccer offers community-focused soccer leagues for children in Miami County, emphasizing fun, active play, and foundational skill development. The organization provides a welcoming environment for players starting their soccer journeys."
+    },
+    {
+        "name": "Total Futbol Academy",
+        "website": "https://www.tfacincinnati.com",
+        "about": "Total Futbol Academy (TFA) is one of Cincinnati's premier youth soccer clubs, renowned for its technical curriculum and competitive player development. Operating extensively across the Tri-State area, TFA prepares players for high school, regional, and national levels of competition."
+    },
+    {
+        "name": "Total Ginga",
+        "website": null,
+        "about": "Total Ginga Academy specializes in futsal and high-tempo technical skill training in the Greater Cincinnati area. Inspired by Brazilian soccer culture, the academy focuses on footwork, quick decision-making, and individual ball mastery to elevate each player's game."
+    },
+    {
+        "name": "Tri-State",
+        "website": null,
+        "about": "Tri-State soccer programs serve young athletes across Ohio, Kentucky, and Indiana with developmental training and team play. The organization focuses on fundamental mechanics, teamwork, and building competitive spirit."
+    },
+    {
+        "name": "Troy Rattlers",
+        "website": null,
+        "about": "The Troy Rattlers program offers competitive select soccer experiences for local athletes in Troy and Miami County. They focus on player skill progression, physical conditioning, and representing their community with pride."
+    },
+    {
+        "name": "Troy Renegades",
+        "website": null,
+        "about": "Troy Renegades provides youth soccer players in the Miami County area with structured training and competitive match experience. The club emphasizes sportsmanship, fundamental skill building, and team unity."
+    },
+    {
+        "name": "Warren County",
+        "website": "https://www.wcsoccerclub.com",
+        "about": "Warren County Soccer Club is dedicated to developing youth players in Southwestern Ohio through structured recreational and competitive programs. The club emphasizes technical skill development, teamwork, and positive character building in a supportive community environment. Parents can expect a well-rounded athletic experience designed to foster a lifelong passion for soccer."
+    },
+    {
+        "name": "Warrior Soccer Club",
+        "website": "https://www.warriorsoccerclub.org",
+        "about": "Based in the greater Dayton and Miami Valley area, Warrior Soccer Club has a long-standing tradition of providing competitive youth soccer opportunities focused on player growth and athletic development. The club strives to instill discipline, leadership, and sportsmanship both on and off the field. It remains a staple in the local soccer community, offering pathways for players aiming to excel at higher levels of competition."
+    },
+    {
+        "name": "Waynesville FC",
+        "website": null,
+        "about": "Waynesville FC serves its local Southwestern Ohio community by providing young athletes with a positive environment to learn and play soccer. The organization focuses on foundational skill-building, teamwork, and instilling good sportsmanship in every player. It offers a family-friendly soccer experience aimed at encouraging healthy athletic development and a love for the game."
     }
 ]
