@@ -443,8 +443,8 @@
             <div id="team-list">
                 <% if (seasonInfo) { %>
                     <div class="league-header">
-                        <h3><%- seasonInfo.split(" ")[0] %></h3>
-                    <p><%- seasonInfo.split(" ").slice(1).join(" ") %></p>
+                        <h3><%- typeof seasonName !== 'undefined' ? seasonName : (typeof currentSeason !== 'undefined' ? currentSeason : 'Season Overview') %></h3>
+                        <p><%- typeof seasonDetails !== 'undefined' ? seasonDetails : seasonInfo.replace(typeof currentSeason !== 'undefined' ? currentSeason : '', '').trim() %></p>
                     
                     <% if (typeof leagueAbout !== 'undefined' && leagueAbout) { %>
                         <p style=" font-size: 0.95rem; line-height: 1.6; color: var(--text-light); max-width: 750px;

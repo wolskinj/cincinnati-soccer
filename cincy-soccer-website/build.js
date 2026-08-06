@@ -485,6 +485,8 @@ function generateLeaguePages(leagueGroups) {
             isoDate: isoDate,
             currentSeason: CURRENT_SEASON,
             teams: teams,
+            seasonName: season,
+            seasonDetails: `Listing includes ${teams.length} teams found in our latest scan.`,
             seasonInfo: `${season} Listing includes ${teams.length} teams found in our latest scan.`,
             seasonLink: seasonLink,
             leagueWebsite: websiteLink,
