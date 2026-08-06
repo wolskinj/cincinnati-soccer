@@ -157,8 +157,9 @@ async function buildSite() {
             generateRedirects();
             generateWorker();
 
-            // 5. VERIFY METADATA & FAVICONS ACROSS ALL GENERATED PAGES
+            // 5. VERIFY METADATA, FAVICONS & SITEMAP ACROSS ALL GENERATED PAGES
             require('./verify_dist_metadata.js');
+            require('./validate_sitemap.js');
         });
 }
 
@@ -600,29 +601,44 @@ function generateHomepage(ageGroups, clubGroups, leagueGroups, teamGroups) {
     }
 }
 
+function getPriorityAndFreq(url) {
+    if (url === '' || url === 'index.html') return { priority: '1.0', freq: 'daily' };
+    if (['clubs.html', 'ages.html', 'leagues.html'].includes(url)) return { priority: '0.9', freq: 'daily' };
+    if (url.startsWith('club-') || url.startsWith('league-')) return { priority: '0.8', freq: 'weekly' };
+    if (url.startsWith('boys-') || url.startsWith('girls-')) return { priority: '0.7', freq: 'weekly' };
+    return { priority: '0.6', freq: 'weekly' };
+}
+
 // === SITEMAP GENERATOR ===
 function generateSitemap() {
     console.log("🗺️ Generating Sitemap...");
 
-    // OLD WAY (UTC/London Time):
-    // const today = new Date().toISOString().split('T')[0];
-
-    // NEW WAY (Local System Time):
     const d = new Date();
     const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+    const month = String(d.getMonth() + 1).padStart(2, '0');
     const day = String(d.getDate()).padStart(2, '0');
     const today = `${year}-${month}-${day}`;
 
+    // Ensure core pages are included
+    const corePages = ['', 'clubs.html', 'ages.html', 'leagues.html'];
+    corePages.reverse().forEach(p => {
+        if (!sitemapUrls.includes(p)) {
+            sitemapUrls.unshift(p);
+        }
+    });
+
     const xmlContent = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${sitemapUrls.map(url => `
-    <url>
-        <loc>${DOMAIN}/${url}</loc>
+${sitemapUrls.map(url => {
+    const loc = url ? `${DOMAIN}/${url}` : `${DOMAIN}/`;
+    const { priority, freq } = getPriorityAndFreq(url);
+    return `    <url>
+        <loc>${loc}</loc>
         <lastmod>${today}</lastmod>
-        <changefreq>weekly</changefreq>
-    </url>
-`).join('')}
+        <changefreq>${freq}</changefreq>
+        <priority>${priority}</priority>
+    </url>`;
+}).join('\n')}
 </urlset>`;
 
     fs.writeFileSync(`${OUTPUT_DIR}/sitemap.xml`, xmlContent);
