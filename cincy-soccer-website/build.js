@@ -375,7 +375,9 @@ function generatePages(groups, type) {
 
             if (clubConfig) {
                 if (clubConfig.about) clubAbout = clubConfig.about;
-                if (clubConfig.website) clubWebsite = clubConfig.website;
+                if (clubConfig.website && (clubConfig.confirmed === true || clubConfig.confirmed === undefined)) {
+                    clubWebsite = clubConfig.website;
+                }
             }
 
             if (!clubAbout) {

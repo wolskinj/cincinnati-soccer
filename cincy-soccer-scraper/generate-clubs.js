@@ -8,12 +8,27 @@ const CLEAN_TEAMS_FILE = path.join(__dirname, '../data/clean_teams.csv');
 const OUTPUT_JSON = path.join(__dirname, '../data/clubs.json');
 
 async function run() {
-    console.log("📝 AI Club Description & Website Generator Starting...");
+    console.log("📝 AI Club Description & Website Candidate Generator Starting...");
 
     if (!process.env.GEMINI_API_KEY || process.env.GEMINI_API_KEY.includes('your_api_key_here') || process.env.GEMINI_API_KEY.includes('your_actual_gemini_api_key_here')) {
         console.error("❌ ERROR: GEMINI_API_KEY is not set (or is using the default placeholder) in .env");
         console.log("Please add your actual key to generate dynamic club descriptions.");
         process.exit(1);
+    }
+
+    // Load existing clubs.json to preserve user-confirmed overrides
+    const existingClubsMap = {};
+    if (fs.existsSync(OUTPUT_JSON)) {
+        try {
+            const existingArr = JSON.parse(fs.readFileSync(OUTPUT_JSON, 'utf-8'));
+            existingArr.forEach(c => {
+                if (c && c.name) {
+                    existingClubsMap[c.name.toLowerCase()] = c;
+                }
+            });
+        } catch (e) {
+            console.warn("⚠️ Could not parse existing data/clubs.json for override preservation.");
+        }
     }
 
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
@@ -53,8 +68,9 @@ async function run() {
 You are an expert on youth soccer in the Greater Cincinnati and Southwestern Ohio area.
 I will give you a list of local youth soccer clubs.
 For each club:
-1. Write a professional, supportive, and informative 2-3 sentence "about" blurb tailored for parents looking at youth soccer organizations. Highlight their developmental focus, community presence, or general reputation if known. If a club is obscure, write a generic positive blurb about their commitment to local youth soccer development.
-2. Provide their official website URL (starting with http:// or https://) ONLY if you have extremely HIGH CONFIDENCE that it is the accurate, official domain for this youth soccer club. If you are unsure or not 100% confident, set "website" to null.
+1. Write a professional, supportive, and informative 2-3 sentence "about" blurb tailored for parents looking at youth soccer organizations.
+2. Provide their official website URL (starting with http:// or https://) if you find a likely domain for this youth soccer club. If no website candidate is found, set "website" to null.
+3. Set "confirmed" to true ONLY if you have 100% high confidence that the website is the official domain. Set "confirmed" to false if it is a candidate that should be manually verified by a human.
 
 Output MUST be a raw JSON array of objects (no markdown, no backticks).
 Format:
@@ -62,6 +78,7 @@ Format:
   {
     "name": "Club Name",
     "website": "https://www.exampleclub.com",
+    "confirmed": true,
     "about": "Description here..."
   }
 ]
@@ -77,6 +94,19 @@ ${JSON.stringify(batchClubs)}
             responseText = responseText.replace(/```json/gi, '').replace(/```/g, '').trim();
             
             const batchResults = JSON.parse(responseText);
+
+            // Merge with existing user overrides
+            batchResults.forEach(item => {
+                const lowerName = item.name.toLowerCase();
+                const existing = existingClubsMap[lowerName];
+                
+                // If user previously confirmed/overrode a website, preserve user choice!
+                if (existing && existing.confirmed === true && existing.website) {
+                    item.website = existing.website;
+                    item.confirmed = true;
+                }
+            });
+
             allDescriptions.push(...batchResults);
 
         } catch (error) {
@@ -85,7 +115,7 @@ ${JSON.stringify(batchClubs)}
     }
 
     fs.writeFileSync(OUTPUT_JSON, JSON.stringify(allDescriptions, null, 4));
-    console.log(`✅ Successfully generated descriptions & websites for ${allDescriptions.length} clubs!`);
+    console.log(`✅ Successfully generated descriptions & website candidates for ${allDescriptions.length} clubs!`);
     console.log(`Saved to data/clubs.json`);
 }
 
