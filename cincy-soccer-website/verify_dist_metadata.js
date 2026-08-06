@@ -48,6 +48,16 @@ function checkFileMetadata(filePath) {
     if (!html.includes('article:modified_time')) issues.push('Missing article:modified_time freshness tag');
     if (!html.includes('dateModified')) issues.push('Missing dateModified in JSON-LD schema');
 
+    // Check for Duplicate Meta Tags
+    const metaTags = [...html.matchAll(/<meta\s+[^>]+>/gi)].map(m => m[0].toLowerCase().trim());
+    const seenMeta = new Set();
+    metaTags.forEach(tag => {
+        if (seenMeta.has(tag)) {
+            issues.push(`Duplicate meta tag found: ${tag}`);
+        }
+        seenMeta.add(tag);
+    });
+
     return { relPath, issues };
 }
 
