@@ -425,6 +425,13 @@
                 <p style="font-size: 1.05rem; line-height: 1.6; color: rgba(255,255,255,0.8); max-width: 800px; margin: 15px auto 0 auto; text-align: center;">
                     <%- clubAbout %>
                 </p>
+                <% if (typeof clubWebsite !== 'undefined' && clubWebsite) { %>
+                    <div style="margin-top: 15px; text-align: center;">
+                        <a href="<%- clubWebsite %>" class="btn" target="_blank" rel="noopener" style="display: inline-block; max-width: 280px; padding: 10px 20px; font-size: 0.95rem; font-weight: 700; background: rgba(255,255,255,0.15); color: #fff; border: 1px solid rgba(255,255,255,0.3); border-radius: 8px; text-decoration: none; transition: background 0.2s;">
+                            Visit Club Website ➜
+                        </a>
+                    </div>
+                <% } %>
             <% } %>
             <% if (typeof divisionAbout !=='undefined' && divisionAbout) { %>
                 <p style="font-size: 1.05rem; line-height: 1.6; color: rgba(255,255,255,0.8); max-width: 800px; margin: 15px auto 0 auto; text-align: center;">

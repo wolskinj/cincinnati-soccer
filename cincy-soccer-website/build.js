@@ -257,6 +257,7 @@ function generatePages(groups, type) {
         let filename;
         let description;
         let clubAbout = null;
+        let clubWebsite = null;
         let divisionAbout = null;
 
         if (type === 'age') {
@@ -372,9 +373,12 @@ function generatePages(groups, type) {
             const lowerGroup = groupName.toLowerCase();
             const clubConfig = CLUBS_CONFIG.find(c => c.name.toLowerCase() === lowerGroup);
 
-            if (clubConfig && clubConfig.about) {
-                clubAbout = clubConfig.about;
-            } else {
+            if (clubConfig) {
+                if (clubConfig.about) clubAbout = clubConfig.about;
+                if (clubConfig.website) clubWebsite = clubConfig.website;
+            }
+
+            if (!clubAbout) {
                 const teamCount = teams.length;
                 const leagues = [...new Set(teams.map(t => t.LEAGUE))].filter(Boolean);
 
@@ -446,6 +450,7 @@ function generatePages(groups, type) {
             leagueWebsite: null,
             leagueAbout: null,
             clubAbout: clubAbout,
+            clubWebsite: clubWebsite,
             divisionAbout: divisionAbout,
             makeFilename: makeFilename,
             normalizeDivision: normalizeDivision
