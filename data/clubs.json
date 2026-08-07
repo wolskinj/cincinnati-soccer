@@ -43,8 +43,8 @@
     },
     {
         "name": "Campbell Soccer Club",
-        "website": "https://www.campbellsoccer.org",
-        "confirmed": false,
+        "website": "https://campbellsc.org",
+        "confirmed": true,
         "about": "Campbell Soccer Club serves young athletes across the regional Northern Kentucky and Greater Cincinnati area with quality soccer programming. They concentrate on skill development, physical fitness, and instilling a lifelong passion for the sport. It provides a warm, family-friendly environment for players of all skill levels."
     },
     {
@@ -54,16 +54,10 @@
         "about": "Cincinnati Elite SC is a top-flight competitive club providing comprehensive soccer instruction for elite and developing youth players. Their modern coaching philosophy focuses on technical proficiency, tactical flexibility, and strong competitive character. Families value the club's proven path toward high school and college soccer advancement."
     },
     {
-        "name": "Cincinnati Grand",
-        "website": "https://www.grandfc.org",
-        "confirmed": false,
-        "about": "Cincinnati Grand offers young soccer enthusiasts a supportive platform to elevate their technical skills and game understanding. The organization emphasizes hard work, sportsmanship, and positive team dynamics across all age divisions. Parents appreciate their balanced approach to player development and competitive play."
-    },
-    {
         "name": "Cincinnati Grand Futbol",
-        "website": "https://www.grandfc.org",
-        "confirmed": false,
-        "about": "Cincinnati Grand Futbol Club focuses on creating well-rounded soccer players through structured training and competitive play in the Cincinnati area. Their programs emphasize technique, physical literacy, and a high standard of personal conduct. It is an ideal home for players looking to advance their soccer journey in an encouraging setting."
+        "website": "https://www.cincinnatigrandfutbol.org",
+        "confirmed": true,
+        "about": "Cincinnati Grand Futbol Club offers young soccer enthusiasts a supportive platform to elevate their technical skills, physical literacy, and tactical game understanding. The organization emphasizes hard work, sportsmanship, and positive team dynamics across all age divisions in the Greater Cincinnati area."
     },
     {
         "name": "Cincinnati United",

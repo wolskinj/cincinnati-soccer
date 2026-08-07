@@ -34,6 +34,32 @@ for (const [officialName, aliases] of Object.entries(CLUB_MAPPINGS)) {
 // Sort descending by length so longer specific aliases (e.g. "Northwest Cincy SC") match before shorter subsets (e.g. "Cincy SC")
 sortedAliases.sort((a, b) => b.alias.length - a.alias.length);
 
+// Build direct lookup table for exact alias to canonical name resolution
+const clubCanonicalMap = {};
+for (const [officialName, aliases] of Object.entries(CLUB_MAPPINGS)) {
+    clubCanonicalMap[officialName.toLowerCase()] = officialName;
+    for (const alias of aliases) {
+        clubCanonicalMap[alias.toLowerCase()] = officialName;
+    }
+}
+
+function canonicalizeClubName(name) {
+    if (!name) return "Independent";
+    const trimmed = name.trim();
+    const lower = trimmed.toLowerCase();
+    
+    if (clubCanonicalMap[lower]) {
+        return clubCanonicalMap[lower];
+    }
+    
+    for (const { regex, officialName } of sortedAliases) {
+        if (regex.test(trimmed)) {
+            return officialName;
+        }
+    }
+    return trimmed;
+}
+
 const allTeams = [];
 const seenSignatures = new Set(); // Tracks unique teams
 
@@ -70,6 +96,9 @@ fs.createReadStream(INPUT_FILE)
                 }
             }
         }
+
+        // Pass clubName through canonical lookup to guarantee single source of truth!
+        clubName = canonicalizeClubName(clubName);
 
         // 3. DE-DUPLICATION CHECK (Using Cleaned Name)
         const signature = `${teamName}|${row.DIVISION}|${row.LEAGUE}`;
