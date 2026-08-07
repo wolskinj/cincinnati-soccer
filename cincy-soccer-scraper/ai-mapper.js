@@ -87,9 +87,11 @@ Rules for Clean Name:
 - Keep the year/identifier (e.g. B2018, 17B, BU10).
 
 Rules for Club Name:
-- Map to one of these known clubs if possible: ${clubsList.join(', ')}.
+- All teams belong strictly to the Greater Cincinnati, Northern Kentucky, and Southwestern Ohio geographic region.
+- Map to one of these known local clubs if possible: ${clubsList.join(', ')}.
 - Here are some known aliases to help you: ${JSON.stringify(clubContext)}.
-- If it doesn't match a known club, guess the club name from the first 1 or 2 words (e.g. "Ohio Premier B10" -> "Ohio Premier"), or use "Independent" if unclear.
+- Always prioritize local Greater Cincinnati area club identities. Do NOT map local teams to out-of-region clubs from other cities or regions unless explicitly named.
+- If it doesn't match a known club, guess the local club name from the first 1 or 2 words (e.g. "Ohio Premier B10" -> "Ohio Premier"), or use "Independent" if unclear.
 
 Output Format:
 You MUST return ONLY a raw JSON array of objects (no markdown, no backticks).

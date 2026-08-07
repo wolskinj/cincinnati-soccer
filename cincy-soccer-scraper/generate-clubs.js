@@ -7,6 +7,8 @@ const CLUB_MAPPINGS_FILE = path.join(__dirname, 'club_mappings.json');
 const CLEAN_TEAMS_FILE = path.join(__dirname, '../data/clean_teams.csv');
 const OUTPUT_JSON = path.join(__dirname, '../data/clubs.json');
 
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
 async function run() {
     console.log("📝 AI Club Description & Website Candidate Generator Starting...");
 
@@ -62,7 +64,9 @@ async function run() {
 
     for (let i = 0; i < clubsList.length; i += BATCH_SIZE) {
         const batchClubs = clubsList.slice(i, i + BATCH_SIZE);
-        console.log(`Processing club batch ${Math.floor(i / BATCH_SIZE) + 1} / ${Math.ceil(clubsList.length / BATCH_SIZE)} (${batchClubs.length} clubs)...`);
+        const batchNum = Math.floor(i / BATCH_SIZE) + 1;
+        const totalBatches = Math.ceil(clubsList.length / BATCH_SIZE);
+        console.log(`Processing club batch ${batchNum} / ${totalBatches} (${batchClubs.length} clubs)...`);
 
         const prompt = `
 You are an expert on youth soccer in the Greater Cincinnati and Southwestern Ohio area.
@@ -87,32 +91,55 @@ Input Clubs:
 ${JSON.stringify(batchClubs)}
         `;
 
-        try {
-            const result = await model.generateContent(prompt);
-            let responseText = result.response.text();
-            
-            responseText = responseText.replace(/```json/gi, '').replace(/```/g, '').trim();
-            
-            const batchResults = JSON.parse(responseText);
+        let success = false;
+        let retries = 0;
 
-            // Merge with existing user overrides
-            batchResults.forEach(item => {
-                const lowerName = item.name.toLowerCase();
-                const existing = existingClubsMap[lowerName];
+        while (!success && retries < 5) {
+            try {
+                const result = await model.generateContent(prompt);
+                let responseText = result.response.text();
                 
-                // If user previously confirmed/overrode a website, preserve user choice!
-                if (existing && existing.confirmed === true && existing.website) {
-                    item.website = existing.website;
-                    item.confirmed = true;
-                }
-            });
+                responseText = responseText.replace(/```json/gi, '').replace(/```/g, '').trim();
+                
+                const batchResults = JSON.parse(responseText);
 
-            allDescriptions.push(...batchResults);
+                // Merge with existing user overrides
+                batchResults.forEach(item => {
+                    const lowerName = item.name.toLowerCase();
+                    const existing = existingClubsMap[lowerName];
+                    
+                    // If user previously confirmed/overrode a website, preserve user choice!
+                    if (existing && existing.confirmed === true && existing.website) {
+                        item.website = existing.website;
+                        item.confirmed = true;
+                    }
+                });
 
-        } catch (error) {
-            console.error(`❌ Error generating batch ${Math.floor(i / BATCH_SIZE) + 1}:`, error);
+                allDescriptions.push(...batchResults);
+                success = true;
+
+            } catch (error) {
+                retries++;
+                console.warn(`⚠️ Rate limit or network error on batch ${batchNum} (Attempt ${retries}/5): ${error.message}`);
+                console.log(`Pausing for 10 seconds before retrying...`);
+                await sleep(10000);
+            }
         }
+
+        if (!success) {
+            console.error(`❌ Failed batch ${batchNum} after 5 retries. Moving to next batch.`);
+        }
+
+        // Small pause between batches to prevent rate limits
+        await sleep(2000);
     }
+
+    // Preserve any existing confirmed clubs that were not returned in current batch
+    Object.values(existingClubsMap).forEach(existing => {
+        if (!allDescriptions.some(d => d.name.toLowerCase() === existing.name.toLowerCase())) {
+            allDescriptions.push(existing);
+        }
+    });
 
     fs.writeFileSync(OUTPUT_JSON, JSON.stringify(allDescriptions, null, 4));
     console.log(`✅ Successfully generated descriptions & website candidates for ${allDescriptions.length} clubs!`);
