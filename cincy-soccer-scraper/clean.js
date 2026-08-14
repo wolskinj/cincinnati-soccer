@@ -2,11 +2,23 @@ const fs = require('fs');
 const csv = require('csv-parser');
 const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 const path = require('path');
+const { getClubStem, buildCanonicalLookup } = require('./clubNormalizer');
 
 const INPUT_FILE = path.join(__dirname, '../data/all_teams.csv');
 const OUTPUT_FILE = path.join(__dirname, '../data/clean_teams.csv');
 
-// === AI MAPPINGS ===
+// === 1. LOAD EXPLICIT CLUB MAPPINGS ===
+let CLUB_MAPPINGS = {};
+const CLUB_MAPPINGS_FILE = path.join(__dirname, 'club_mappings.json');
+if (fs.existsSync(CLUB_MAPPINGS_FILE)) {
+    try {
+        CLUB_MAPPINGS = JSON.parse(fs.readFileSync(CLUB_MAPPINGS_FILE, 'utf-8'));
+    } catch (e) {
+        console.warn("Could not parse club_mappings.json, continuing without explicit overrides.");
+    }
+}
+
+// === 2. LOAD AI MAPPINGS ===
 const AI_MAPPINGS_FILE = path.join(__dirname, '../data/ai_team_mappings.json');
 let aiMappings = {};
 if (fs.existsSync(AI_MAPPINGS_FILE)) {
@@ -17,13 +29,40 @@ if (fs.existsSync(AI_MAPPINGS_FILE)) {
     }
 }
 
-// === THE SMART DICTIONARY (Fallback) ===
-const CLUB_MAPPINGS = require(path.join(__dirname, 'club_mappings.json'));
+// === 3. PRE-PASS: COLLECT ALL CANDIDATE CLUB NAMES FOR CLUSTERING ===
+const discoveredClubs = new Set();
+Object.keys(CLUB_MAPPINGS).forEach(c => discoveredClubs.add(c));
 
+// Add from existing AI mappings
+Object.values(aiMappings).forEach(m => {
+    if (m.clubName && m.clubName !== 'Independent') {
+        discoveredClubs.add(m.clubName);
+    }
+});
+
+// Build the global canonical lookup engine
+const canonicalEngine = buildCanonicalLookup(Array.from(discoveredClubs), CLUB_MAPPINGS);
+
+// Reconcile and clean existing ai_team_mappings.json in-place
+let aiDirty = false;
+for (const [key, mapping] of Object.entries(aiMappings)) {
+    if (mapping.clubName) {
+        const canonical = canonicalEngine.getCanonical(mapping.clubName);
+        if (canonical !== mapping.clubName) {
+            mapping.clubName = canonical;
+            aiDirty = true;
+        }
+    }
+}
+if (aiDirty) {
+    fs.writeFileSync(AI_MAPPINGS_FILE, JSON.stringify(aiMappings, null, 2));
+    console.log("🔄 Synchronized and canonicalized cached AI team mappings.");
+}
+
+// Prepare regex fallback list sorted by length descending
 const sortedAliases = [];
 for (const [officialName, aliases] of Object.entries(CLUB_MAPPINGS)) {
     for (const alias of aliases) {
-        // Use word boundaries for better regex fallback matching
         sortedAliases.push({ 
             alias: alias,
             regex: new RegExp('\\b' + alias.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'i'), 
@@ -31,39 +70,29 @@ for (const [officialName, aliases] of Object.entries(CLUB_MAPPINGS)) {
         });
     }
 }
-// Sort descending by length so longer specific aliases (e.g. "Northwest Cincy SC") match before shorter subsets (e.g. "Cincy SC")
 sortedAliases.sort((a, b) => b.alias.length - a.alias.length);
 
-// Build direct lookup table for exact alias to canonical name resolution
-const clubCanonicalMap = {};
-for (const [officialName, aliases] of Object.entries(CLUB_MAPPINGS)) {
-    clubCanonicalMap[officialName.toLowerCase()] = officialName;
-    for (const alias of aliases) {
-        clubCanonicalMap[alias.toLowerCase()] = officialName;
-    }
+function sanitizeTeamName(rawName) {
+    if (!rawName) return '';
+    let name = rawName.trim().replace(/\s+/g, ' ');
+
+    // Remove trailing state codes like (OH), (KY), (IN)
+    name = name.replace(/\s*\([A-Z]{2}\)\s*$/i, '');
+
+    // Remove repeated club prefix tokens at beginning, e.g. "Impact GFC Impact GFC GU14 Premier" -> "Impact GFC GU14 Premier"
+    name = name.replace(/^(\b[\w\s]{2,25}?\b)\s+\1\b/i, '$1');
+    name = name.replace(/^(\b[\w\s]{2,25}?\b)\s+\1\b/i, '$1');
+
+    return name.trim();
 }
 
-function canonicalizeClubName(name) {
-    if (!name) return "Independent";
-    const trimmed = name.trim();
-    const lower = trimmed.toLowerCase();
-    
-    if (clubCanonicalMap[lower]) {
-        return clubCanonicalMap[lower];
-    }
-    
-    for (const { regex, officialName } of sortedAliases) {
-        if (regex.test(trimmed)) {
-            return officialName;
-        }
-    }
-    return trimmed;
-}
+const { buildClubAliasesMap, getCanonicalTeamName, getNormalizedTeamKey } = require('../data/teamCanonicalizer');
+const clubAliasesMap = buildClubAliasesMap(CLUB_MAPPINGS);
 
 const allTeams = [];
 const seenSignatures = new Set(); // Tracks unique teams
 
-console.log("🧼 Smart Refinery (with AI Deduplication & Dictionary) starting...");
+console.log("🧼 Smart Refinery (with Deterministic Club Normalization & AI Deduplication) starting...");
 
 fs.createReadStream(INPUT_FILE)
     .pipe(csv())
@@ -71,13 +100,17 @@ fs.createReadStream(INPUT_FILE)
         if (!row.TEAM_NAME) return;
 
         let originalName = row.TEAM_NAME.trim();
-        let teamName = originalName;
+        let sanitized = sanitizeTeamName(originalName);
+        let teamName = sanitized;
         let clubName = "Independent";
 
         // 1. AI MATCHING (Primary)
         if (aiMappings[originalName]) {
-            teamName = aiMappings[originalName].cleanName || teamName;
+            teamName = sanitizeTeamName(aiMappings[originalName].cleanName || teamName);
             clubName = aiMappings[originalName].clubName || clubName;
+        } else if (aiMappings[sanitized]) {
+            teamName = sanitizeTeamName(aiMappings[sanitized].cleanName || teamName);
+            clubName = aiMappings[sanitized].clubName || clubName;
         } else {
             // 2. FALLBACK SMART MATCHING
             for (const { regex, officialName } of sortedAliases) {
@@ -97,11 +130,15 @@ fs.createReadStream(INPUT_FILE)
             }
         }
 
-        // Pass clubName through canonical lookup to guarantee single source of truth!
-        clubName = canonicalizeClubName(clubName);
+        // Pass clubName through deterministic canonical lookup
+        clubName = canonicalEngine.getCanonical(clubName);
 
-        // 3. DE-DUPLICATION CHECK (Using Cleaned Name)
-        const signature = `${teamName}|${row.DIVISION}|${row.LEAGUE}`;
+        // 3. CANONICAL TEAM NAME STANDARDIZATION
+        teamName = getCanonicalTeamName(teamName, clubName, clubAliasesMap);
+
+        // 4. DE-DUPLICATION CHECK (Using Canonical Key)
+        const teamKey = getNormalizedTeamKey(teamName, clubName, clubAliasesMap);
+        const signature = `${teamKey}|${row.DIVISION}|${row.LEAGUE}`;
 
         if (seenSignatures.has(signature)) {
             return;
@@ -109,7 +146,7 @@ fs.createReadStream(INPUT_FILE)
 
         seenSignatures.add(signature);
 
-        // 4. Update row
+        // 5. Update row
         row.TEAM_NAME = teamName;
         row.CLUB = clubName;
         allTeams.push(row);

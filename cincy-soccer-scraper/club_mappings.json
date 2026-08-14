@@ -22,16 +22,24 @@
         "CSC"
     ],
     "Cincinnati West Soccer Club": [
+        "Cincinnati West Soccer Club",
+        "Cincinnati West SC",
         "Cincinnati West",
-        "CWSC",
-        "Cincinnati West SC"
+        "CWSC"
     ],
     "Cincinnati United": [
         "Cincinnati United",
+        "Cincinnati United Soccer Club",
+        "CUSC",
+        "CUSC North",
+        "CUSC South",
+        "CUSC West",
         "CUSE",
         "CUSM",
         "CULM",
         "CU North",
+        "CU South",
+        "CU West",
         "CUP",
         "CU Sycamore",
         "CU Lakota",
@@ -55,7 +63,12 @@
     ],
     "Kings Hammer": [
         "Kings Hammer",
+        "Kings Hammer SC",
+        "Kings Hammer Soccer Club",
+        "Kings Hammer Academy",
         "KHA",
+        "KHSC",
+        "KH",
         "KHJR",
         "KH North",
         "KH South",
@@ -64,6 +77,7 @@
     ],
     "Lakota FC": [
         "Lakota FC",
+        "Lakota Futbol Club",
         "Lakota Futbol",
         "LFC",
         "Lakota"
@@ -78,6 +92,7 @@
         "NASC"
     ],
     "Total Futbol Academy": [
+        "Total Futbol Academy",
         "Total Futbol",
         "TFA"
     ],
@@ -87,14 +102,20 @@
     ],
     "Ohio Elite": [
         "Ohio Elite",
+        "Ohio Elite SA",
+        "Ohio Elite Soccer Academy",
         "OESA"
     ],
     "Fairfield Optimist": [
         "Fairfield Optimist",
+        "Fairfield Optimist Soccer Club",
+        "Fairfield Optimist SC",
         "FOSC"
     ],
     "Warren County": [
         "Warren County",
+        "Warren County Soccer Club",
+        "Warren County SC",
         "WCSC"
     ],
     "Cincinnati Elite": [
@@ -112,7 +133,11 @@
         "Total Ginga"
     ],
     "Mercury Soccer": [
-        "Mercury"
+        "Mercury Soccer",
+        "Mercury",
+        "Mercury West",
+        "Mercury Westside",
+        "Mercury Westside FC"
     ],
     "Kolping": [
         "Kolping"
@@ -130,5 +155,36 @@
         "Northwest Cincy SC",
         "NW Cincy SC",
         "Northwest Cincy"
+    ],
+    "On Goal Passion FC": [
+        "On Goal Passion FC",
+        "On Goal",
+        "Passion FC",
+        "On Goal Passion"
+    ],
+    "Oak Hills Youth Athletics": [
+        "Oak Hills Youth Athletics",
+        "Oak Hills Premier",
+        "Oak Hills",
+        "OHYA"
+    ],
+    "Springboro Force SC": [
+        "Springboro Force SC",
+        "Springboro Force",
+        "Force SC"
+    ],
+    "Madeira FC": [
+        "Madeira FC",
+        "Madeira"
+    ],
+    "Monroe Premier FC": [
+        "Monroe Premier FC",
+        "Monroe Premier",
+        "Monroe FC"
+    ],
+    "Eclipse East FC": [
+        "Eclipse East FC",
+        "Eclipse East",
+        "Eclipse East SC"
     ]
 }

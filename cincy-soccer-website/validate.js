@@ -146,7 +146,7 @@ async function validateCleanTeams(validLeagueIds) {
                 }
             }
 
-            if (row.LEAGUE && validLeagueIds.size > 0 && !validLeagueIds.has(row.LEAGUE)) {
+            if (row.LEAGUE && row.LEAGUE !== 'Tournament Play Only' && validLeagueIds.size > 0 && !validLeagueIds.has(row.LEAGUE)) {
                 unknownLeagues++;
                 if (unknownLeagues <= 5) {
                     logWarning(`Line ${lineNum}: League '${row.LEAGUE}' not listed in leagues.js`);

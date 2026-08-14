@@ -3,6 +3,7 @@ const path = require('path');
 const csv = require('csv-parser');
 require('dotenv').config({ path: path.join(__dirname, '.env') });
 const { GoogleGenerativeAI } = require('@google/generative-ai');
+const { buildCanonicalLookup } = require('./clubNormalizer');
 
 const INPUT_CSV = path.join(__dirname, '../data/all_teams.csv');
 const MAPPINGS_FILE = path.join(__dirname, '../data/ai_team_mappings.json');
@@ -38,23 +39,54 @@ async function run() {
     }
 
     // 2. Load club contexts
-    const clubContext = JSON.parse(fs.readFileSync(CLUB_MAPPINGS_FILE, 'utf-8'));
-    const clubsList = Object.keys(clubContext);
+    let clubContext = {};
+    if (fs.existsSync(CLUB_MAPPINGS_FILE)) {
+        try {
+            clubContext = JSON.parse(fs.readFileSync(CLUB_MAPPINGS_FILE, 'utf-8'));
+        } catch (e) {
+            console.warn("Could not parse club_mappings.json");
+        }
+    }
 
-    // 3. Extract unique teams from CSV
-    const uniqueTeams = new Set();
-    await new Promise((resolve) => {
-        fs.createReadStream(INPUT_CSV)
-            .pipe(csv())
-            .on('data', (row) => {
-                if (row.TEAM_NAME) uniqueTeams.add(row.TEAM_NAME.trim());
-            })
-            .on('end', resolve);
+    // 3. Collect all discovered clubs across existing mappings and context
+    const discoveredClubs = new Set(Object.keys(clubContext));
+    Object.values(existingMappings).forEach(m => {
+        if (m.clubName && m.clubName !== 'Independent') {
+            discoveredClubs.add(m.clubName);
+        }
     });
 
-    console.log(`Found ${uniqueTeams.size} unique teams in CSV.`);
+    const canonicalEngine = buildCanonicalLookup(Array.from(discoveredClubs), clubContext);
+    const clubsList = Array.from(new Set(Object.values(canonicalEngine.stemToCanonical))).sort();
 
-    // 4. Determine which teams need mapping
+    // 4. Extract unique teams from CSVs
+    const uniqueTeams = new Set();
+    if (fs.existsSync(INPUT_CSV)) {
+        await new Promise((resolve) => {
+            fs.createReadStream(INPUT_CSV)
+                .pipe(csv())
+                .on('data', (row) => {
+                    if (row.TEAM_NAME) uniqueTeams.add(row.TEAM_NAME.trim());
+                })
+                .on('end', resolve);
+        });
+    }
+
+    const TOURNAMENT_INPUT_CSV = path.join(__dirname, '../data/all_tournament_teams.csv');
+    if (fs.existsSync(TOURNAMENT_INPUT_CSV)) {
+        await new Promise((resolve) => {
+            fs.createReadStream(TOURNAMENT_INPUT_CSV)
+                .pipe(csv())
+                .on('data', (row) => {
+                    if (row.TEAM_NAME) uniqueTeams.add(row.TEAM_NAME.trim());
+                })
+                .on('end', resolve);
+        });
+    }
+
+    console.log(`Found ${uniqueTeams.size} unique teams across leagues and tournaments.`);
+
+    // 5. Determine which teams need mapping
     const teamsToMap = [];
     for (const team of uniqueTeams) {
         if (!existingMappings[team]) {
@@ -69,7 +101,7 @@ async function run() {
 
     console.log(`Processing ${teamsToMap.length} unmapped teams in batches of ${BATCH_SIZE}...`);
 
-    // 5. Process in batches
+    // 6. Process in batches
     for (let i = 0; i < teamsToMap.length; i += BATCH_SIZE) {
         const batch = teamsToMap.slice(i, i + BATCH_SIZE);
         const batchNum = Math.floor(i / BATCH_SIZE) + 1;
@@ -122,9 +154,10 @@ ${JSON.stringify(batch)}
 
                 for (const item of mappedBatch) {
                     if (item.originalName && item.cleanName && item.clubName) {
+                        const canonicalClub = canonicalEngine.getCanonical(item.clubName);
                         existingMappings[item.originalName] = {
                             cleanName: item.cleanName,
-                            clubName: item.clubName
+                            clubName: canonicalClub
                         };
                     }
                 }

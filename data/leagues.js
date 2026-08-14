@@ -16,5 +16,13 @@ module.exports = [
         url: 'https://system.gotsport.com/org_event/events/54982',
         website: 'https://ohio-soccer.org/buckeye/',
         about: `As a nationally recognized US Youth Soccer affiliate, the Buckeye Premier Youth Soccer League (BPYSL) serves as the premier proving ground for elite and developing teams across central and southern Ohio, Indiana, and Kentucky. With over 650 participating youth soccer teams, BPYSL provides exceptional competitive diversity, allowing clubs to test their rosters against top-tier regional talent without extensive travel. Currently underway for the ${CONFIG.currentSeason} youth soccer season, the league remains a gold standard for Ohio families focused on long-term athletic growth and high-level collegiate exposure.`
+    },
+    {
+        id: 'OSSL',
+        name: 'Ohio State Soccer League',
+        season: CONFIG.currentSeason,
+        url: 'https://system.gotsport.com/org_event/events/55610',
+        website: 'https://ohio-soccer.org/state-league/',
+        about: `The Ohio Soccer State League (OSSL) is the premier, statewide youth competitive soccer league managed by the Ohio Soccer Association (OSA). Operating as a highly selective division for teams from the 11U to 19U age groups, it utilizes a promotion and relegation structure to offer elite-level competition. Additionally, the league acts as a critical advancement gateway, giving successful teams a direct pathway to qualify for regional and national US Youth Soccer leagues.`
     }
 ];

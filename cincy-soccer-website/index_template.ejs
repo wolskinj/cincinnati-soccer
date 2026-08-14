@@ -300,8 +300,8 @@
 
         <section class="ai-summary-box" style="max-width: 750px; margin: 35px auto 0; padding: 18px 24px; background: rgba(255,255,255,0.08); border-radius: 12px; border-left: 4px solid var(--accent); text-align: left;">
             <h2 style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; color: #94a3b8; margin: 0 0 6px 0; font-weight: 700;">Directory Overview &amp; Quick Facts</h2>
-            <p style="font-size: 0.95rem; color: #e2e8f0; margin: 0; line-height: 1.5;">
-                <strong>cincinnati.soccer</strong> is the centralized schedule directory tracking <strong>1,380+ active youth soccer teams</strong> and <strong>270+ age divisions</strong> across Greater Cincinnati and Southwestern Ohio for the <%= currentSeason %> season. Aggregating schedules across Cardinal Premier (CPL), Buckeye Premier (BPYSL), Ohio Soccer State League (OSSL), and Club v Club (CvC).
+            <p style="font-size: 0.95rem; color: #e2e8f0; margin: 0; line-height: 1.6;">
+                <strong>cincinnati.soccer</strong> is the centralized youth soccer directory tracking <strong><%= teams.length %>+ active youth soccer teams</strong>, <strong><%= clubsGroups.length %>+ local clubs</strong>, and <strong>270+ age divisions</strong> across Greater Cincinnati and Southwestern Ohio for the <%= currentSeason %> season. Aggregating league schedules across Cardinal Premier (CPL), Buckeye Premier (BPYSL), and Ohio Soccer State League (OSSL), alongside upcoming regional tournaments and tournament schedules.
             </p>
         </section>
     </header>
@@ -311,16 +311,20 @@
         <div class="hub-container">
             <div class="hub-grid">
                 <a href="clubs.html" class="hub-card">
-                    <img src="https://images.unsplash.com/photo-1579952363873-27f3bade9f55?q=80&w=800&auto=format&fit=crop" alt="Soccer Ball" loading="lazy">
+                    <img src="assets/hub-clubs.jpg" alt="Soccer Ball and Stadium" width="800" height="600" loading="lazy">
                     <h2>Browse by Club</h2>
                 </a>
                 <a href="ages.html" class="hub-card">
-                    <img src="https://images.unsplash.com/photo-1526232761682-d26e03ac148e?q=80&w=800&auto=format&fit=crop" alt="Kids playing soccer" loading="lazy">
+                    <img src="assets/hub-ages.jpg" alt="Youth soccer players in action" width="800" height="600" loading="lazy">
                     <h2>Browse by Age</h2>
                 </a>
                 <a href="leagues.html" class="hub-card">
-                    <img src="https://images.unsplash.com/photo-1604651684573-05470013b3b9?q=80&w=800&auto=format&fit=crop" alt="Youth soccer players" loading="lazy">
+                    <img src="assets/hub-leagues.jpg" alt="Competitive youth soccer match" width="800" height="600" loading="lazy">
                     <h2>Browse by League</h2>
+                </a>
+                <a href="tournaments.html" class="hub-card">
+                    <img src="assets/hub-tournaments.jpg" alt="Championship Soccer Trophy and Medals" width="800" height="600" loading="lazy">
+                    <h2>Tournaments</h2>
                 </a>
             </div>
         </div>

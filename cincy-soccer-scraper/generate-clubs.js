@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '.env') });
 const { GoogleGenerativeAI } = require('@google/generative-ai');
+const { buildCanonicalLookup } = require('./clubNormalizer');
 
 const CLUB_MAPPINGS_FILE = path.join(__dirname, 'club_mappings.json');
 const CLEAN_TEAMS_FILE = path.join(__dirname, '../data/clean_teams.csv');
@@ -18,6 +19,40 @@ async function run() {
         process.exit(1);
     }
 
+    let clubContext = {};
+    if (fs.existsSync(CLUB_MAPPINGS_FILE)) {
+        try {
+            clubContext = JSON.parse(fs.readFileSync(CLUB_MAPPINGS_FILE, 'utf-8'));
+        } catch (e) {
+            console.warn("Could not parse club_mappings.json");
+        }
+    }
+
+    const rawClubs = new Set();
+    Object.keys(clubContext).forEach(c => rawClubs.add(c));
+
+    if (fs.existsSync(CLEAN_TEAMS_FILE)) {
+        const lines = fs.readFileSync(CLEAN_TEAMS_FILE, 'utf-8').split('\n');
+        lines.slice(1).forEach(line => {
+            const parts = line.split(',');
+            if (parts[4]) {
+                const club = parts[4].trim();
+                if (club && club !== 'Independent') {
+                    rawClubs.add(club);
+                }
+            }
+        });
+    }
+
+    const canonicalEngine = buildCanonicalLookup(Array.from(rawClubs), clubContext);
+    const clubsSet = new Set();
+    rawClubs.forEach(c => {
+        const canonical = canonicalEngine.getCanonical(c);
+        if (canonical && canonical !== 'Independent') {
+            clubsSet.add(canonical);
+        }
+    });
+
     // Load existing clubs.json to preserve user-confirmed overrides
     const existingClubsMap = {};
     if (fs.existsSync(OUTPUT_JSON)) {
@@ -25,7 +60,11 @@ async function run() {
             const existingArr = JSON.parse(fs.readFileSync(OUTPUT_JSON, 'utf-8'));
             existingArr.forEach(c => {
                 if (c && c.name) {
-                    existingClubsMap[c.name.toLowerCase()] = c;
+                    const canonicalName = canonicalEngine.getCanonical(c.name);
+                    existingClubsMap[canonicalName.toLowerCase()] = {
+                        ...c,
+                        name: canonicalName
+                    };
                 }
             });
         } catch (e) {
@@ -36,28 +75,8 @@ async function run() {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
 
-    const clubsSet = new Set();
-
-    if (fs.existsSync(CLUB_MAPPINGS_FILE)) {
-        const clubContext = JSON.parse(fs.readFileSync(CLUB_MAPPINGS_FILE, 'utf-8'));
-        Object.keys(clubContext).forEach(c => clubsSet.add(c));
-    }
-
-    if (fs.existsSync(CLEAN_TEAMS_FILE)) {
-        const lines = fs.readFileSync(CLEAN_TEAMS_FILE, 'utf-8').split('\n');
-        lines.slice(1).forEach(line => {
-            const parts = line.split(',');
-            if (parts[4]) {
-                const club = parts[4].trim();
-                if (club && club !== 'Independent') {
-                    clubsSet.add(club);
-                }
-            }
-        });
-    }
-
     const clubsList = Array.from(clubsSet).sort();
-    console.log(`Found ${clubsList.length} unique clubs across CSV & mapping definitions.`);
+    console.log(`Found ${clubsList.length} unique canonical clubs across CSV & mapping definitions.`);
 
     const BATCH_SIZE = 50;
     const allDescriptions = [];
@@ -105,7 +124,9 @@ ${JSON.stringify(batchClubs)}
 
                 // Merge with existing user overrides
                 batchResults.forEach(item => {
-                    const lowerName = item.name.toLowerCase();
+                    const canonicalName = canonicalEngine.getCanonical(item.name);
+                    item.name = canonicalName;
+                    const lowerName = canonicalName.toLowerCase();
                     const existing = existingClubsMap[lowerName];
                     
                     // If user previously confirmed/overrode a website, preserve user choice!
@@ -141,8 +162,20 @@ ${JSON.stringify(batchClubs)}
         }
     });
 
-    fs.writeFileSync(OUTPUT_JSON, JSON.stringify(allDescriptions, null, 4));
-    console.log(`✅ Successfully generated descriptions & website candidates for ${allDescriptions.length} clubs!`);
+    // Deduplicate allDescriptions by canonical name
+    const finalDescriptionsMap = new Map();
+    allDescriptions.forEach(item => {
+        const canonical = canonicalEngine.getCanonical(item.name);
+        const lower = canonical.toLowerCase();
+        if (!finalDescriptionsMap.has(lower) || (item.confirmed && !finalDescriptionsMap.get(lower).confirmed)) {
+            finalDescriptionsMap.set(lower, { ...item, name: canonical });
+        }
+    });
+
+    const finalDescriptions = Array.from(finalDescriptionsMap.values()).sort((a, b) => a.name.localeCompare(b.name));
+
+    fs.writeFileSync(OUTPUT_JSON, JSON.stringify(finalDescriptions, null, 4));
+    console.log(`✅ Successfully generated descriptions & website candidates for ${finalDescriptions.length} clubs!`);
     console.log(`Saved to data/clubs.json`);
 }
 

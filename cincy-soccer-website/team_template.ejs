@@ -367,9 +367,14 @@
             <div class="tags-row">
                 <% if (teamRows.length > 0 && teamRows[0].DIVISION) { 
                     const divInfo = normalizeDivision(teamRows[0].DIVISION);
-                    const ageUrl = `${divInfo.gender.toLowerCase()}-${divInfo.age.toLowerCase().replace(/[^a-z0-9]/g, '-')}.html`;
+                    const ageSlug = (divInfo.age || '').toLowerCase().replace(/[^a-z0-9]/g, '-');
+                    const ageUrl = divInfo.gender && ageSlug ? `${divInfo.gender.toLowerCase()}-${ageSlug}.html` : null;
                 %>
-                    <a href="<%- ageUrl %>" class="tag division-tag"><span aria-hidden="true">📅</span> <%- divInfo.label %></a>
+                    <% if (ageUrl) { %>
+                        <a href="<%- ageUrl %>" class="tag division-tag"><span aria-hidden="true">📅</span> <%- divInfo.label %></a>
+                    <% } else { %>
+                        <span class="tag division-tag"><span aria-hidden="true">📅</span> <%- divInfo.label %></span>
+                    <% } %>
                 <% } %>
                 
                 <% if (teamRows.length > 0 && teamRows[0].CLUB && teamRows[0].CLUB !== 'Independent') { %>
@@ -378,7 +383,7 @@
                     <span class="tag"><span aria-hidden="true">⚽</span> <%- teamRows[0].CLUB %></span>
                 <% } %>
                 
-                <% if (teamRows.length > 0 && teamRows[0].LEAGUE) { 
+                <% if (teamRows.length > 0 && teamRows[0].LEAGUE && teamRows[0].LEAGUE !== 'Tournament Play Only') { 
                     const leagueUrl = `league-${makeFilename(teamRows[0].LEAGUE)}`;
                 %>
                     <a href="<%- leagueUrl %>" class="tag league-tag"><span aria-hidden="true">🏆</span> <%- teamRows[0].LEAGUE %></a>
@@ -397,23 +402,29 @@
                     <li><a href="club-<%- makeFilename(teamRows[0].CLUB) %>"><%- teamRows[0].CLUB %></a></li>
                     <% } else if (teamRows.length > 0 && teamRows[0].DIVISION) { 
                         const divInfo = normalizeDivision(teamRows[0].DIVISION);
-                        const ageUrl = `${divInfo.gender.toLowerCase()}-${divInfo.age.toLowerCase().replace(/[^a-z0-9]/g, '-')}.html`;
+                        const ageSlug = (divInfo.age || '').toLowerCase().replace(/[^a-z0-9]/g, '-');
+                        const ageUrl = divInfo.gender && ageSlug ? `${divInfo.gender.toLowerCase()}-${ageSlug}.html` : null;
                     %>
-                    <li><a href="<%- ageUrl %>"><%- teamRows[0].DIVISION %></a></li>
+                        <% if (ageUrl) { %>
+                            <li><a href="<%- ageUrl %>"><%- teamRows[0].DIVISION %></a></li>
+                        <% } %>
                     <% } %>
                     <li aria-current="page"><%- teamName %></li>
                 </ol>
             </nav>
 
             <p class="intro-text">
-                <strong><%- teamName %></strong> is a competitive youth soccer team based in Cincinnati, OH<% if (teamRows.length > 0 && teamRows[0].CLUB && teamRows[0].CLUB !== 'Independent') { %>, affiliated with <%- teamRows[0].CLUB %><% } %>. For the current season, they are competing <% if (teamRows.length > 0 && teamRows[0].DIVISION) { %>in the <%- teamRows[0].DIVISION %> bracket<% } %><% if (teamRows.length > 0 && teamRows[0].LEAGUE) { %> within the <%- teamRows[0].LEAGUE %><% } %>.
+                <strong><%- teamName %></strong> is a competitive youth soccer team based in Cincinnati, OH<% if (teamRows.length > 0 && teamRows[0].CLUB && teamRows[0].CLUB !== 'Independent') { %>, affiliated with <%- teamRows[0].CLUB %><% } %>. For the <%= currentSeason %> season, they are competing <% if (teamRows.length > 0 && teamRows[0].DIVISION) { %>in the <%- teamRows[0].DIVISION %> bracket<% } %><% if (teamRows.length > 0 && teamRows[0].LEAGUE && teamRows[0].LEAGUE !== 'Tournament Play Only') { %> within the <%- teamRows[0].LEAGUE %><% } %><% if (typeof tournaments !== 'undefined' && tournaments && tournaments.length > 0) { %> and participating in <%= tournaments.length %> regional youth tournament<%= tournaments.length > 1 ? 's' : '' %><% } %>.
             </p>
 
+            <% const validLeagueRows = teamRows.filter(r => r.LEAGUE && r.LEAGUE !== 'Tournament Play Only'); %>
+            <% if (validLeagueRows.length > 0) { %>
             <h2 class="section-title">League Participation</h2>
             <div class="league-participation">
-                <% teamRows.forEach(function(row) { 
+                <% validLeagueRows.forEach(function(row) { 
                     const divInfo = normalizeDivision(row.DIVISION);
-                    const ageUrl = `${divInfo.gender.toLowerCase()}-${divInfo.age.toLowerCase().replace(/[^a-z0-9]/g, '-')}.html`;
+                    const ageSlug = (divInfo.age || '').toLowerCase().replace(/[^a-z0-9]/g, '-');
+                    const ageUrl = divInfo.gender && ageSlug ? `${divInfo.gender.toLowerCase()}-${ageSlug}.html` : null;
                     const leagueUrl = `league-${makeFilename(row.LEAGUE)}`;
                     
                     const leagueConfig = leaguesConfig.find(l => l.id === row.LEAGUE);
@@ -424,14 +435,44 @@
                         <span aria-hidden="true">🏆</span> <a href="<%- leagueUrl %>"><%- fullLeagueName %></a>
                     </div>
                     <div class="participation-division">
-                        <span aria-hidden="true">📅</span> <a href="<%- ageUrl %>"><%- row.DIVISION %></a>
+                        <span aria-hidden="true">📅</span> 
+                        <% if (ageUrl) { %>
+                            <a href="<%- ageUrl %>"><%- row.DIVISION %></a>
+                        <% } else { %>
+                            <span><%- row.DIVISION %></span>
+                        <% } %>
                     </div>
                     <div style="margin-top: 25px;">
-                        <a href="<%- row.SCHEDULE_LINK %>" class="btn" target="_blank">View Schedule & Standings ➜</a>
+                        <a href="<%- row.SCHEDULE_LINK %>" class="btn" target="_blank" rel="noopener">View Schedule &amp; Standings ➜</a>
                     </div>
                 </div>
                 <% }); %>
             </div>
+            <% } %>
+
+            <% if (typeof tournaments !== 'undefined' && tournaments && tournaments.length > 0) { %>
+            <h2 class="section-title" style="margin-top: <% if (validLeagueRows.length > 0) { %>50px<% } else { %>10px<% } %>;">Tournament Participation</h2>
+            <div class="league-participation">
+                <% tournaments.forEach(function(t) { 
+                    const tournamentUrl = `tournament-${t.id}.html`;
+                %>
+                <div class="participation-card">
+                    <div class="participation-league">
+                        <span aria-hidden="true">⚽</span> <a href="<%- tournamentUrl %>"><%- t.name %></a>
+                    </div>
+                    <div class="participation-division" style="margin-bottom: 20px;">
+                        <span aria-hidden="true">📅</span> <%- t.division %><% if (t.dates) { %> • <span><%- t.dates %></span><% } %>
+                    </div>
+                    <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 20px;">
+                        <% if (t.scheduleLink) { %>
+                            <a href="<%- t.scheduleLink %>" class="btn" target="_blank" rel="noopener" style="flex: 1; min-width: 220px;">View Tournament Schedule ➜</a>
+                        <% } %>
+                        <a href="<%- tournamentUrl %>" class="btn" style="flex: 1; min-width: 220px; background: var(--primary);">Tournament Details ➜</a>
+                    </div>
+                </div>
+                <% }); %>
+            </div>
+            <% } %>
 
         </main>
 

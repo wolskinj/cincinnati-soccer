@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include('partials/head') %>
+
+    <style>
+        :root {
+            --primary: #002147;
+            --primary-dark: #001F3F;
+            --accent: #E31837;
+            --white: #FFFFFF;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #002147;
+            --text-light: #475569;
+            --border: #e2e8f0;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            scroll-behavior: smooth;
+        }
+
+        /* COMPACT HERO & SEARCH SECTION */
+        .compact-hero {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+            padding: 20px 20px 40px;
+            border-bottom: 4px solid var(--accent);
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        .compact-hero-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1000px;
+            margin: 0 auto 30px;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .compact-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--white);
+            font-weight: 800;
+            font-size: 1.2rem;
+            letter-spacing: -0.5px;
+        }
+
+        .compact-logo img {
+            height: 40px;
+            width: auto;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+        }
+
+        .compact-search-container {
+            position: relative;
+            flex-grow: 1;
+            max-width: 500px;
+            z-index: 50;
+        }
+
+        .compact-search-input {
+            width: 100%;
+            padding: 12px 20px;
+            border-radius: 50px;
+            border: none;
+            font-size: 1rem;
+            font-family: inherit;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--white);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.2s;
+        }
+
+        .compact-search-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .compact-search-input:focus {
+            outline: none;
+            background: var(--white);
+            color: var(--text-main);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 0 0 3px rgba(227, 24, 55, 0.3);
+        }
+
+        .compact-hero-bottom {
+            max-width: 1000px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .compact-hero-bottom h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin: 0;
+            letter-spacing: -0.5px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            color: var(--white);
+        }
+
+        .compact-hero-bottom p {
+            font-size: 1.05rem;
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.85);
+            max-width: 800px;
+            margin: 15px auto 0;
+        }
+
+        /* SEARCH RESULTS BOX */
+        .search-results {
+            position: absolute;
+            top: calc(100% + 10px);
+            left: 0;
+            right: 0;
+            background: var(--white);
+            border-radius: 16px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+            max-height: 400px;
+            overflow-y: auto;
+            display: none;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+
+        .search-results.active {
+            display: block;
+        }
+
+        .search-item {
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            text-decoration: none;
+            color: var(--text-main);
+            border-bottom: 1px solid var(--border);
+            transition: background 0.2s;
+        }
+
+        .search-item:last-child {
+            border-bottom: none;
+        }
+
+        .search-item:hover {
+            background: #f1f5f9;
+        }
+
+        .search-item-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .search-item-meta {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            background: var(--bg);
+            padding: 4px 10px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+        }
+
+        /* MAIN CONTAINER */
+        .container {
+            max-width: 900px;
+            margin: 0 auto 60px;
+            padding: 0 20px;
+        }
+
+        .breadcrumb {
+            margin-bottom: 25px;
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        .breadcrumb ol {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .breadcrumb li {
+            display: flex;
+            align-items: center;
+        }
+
+        .breadcrumb li:not(:last-child)::after {
+            content: "›";
+            margin: 0 8px;
+            color: #94a3b8;
+        }
+
+        .breadcrumb a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        /* FILTER BAR */
+        .filter-bar {
+            margin-bottom: 30px;
+        }
+
+        .filter-input {
+            width: 100%;
+            padding: 14px 20px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            background: var(--white);
+            color: var(--text-main);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .filter-input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        /* TOURNAMENT CARDS */
+        .tournaments-list {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .tournament-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 30px 35px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border);
+            border-top: 6px solid var(--primary);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            position: relative;
+        }
+
+        .tournament-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .tournament-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+
+        .tournament-title {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin: 0;
+            letter-spacing: -0.5px;
+        }
+
+        .tournament-title a {
+            color: inherit;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .tournament-title a:hover {
+            color: var(--accent);
+        }
+
+        .platform-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-light);
+        }
+
+        .tournament-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            color: var(--text-light);
+            font-size: 0.95rem;
+            margin-bottom: 16px;
+            font-weight: 500;
+        }
+
+        .tournament-meta span {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .tournament-desc {
+            color: var(--text-light);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin: 0 0 25px 0;
+        }
+
+        .tournament-actions {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            display: inline-block;
+            padding: 12px 24px;
+            background: var(--accent);
+            color: var(--white);
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            transition: background 0.2s;
+            text-align: center;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary);
+        }
+
+        .btn-secondary {
+            display: inline-block;
+            padding: 12px 24px;
+            background: var(--white);
+            color: var(--primary);
+            text-decoration: none;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            font-size: 0.95rem;
+            font-weight: 700;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 80px;
+            padding: 60px 20px;
+            background: var(--primary);
+            color: #cbd5e1;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="compact-hero">
+        <div class="compact-hero-top">
+            <a href="index.html" class="compact-logo">
+                <img src="assets/logo.webp" alt="Cincinnati Soccer Logo" width="40" height="40" fetchpriority="high">
+                <span>cincinnati.soccer</span>
+            </a>
+            <div class="compact-search-container">
+                <input type="search" id="global-search" class="compact-search-input" placeholder="Search for a team, club, or division..." autocomplete="off">
+                <div id="search-results" class="search-results"></div>
+            </div>
+        </div>
+        <div class="compact-hero-bottom">
+            <h1>Cincinnati Youth Soccer Tournaments</h1>
+            <p>
+                Browse competitive youth soccer tournaments across Greater Cincinnati. Explore division flights, participating local teams, and links to official match schedules.
+            </p>
+        </div>
+    </header>
+
+    <div class="container">
+        <main>
+            <nav aria-label="breadcrumb" class="breadcrumb">
+                <ol>
+                    <li><a href="index.html">Home</a></li>
+                    <li aria-current="page">Tournaments</li>
+                </ol>
+            </nav>
+
+            <div class="filter-bar">
+                <input type="text" id="tournament-filter" class="filter-input"
+                    aria-label="Search tournaments by name, host club, or date"
+                    placeholder="Search tournaments by name, host club, or location..." onkeyup="filterTournaments()">
+            </div>
+
+            <div class="tournaments-list" id="tournament-list">
+                <% tournamentsData.forEach(function(t) { 
+                    const tournamentUrl = `tournament-${t.id}.html`;
+                    const venueNames = t.venues ? t.venues.map(v => v.name).join(', ') : 'Cincinnati, OH';
+                %>
+                <div class="tournament-card" data-search="<%- t.name.toLowerCase() %> <%- (t.hostClub || '').toLowerCase() %> <%- venueNames.toLowerCase() %>">
+                    <div class="tournament-header-row">
+                        <h2 class="tournament-title">
+                            <a href="<%- tournamentUrl %>"><%- t.name %></a>
+                        </h2>
+                        <% if (t.platform) { %>
+                            <span class="platform-badge"><%- t.platform %></span>
+                        <% } %>
+                    </div>
+
+                    <div class="tournament-meta">
+                        <span>📅 <strong><%- t.dates %></strong></span>
+                        <% if (t.hostClub) { %>
+                            <span>⚽ Host: <strong><%- t.hostClub %></strong></span>
+                        <% } %>
+                        <span>📍 <%- venueNames %></span>
+                        <% if (t.teamCount) { %>
+                            <span>👥 <strong><%- t.teamCount %> Teams Registered</strong></span>
+                        <% } %>
+                    </div>
+
+                    <p class="tournament-desc"><%- t.about %></p>
+
+                    <div class="tournament-actions">
+                        <% if (t.url) { %>
+                            <a href="<%- t.url %>" class="btn-primary" target="_blank" rel="noopener">Official Schedule &amp; Brackets ➜</a>
+                        <% } %>
+                        <a href="<%- tournamentUrl %>" class="btn-secondary">View Participating Teams ➜</a>
+                        <% if (t.website && t.website !== t.url) { %>
+                            <a href="<%- t.website %>" class="btn-secondary" target="_blank" rel="noopener">Tournament Website ➜</a>
+                        <% } %>
+                    </div>
+                </div>
+                <% }); %>
+            </div>
+        </main>
+    </div>
+
+    <footer>
+        <p>Updated for the <%= currentSeason %> season. Not affiliated with CPL, BPYSL, or individual tournament organizers.<br>
+            Built by parents and players for parents and players. <strong>Last verified: <%- lastUpdated %></strong></p>
+        <p style="margin-top: 15px; font-size: 0.8rem;"><a href="/privacy-policy.html"
+                style="color: inherit; text-decoration: underline;">Privacy Policy</a> | <a href="/cookie-policy.html"
+                style="color: inherit; text-decoration: underline;">Cookie Policy</a></p>
+    </footer>
+
+    <script>
+        function filterTournaments() {
+            const input = document.getElementById('tournament-filter');
+            const filter = input.value.toLowerCase().trim();
+            const cards = document.querySelectorAll('.tournament-card');
+
+            cards.forEach(card => {
+                const searchData = card.getAttribute('data-search') || '';
+                if (searchData.includes(filter)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // Search Autocomplete
+        document.addEventListener('DOMContentLoaded', () => {
+            const searchInput = document.getElementById('global-search');
+            const searchResults = document.getElementById('search-results');
+            let searchIndex = null;
+
+            fetch('/search-index.json')
+                .then(r => r.json())
+                .then(data => searchIndex = data)
+                .catch(err => console.error("Search index failed:", err));
+
+            if (searchInput) {
+                searchInput.addEventListener('input', (e) => {
+                    const q = e.target.value.toLowerCase().trim();
+                    if (!q || q.length < 2 || !searchIndex) {
+                        searchResults.classList.remove('active');
+                        return;
+                    }
+
+                    const matches = searchIndex.filter(item => {
+                        return item.name.toLowerCase().includes(q) || 
+                               (item.club && item.club.toLowerCase().includes(q));
+                    }).slice(0, 10);
+
+                    if (matches.length > 0) {
+                        searchResults.innerHTML = matches.map(item => `
+                            <a href="${item.url}" class="search-item">
+                                <span class="search-item-title">${item.name}</span>
+                                <span class="search-item-meta">${item.type.toUpperCase()}</span>
+                            </a>
+                        `).join('');
+                        searchResults.classList.add('active');
+                    } else {
+                        searchResults.innerHTML = `<div class="search-item"><span class="search-item-title" style="color: #64748b; font-weight: normal;">No results found for "${q}"</span></div>`;
+                        searchResults.classList.add('active');
+                    }
+                });
+
+                document.addEventListener('click', (e) => {
+                    if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+                        searchResults.classList.remove('active');
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

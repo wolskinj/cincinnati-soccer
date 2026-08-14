@@ -79,7 +79,8 @@ function validateSitemap() {
         'https://cincinnati.soccer/',
         'https://cincinnati.soccer/clubs.html',
         'https://cincinnati.soccer/ages.html',
-        'https://cincinnati.soccer/leagues.html'
+        'https://cincinnati.soccer/leagues.html',
+        'https://cincinnati.soccer/tournaments.html'
     ];
 
     mandatoryPages.forEach(page => {

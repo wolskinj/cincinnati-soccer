@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include('partials/head') %>
+
+    <style>
+        :root {
+            --primary: #002147;
+            --primary-dark: #001F3F;
+            --accent: #E31837;
+            --white: #FFFFFF;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #002147;
+            --text-light: #475569;
+            --border: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            scroll-behavior: smooth;
+        }
+
+        /* COMPACT HERO & SEARCH SECTION */
+        .compact-hero {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+            padding: 20px 20px 40px;
+            border-bottom: 4px solid var(--accent);
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        .compact-hero-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1000px;
+            margin: 0 auto 30px;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .compact-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--white);
+            font-weight: 800;
+            font-size: 1.2rem;
+            letter-spacing: -0.5px;
+        }
+
+        .compact-logo img {
+            height: 40px;
+            width: auto;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+        }
+
+        .compact-search-container {
+            position: relative;
+            flex-grow: 1;
+            max-width: 500px;
+            z-index: 50;
+        }
+
+        .compact-search-input {
+            width: 100%;
+            padding: 12px 20px;
+            border-radius: 50px;
+            border: none;
+            font-size: 1rem;
+            font-family: inherit;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--white);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.2s;
+        }
+
+        .compact-search-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .compact-search-input:focus {
+            outline: none;
+            background: var(--white);
+            color: var(--text-main);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 0 0 3px rgba(227, 24, 55, 0.3);
+        }
+
+        .compact-hero-bottom {
+            max-width: 1000px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .compact-hero-bottom h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin: 0;
+            letter-spacing: -0.5px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            color: var(--white);
+        }
+
+        .hero-meta {
+            font-size: 1.05rem;
+            color: rgba(255, 255, 255, 0.85);
+            margin: 12px auto 20px;
+            max-width: 800px;
+            font-weight: 500;
+        }
+
+        .hero-actions {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .hero-btn-primary {
+            display: inline-block;
+            padding: 12px 24px;
+            background: var(--accent);
+            color: var(--white);
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 800;
+            transition: background 0.2s, transform 0.2s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .hero-btn-primary:hover {
+            background: #b91c1c;
+            transform: translateY(-2px);
+        }
+
+        .hero-btn-secondary {
+            display: inline-block;
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.15);
+            color: var(--white);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            transition: background 0.2s;
+        }
+
+        .hero-btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        /* SEARCH RESULTS BOX */
+        .search-results {
+            position: absolute;
+            top: calc(100% + 10px);
+            left: 0;
+            right: 0;
+            background: var(--white);
+            border-radius: 16px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+            max-height: 400px;
+            overflow-y: auto;
+            display: none;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+
+        .search-results.active {
+            display: block;
+        }
+
+        .search-item {
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            text-decoration: none;
+            color: var(--text-main);
+            border-bottom: 1px solid var(--border);
+            transition: background 0.2s;
+        }
+
+        .search-item:last-child {
+            border-bottom: none;
+        }
+
+        .search-item:hover {
+            background: #f1f5f9;
+        }
+
+        .search-item-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .search-item-meta {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            background: var(--bg);
+            padding: 4px 10px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+        }
+
+        /* MAIN CONTAINER */
+        .container {
+            max-width: 900px;
+            margin: 0 auto 60px;
+            padding: 0 20px;
+        }
+
+        .breadcrumb {
+            margin-bottom: 25px;
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        .breadcrumb ol {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .breadcrumb li {
+            display: flex;
+            align-items: center;
+        }
+
+        .breadcrumb li:not(:last-child)::after {
+            content: "›";
+            margin: 0 8px;
+            color: #94a3b8;
+        }
+
+        .breadcrumb a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .intro-text {
+            color: var(--text-light);
+            font-size: 1.05rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        /* FILTER BAR */
+        .filter-bar {
+            margin-bottom: 30px;
+        }
+
+        .filter-input {
+            width: 100%;
+            padding: 14px 20px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            background: var(--white);
+            color: var(--text-main);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .filter-input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        /* DIVISION PARTICIPATION CARDS */
+        .divisions-container {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .division-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 30px;
+            border: 1px solid var(--border);
+            border-top: 6px solid var(--primary);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .division-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+        }
+
+        .division-title {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin: 0;
+        }
+
+        .team-count-badge {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            font-weight: 700;
+            background: var(--bg);
+            padding: 4px 10px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 12px;
+        }
+
+        .team-row {
+            padding: 10px 14px;
+            background: var(--bg);
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .team-link {
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .team-link:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+
+        .team-plain {
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .team-club-sub {
+            font-size: 0.82rem;
+            color: var(--text-light);
+        }
+
+        .team-club-sub a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .team-club-sub a:hover {
+            text-decoration: underline;
+        }
+
+        /* EMPTY STATE CARD */
+        .empty-state-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 40px;
+            text-align: center;
+            border: 1px solid var(--border);
+            border-top: 6px solid var(--accent);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .empty-state-card h3 {
+            font-size: 1.3rem;
+            color: var(--primary);
+            margin: 0 0 10px 0;
+            font-weight: 800;
+        }
+
+        .empty-state-card p {
+            color: var(--text-light);
+            font-size: 1rem;
+            line-height: 1.6;
+            max-width: 600px;
+            margin: 0 auto 20px;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 80px;
+            padding: 60px 20px;
+            background: var(--primary);
+            color: #cbd5e1;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="compact-hero">
+        <div class="compact-hero-top">
+            <a href="index.html" class="compact-logo">
+                <img src="assets/logo.webp" alt="Cincinnati Soccer Logo" width="40" height="40" fetchpriority="high">
+                <span>cincinnati.soccer</span>
+            </a>
+            <div class="compact-search-container">
+                <input type="search" id="global-search" class="compact-search-input" placeholder="Search for a team, club, or division..." autocomplete="off">
+                <div id="search-results" class="search-results"></div>
+            </div>
+        </div>
+        <div class="compact-hero-bottom">
+            <h1><%- tournament.name %></h1>
+            <div class="hero-meta">
+                <span>📅 <%- tournament.dates %></span> • 
+                <% if (tournament.hostClub) { %>
+                    <span>⚽ <%- tournament.hostClub %></span> • 
+                <% } %>
+                <span>📍 <%- (tournament.venues || []).map(v => v.name).join(', ') %></span>
+            </div>
+
+            <div class="hero-actions">
+                <% if (tournament.url) { %>
+                    <a href="<%- tournament.url %>" class="hero-btn-primary" target="_blank" rel="noopener">Official Schedule &amp; Brackets ➜</a>
+                <% } %>
+                <% if (tournament.website) { %>
+                    <a href="<%- tournament.website %>" class="hero-btn-secondary" target="_blank" rel="noopener">Visit Tournament Website ➜</a>
+                <% } %>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <main>
+            <nav aria-label="breadcrumb" class="breadcrumb">
+                <ol>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="tournaments.html">Tournaments</a></li>
+                    <li aria-current="page"><%- tournament.name %></li>
+                </ol>
+            </nav>
+
+            <p class="intro-text">
+                <%- tournament.about %>
+            </p>
+
+            <% if (divisionsList && divisionsList.length > 0) { %>
+                <div class="filter-bar">
+                    <input type="text" id="team-filter" class="filter-input"
+                        aria-label="Search participating teams or divisions"
+                        placeholder="Search participating teams or division flights..." onkeyup="filterTeams()">
+                </div>
+
+                <div class="divisions-container" id="divisions-list">
+                    <% divisionsList.forEach(function(div) { %>
+                    <div class="division-card" data-search="<%- div.name.toLowerCase() %> <%- div.teams.map(t => t.TEAM_NAME + ' ' + (t.CLUB || '')).join(' ').toLowerCase() %>">
+                        <div class="division-header-row">
+                            <h2 class="division-title"><%- div.name %></h2>
+                            <span class="team-count-badge"><%- div.teams.length %> Teams</span>
+                        </div>
+
+                        <div class="team-grid">
+                            <% div.teams.forEach(function(t) { 
+                                const isLocal = t.IS_LOCAL_CLUB === 'true' || t.IS_LOCAL_CLUB === true;
+                                const teamUrl = `team-${makeFilename(t.TEAM_NAME)}`;
+                                const clubUrl = t.CLUB && t.CLUB !== 'Independent' ? `club-${makeFilename(t.CLUB)}` : null;
+                            %>
+                            <div class="team-row">
+                                <% if (isLocal) { %>
+                                    <a href="<%- teamUrl %>" class="team-link"><%- t.TEAM_NAME %></a>
+                                <% } else { %>
+                                    <span class="team-plain"><%- t.TEAM_NAME %></span>
+                                <% } %>
+
+                                <% if (t.CLUB && t.CLUB !== 'Independent') { %>
+                                    <span class="team-club-sub">
+                                        <% if (isLocal && clubUrl) { %>
+                                            <a href="<%- clubUrl %>"><%- t.CLUB %></a>
+                                        <% } else { %>
+                                            <%- t.CLUB %>
+                                        <% } %>
+                                    </span>
+                                <% } %>
+                            </div>
+                            <% }); %>
+                        </div>
+                    </div>
+                    <% }); %>
+                </div>
+            <% } else { %>
+                <div class="empty-state-card">
+                    <h3>Division Brackets &amp; Team Rosters Pending</h3>
+                    <p>
+                        Participating teams and flight assignments for <strong><%- tournament.name %></strong> have not yet been published by tournament organizers. Check back closer to the tournament date, or visit the official tournament website for registration and entry details.
+                    </p>
+                    <% if (tournament.website) { %>
+                        <a href="<%- tournament.website %>" class="hero-btn-primary" target="_blank" rel="noopener">Visit Official Tournament Site ➜</a>
+                    <% } %>
+                </div>
+            <% } %>
+        </main>
+    </div>
+
+    <footer>
+        <p>Updated for the <%= currentSeason %> season. Not affiliated with CPL, BPYSL, or individual tournament organizers.<br>
+            Built by parents and players for parents and players. <strong>Last verified: <%- lastUpdated %></strong></p>
+        <p style="margin-top: 15px; font-size: 0.8rem;"><a href="/privacy-policy.html"
+                style="color: inherit; text-decoration: underline;">Privacy Policy</a> | <a href="/cookie-policy.html"
+                style="color: inherit; text-decoration: underline;">Cookie Policy</a></p>
+    </footer>
+
+    <script>
+        function filterTeams() {
+            const input = document.getElementById('team-filter');
+            if (!input) return;
+            const filter = input.value.toLowerCase().trim();
+            const cards = document.querySelectorAll('.division-card');
+
+            cards.forEach(card => {
+                const searchData = card.getAttribute('data-search') || '';
+                if (searchData.includes(filter)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // Search Autocomplete
+        document.addEventListener('DOMContentLoaded', () => {
+            const searchInput = document.getElementById('global-search');
+            const searchResults = document.getElementById('search-results');
+            let searchIndex = null;
+
+            fetch('/search-index.json')
+                .then(r => r.json())
+                .then(data => searchIndex = data)
+                .catch(err => console.error("Search index failed:", err));
+
+            if (searchInput) {
+                searchInput.addEventListener('input', (e) => {
+                    const q = e.target.value.toLowerCase().trim();
+                    if (!q || q.length < 2 || !searchIndex) {
+                        searchResults.classList.remove('active');
+                        return;
+                    }
+
+                    const matches = searchIndex.filter(item => {
+                        return item.name.toLowerCase().includes(q) || 
+                               (item.club && item.club.toLowerCase().includes(q));
+                    }).slice(0, 10);
+
+                    if (matches.length > 0) {
+                        searchResults.innerHTML = matches.map(item => `
+                            <a href="${item.url}" class="search-item">
+                                <span class="search-item-title">${item.name}</span>
+                                <span class="search-item-meta">${item.type.toUpperCase()}</span>
+                            </a>
+                        `).join('');
+                        searchResults.classList.add('active');
+                    } else {
+                        searchResults.innerHTML = `<div class="search-item"><span class="search-item-title" style="color: #64748b; font-weight: normal;">No results found for "${q}"</span></div>`;
+                        searchResults.classList.add('active');
+                    }
+                });
+
+                document.addEventListener('click', (e) => {
+                    if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+                        searchResults.classList.remove('active');
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
