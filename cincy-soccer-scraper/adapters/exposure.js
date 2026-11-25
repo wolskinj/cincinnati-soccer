@@ -5,8 +5,8 @@
 function cleanDivisionName(raw) {
     if (!raw) return '';
     return raw
-        .replace(/\s*\(\s*\d+\s*\/\s*\d+\s*teams\s*\)/i, '')
-        .replace(/\s*\(\s*\d+\s*teams\s*\)/i, '')
+        .replace(/\(\s*\d+\s*\/\s*\d+\s*teams\s*\)/i, '')
+        .replace(/\(\s*\d+\s*teams\s*\)/i, '')
         .trim();
 }
 
@@ -20,7 +20,10 @@ function isDivisionHeading(text) {
 }
 
 async function discoverDivisions(page, tournament) {
-    const baseUrl = tournament.url.replace(/\/+$/, '');
+    let baseUrl = tournament.url;
+    while (baseUrl.endsWith('/')) {
+        baseUrl = baseUrl.slice(0, -1);
+    }
     const teamsUrl = baseUrl.endsWith('/teams') ? baseUrl : `${baseUrl}/teams`;
 
     console.log(`      -> Navigating Exposure portal: ${teamsUrl}`);
@@ -51,8 +54,8 @@ async function discoverDivisions(page, tournament) {
             }
 
             const cleanName = rawText
-                .replace(/\s*\(\s*\d+\s*\/\s*\d+\s*teams\s*\)/i, '')
-                .replace(/\s*\(\s*\d+\s*teams\s*\)/i, '')
+                .replace(/\(\s*\d+\s*\/\s*\d+\s*teams\s*\)/i, '')
+                .replace(/\(\s*\d+\s*teams\s*\)/i, '')
                 .trim();
 
             if (cleanName && !seenDivs.has(cleanName.toLowerCase())) {
@@ -101,8 +104,8 @@ async function extractTeamsFromDivision(page, divisionName, tournamentId) {
         for (const h of headings) {
             const headingText = h.innerText.trim();
             const cleanHeading = headingText
-                .replace(/\s*\(\s*\d+\s*\/\s*\d+\s*teams\s*\)/i, '')
-                .replace(/\s*\(\s*\d+\s*teams\s*\)/i, '')
+                .replace(/\(\s*\d+\s*\/\s*\d+\s*teams\s*\)/i, '')
+                .replace(/\(\s*\d+\s*teams\s*\)/i, '')
                 .trim();
             const normHeading = cleanHeading.toLowerCase().replace(/[^a-z0-9]/g, '');
 

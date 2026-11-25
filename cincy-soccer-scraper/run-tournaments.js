@@ -6,7 +6,7 @@ function runStep(scriptName, args) {
     const scriptPath = path.join(__dirname, scriptName);
     console.log(`\n▶️  Executing: node ${scriptName} ${args.join(' ')}`);
     
-    const result = spawnSync('node', [scriptPath, ...args], {
+    const result = spawnSync(process.execPath, [scriptPath, ...args], {
         stdio: 'inherit',
         env: process.env
     });
