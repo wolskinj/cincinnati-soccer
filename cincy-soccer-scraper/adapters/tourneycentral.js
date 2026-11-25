@@ -2,12 +2,17 @@
  * TourneyCentral Platform Adapter for Tournaments
  */
 const https = require('https');
-const http = require('http');
 
-function fetchHttp(url) {
+function fetchHttps(url) {
     return new Promise((resolve, reject) => {
-        const client = url.startsWith('https') ? https : http;
-        client.get(url, (res) => {
+        const parsed = new URL(url);
+        if (parsed.protocol === 'http:') {
+            parsed.protocol = 'https:';
+        } else if (parsed.protocol !== 'https:') {
+            reject(new Error(`Unsupported protocol: ${parsed.protocol}`));
+            return;
+        }
+        https.get(parsed, (res) => {
             let data = '';
             res.on('data', chunk => data += chunk);
             res.on('end', () => resolve(data));
@@ -22,7 +27,7 @@ async function discoverDivisions(page, tournament) {
     try {
         // Try fetching team_file.txt which contains all division codes
         const txtUrl = `${origin}/fmt/team_file.txt`;
-        const txtContent = await fetchHttp(txtUrl);
+        const txtContent = await fetchHttps(txtUrl);
         
         const optionMatches = [...txtContent.matchAll(/<option\s+value="([^"]+)">([^<]+)<\/option>/gi)];
         

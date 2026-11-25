@@ -538,51 +538,7 @@
             });
         }
 
-        // Search Autocomplete
-        document.addEventListener('DOMContentLoaded', () => {
-            const searchInput = document.getElementById('global-search');
-            const searchResults = document.getElementById('search-results');
-            let searchIndex = null;
-
-            fetch('/search-index.json')
-                .then(r => r.json())
-                .then(data => searchIndex = data)
-                .catch(err => console.error("Search index failed:", err));
-
-            if (searchInput) {
-                searchInput.addEventListener('input', (e) => {
-                    const q = e.target.value.toLowerCase().trim();
-                    if (!q || q.length < 2 || !searchIndex) {
-                        searchResults.classList.remove('active');
-                        return;
-                    }
-
-                    const matches = searchIndex.filter(item => {
-                        return item.name.toLowerCase().includes(q) || 
-                               (item.club && item.club.toLowerCase().includes(q));
-                    }).slice(0, 10);
-
-                    if (matches.length > 0) {
-                        searchResults.innerHTML = matches.map(item => `
-                            <a href="${item.url}" class="search-item">
-                                <span class="search-item-title">${item.name}</span>
-                                <span class="search-item-meta">${item.type.toUpperCase()}</span>
-                            </a>
-                        `).join('');
-                        searchResults.classList.add('active');
-                    } else {
-                        searchResults.innerHTML = `<div class="search-item"><span class="search-item-title" style="color: #64748b; font-weight: normal;">No results found for "${q}"</span></div>`;
-                        searchResults.classList.add('active');
-                    }
-                });
-
-                document.addEventListener('click', (e) => {
-                    if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
-                        searchResults.classList.remove('active');
-                    }
-                });
-            }
-        });
     </script>
+    <%- include('partials/search-script') %>
 </body>
 </html>

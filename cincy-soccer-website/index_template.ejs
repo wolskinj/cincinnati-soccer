@@ -334,57 +334,6 @@
 
     <%- include('partials/footer') %>
 
-    <!-- SEARCH AUTOCOMPLETE LOGIC -->
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const searchInput = document.getElementById('global-search');
-            const searchResults = document.getElementById('search-results');
-            let searchIndex = null;
-
-            // Fetch the static JSON index
-            fetch('/search-index.json')
-                .then(response => response.json())
-                .then(data => {
-                    searchIndex = data;
-                })
-                .catch(err => console.error("Failed to load search index:", err));
-
-            searchInput.addEventListener('input', (e) => {
-                const query = e.target.value.toLowerCase().trim();
-                
-                if (!query || query.length < 2 || !searchIndex) {
-                    searchResults.classList.remove('active');
-                    return;
-                }
-
-                // Filter logic
-                const matches = searchIndex.filter(item => {
-                    return item.name.toLowerCase().includes(query) || 
-                           (item.club && item.club.toLowerCase().includes(query));
-                }).slice(0, 10); // Limit to top 10
-
-                // Render results
-                if (matches.length > 0) {
-                    searchResults.innerHTML = matches.map(item => `
-                        <a href="${item.url}" class="search-item">
-                            <span class="search-item-title">${item.name}</span>
-                            <span class="search-item-meta">${item.type.toUpperCase()}</span>
-                        </a>
-                    `).join('');
-                    searchResults.classList.add('active');
-                } else {
-                    searchResults.innerHTML = `<div class="search-item"><span class="search-item-title" style="color: #64748b; font-weight: normal;">No teams found for "${query}"</span></div>`;
-                    searchResults.classList.add('active');
-                }
-            });
-
-            // Close dropdown when clicking outside
-            document.addEventListener('click', (e) => {
-                if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
-                    searchResults.classList.remove('active');
-                }
-            });
-        });
-    </script>
+    <%- include('partials/search-script') %>
 </body>
 </html>
