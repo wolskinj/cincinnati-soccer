@@ -1,13 +1,18 @@
-<footer class="site-footer">
-    <div class="footer-container">
-        <p>&copy; <%= new Date().getFullYear() %> cincinnati.soccer &bull; Greater Cincinnati Youth Soccer Dashboard</p>
-        <nav class="footer-links" aria-label="Footer Navigation">
-            <a href="/clubs.html">Clubs</a> | 
-            <a href="/ages.html">Age Groups</a> | 
-            <a href="/leagues.html">Leagues</a> | 
-            <a href="/cookie-policy.html">Cookie Policy</a> | 
-            <a href="/privacy-policy.html">Privacy Policy</a>
-        </nav>
-        <p class="footer-timestamp">Data Last Updated: <%- typeof lastUpdated !== 'undefined' ? lastUpdated : '' %></p>
-    </div>
+<footer>
+    <p>Updated for the <%= typeof currentSeason !== 'undefined' ? currentSeason : 'Fall 2026' %> season. Not affiliated with CPL, BPYSL, OSSL, or individual tournament organizers.<br>
+        Built by parents and players for parents and players. <strong>Last verified: <%- typeof lastUpdated !== 'undefined' ? lastUpdated : '' %></strong>
+    </p>
+    <nav aria-label="Footer Navigation" style="margin-top: 15px; font-size: 0.9rem;">
+        <a href="/index.html" style="color: inherit; text-decoration: underline;">Home</a> | 
+        <a href="/clubs.html" style="color: inherit; text-decoration: underline;">Clubs</a> | 
+        <a href="/ages.html" style="color: inherit; text-decoration: underline;">Age Divisions</a> | 
+        <a href="/leagues.html" style="color: inherit; text-decoration: underline;">Leagues</a> | 
+        <a href="/tournaments.html" style="color: inherit; text-decoration: underline;">Tournaments</a> | 
+        <a href="/privacy-policy.html" style="color: inherit; text-decoration: underline;">Privacy Policy</a> | 
+        <a href="/cookie-policy.html" style="color: inherit; text-decoration: underline;">Cookie Policy</a>
+    </nav>
+    <p style="margin-top: 12px; font-size: 0.8rem; opacity: 0.85;">
+        <a href="https://cincinnati.soccer" style="color: inherit; text-decoration: underline;">cincinnati.soccer</a> &copy; <%= new Date().getFullYear() %> is licensed under <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" style="color: inherit; text-decoration: underline;">CC BY-NC-ND 4.0</a>
+    </p>
 </footer>
+

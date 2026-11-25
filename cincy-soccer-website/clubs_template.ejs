@@ -329,6 +329,12 @@
 
         <!-- DIRECTORY CONTENT -->
         <div class="directory-container">
+            <nav aria-label="breadcrumb" class="breadcrumb" style="margin-bottom: 25px; font-size: 0.9rem;">
+                <ol style="list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap;">
+                    <li><a href="index.html" style="color: var(--primary); text-decoration: none; font-weight: 500;">Home</a></li>
+                    <li style="display: flex; align-items: center;" aria-current="page"><span style="margin: 0 8px; color: #94a3b8;">›</span>Clubs</li>
+                </ol>
+            </nav>
             
             <div id="clubs-section" class="directory-section">
                 <h3>Club Directory</h3>
@@ -339,15 +345,10 @@
                 </div>
             </div>
 
-
-
         </div>
     </main>
 
-    <footer>
-        <p>Updated for the current season. Not affiliated with CPL, BPYSL, or individual clubs.<br>
-            Built by parents and players for parents and players. <strong>Last verified: <%- lastUpdated %></strong></p>
-    </footer>
+    <%- include('partials/footer') %>
 
     <!-- SEARCH AUTOCOMPLETE LOGIC -->
     <script>

@@ -27,7 +27,9 @@ if (!metaDesc) {
 }
 
 let currentUrl = typeof canonicalUrl !== 'undefined' && canonicalUrl ? canonicalUrl : (domain + '/');
-let defaultOgImage = domain + '/assets/social-share-og.jpg';
+let defaultOgImage = (typeof type !== 'undefined' && (type === 'tournament' || type === 'tournaments')) 
+    ? (domain + '/assets/hub-tournaments.jpg') 
+    : (domain + '/assets/social-share-og.jpg');
 let shareImage = typeof ogImage !== 'undefined' && ogImage ? ogImage : defaultOgImage;
 let shareImageAlt = typeof ogImageAlt !== 'undefined' && ogImageAlt ? ogImageAlt : (metaTitle + " - Cincinnati Youth Soccer");
 let modDate = typeof isoDate !== 'undefined' && isoDate ? isoDate : new Date().toISOString();
@@ -111,6 +113,92 @@ if (typeof type !== 'undefined' && type === 'team') {
     "description": metaDesc,
     "dateModified": modDate
   });
+} else if (typeof type !== 'undefined' && type === 'tournament') {
+  let tObj = typeof tournament !== 'undefined' ? tournament : {};
+  let locationEntities = [];
+  if (tObj.venues && Array.isArray(tObj.venues) && tObj.venues.length > 0) {
+    locationEntities = tObj.venues.map(v => ({
+      "@type": "Place",
+      "name": v.name,
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": v.city || "Cincinnati, OH",
+        "addressRegion": "OH",
+        "addressCountry": "US"
+      }
+    }));
+  } else {
+    locationEntities.push({
+      "@type": "Place",
+      "name": "Greater Cincinnati, OH",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Cincinnati",
+        "addressRegion": "OH",
+        "addressCountry": "US"
+      }
+    });
+  }
+
+  let sportsEventSchema = {
+    "@context": "https://schema.org",
+    "@type": "SportsEvent",
+    "name": tObj.name || title,
+    "sport": "Soccer",
+    "url": currentUrl,
+    "description": metaDesc,
+    "dateModified": modDate,
+    "eventStatus": "https://schema.org/EventScheduled",
+    "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+    "location": locationEntities.length === 1 ? locationEntities[0] : locationEntities
+  };
+
+  if (tObj.startDate) sportsEventSchema.startDate = tObj.startDate;
+  if (tObj.endDate) sportsEventSchema.endDate = tObj.endDate;
+  if (tObj.hostClub) {
+    sportsEventSchema.organizer = {
+      "@type": "SportsOrganization",
+      "name": tObj.hostClub,
+      "url": tObj.website || currentUrl
+    };
+  }
+  if (tObj.url || tObj.website) {
+    sportsEventSchema.offers = {
+      "@type": "Offer",
+      "url": tObj.url || tObj.website || currentUrl,
+      "price": "0",
+      "priceCurrency": "USD",
+      "availability": "https://schema.org/InStock",
+      "validFrom": modDate,
+      "description": "Spectator admission & public division match schedules"
+    };
+  }
+  schemaBlocks.push(sportsEventSchema);
+} else if (typeof type !== 'undefined' && type === 'tournaments') {
+  let listElements = [];
+  if (typeof tournamentsData !== 'undefined' && Array.isArray(tournamentsData)) {
+    listElements = tournamentsData.map((t, idx) => ({
+      "@type": "ListItem",
+      "position": idx + 1,
+      "name": t.name,
+      "url": `${domain}/tournament-${t.id}.html`
+    }));
+  }
+  let collSchema = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": title,
+    "url": currentUrl,
+    "description": metaDesc,
+    "dateModified": modDate
+  };
+  if (listElements.length > 0) {
+    collSchema.mainEntity = {
+      "@type": "ItemList",
+      "itemListElement": listElements
+    };
+  }
+  schemaBlocks.push(collSchema);
 } else {
   schemaBlocks.push({
     "@context": "https://schema.org",
@@ -242,6 +330,138 @@ if (typeof type !== 'undefined' && type === 'team') {
         }
     });
 
+} else if (typeof type !== 'undefined' && type === 'tournament') {
+    const tObj = typeof tournament !== 'undefined' ? tournament : {};
+    const tName = tObj.name || title;
+    const tDates = tObj.dates || 'Upcoming Season';
+    const tHost = tObj.hostClub ? `hosted by ${tObj.hostClub}` : 'hosted by local soccer organizers';
+    const tVenues = tObj.venues && tObj.venues.length > 0 
+        ? tObj.venues.map(v => `${v.name} (${v.city})`).join(', ') 
+        : 'Greater Cincinnati venues';
+
+    faqEntities.push({
+        "@type": "Question",
+        "name": `When and where does ${tName} take place?`,
+        "acceptedAnswer": {
+            "@type": "Answer",
+            "text": `${tName} takes place ${tDates} at ${tVenues} in the Greater Cincinnati region.`
+        }
+    });
+
+    faqEntities.push({
+        "@type": "Question",
+        "name": `Who hosts and organizes ${tName}?`,
+        "acceptedAnswer": {
+            "@type": "Answer",
+            "text": `${tName} is ${tHost}, featuring competitive youth bracket play for teams from across Ohio, Kentucky, and Indiana.`
+        }
+    });
+
+    faqEntities.push({
+        "@type": "Question",
+        "name": `Where can I find official schedules and division brackets for ${tName}?`,
+        "acceptedAnswer": {
+            "@type": "Answer",
+            "text": `Official schedules, bracket flights, and participating team listings for ${tName} are available on cincinnati.soccer with direct links to official tournament portals.`
+        }
+    });
+
+    if (tObj.ageGroups && tObj.ageGroups.length > 0) {
+        faqEntities.push({
+            "@type": "Question",
+            "name": `What age divisions participate in ${tName}?`,
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": `${tName} features competitive divisions across ${tObj.ageGroups.join(', ')} age categories.`
+            }
+        });
+    }
+
+} else if (typeof type !== 'undefined' && type === 'tournaments') {
+    faqEntities.push({
+        "@type": "Question",
+        "name": "What youth soccer tournaments take place in Greater Cincinnati?",
+        "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Greater Cincinnati hosts premier youth soccer tournaments including the Summer End Showdown, Party on the Pitch, Community Kickoff Classic, and Queen City Fall Classic across premier turf facilities in Hamilton, Butler, and Warren counties."
+        }
+    });
+
+    faqEntities.push({
+        "@type": "Question",
+        "name": "Where can I find schedules, brackets, and participating teams for Cincinnati tournaments?",
+        "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "cincinnati.soccer aggregates competitive tournament listings, division flights, and official schedule links for youth soccer teams across Southwestern Ohio."
+        }
+    });
+
+    faqEntities.push({
+        "@type": "Question",
+        "name": "Which tournament platforms are used by Cincinnati soccer tournaments?",
+        "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Cincinnati tournaments utilize official tournament management platforms including TourneyCentral, GotSport, and Exposure Soccer."
+        }
+    });
+
+} else if (typeof type !== 'undefined' && type === 'clubs') {
+    faqEntities.push({
+        "@type": "Question",
+        "name": "What youth soccer clubs operate in Greater Cincinnati?",
+        "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Greater Cincinnati is home to over 60 competitive youth soccer clubs including Cincinnati United (CUP), Kings Hammer SC, Cincinnati West SC, Ohio Galaxies FC, Total Futbol Academy (TFA), Warren County Soccer Academy, Kolping SC, and Cincinnati Elite FC."
+        }
+    });
+
+    faqEntities.push({
+        "@type": "Question",
+        "name": "How can I find team schedules for a specific Cincinnati soccer club?",
+        "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Browse the Club Directory on cincinnati.soccer to select any local club and view their complete active team rosters, league divisions, and official schedule links."
+        }
+    });
+
+} else if (typeof type !== 'undefined' && type === 'ages') {
+    faqEntities.push({
+        "@type": "Question",
+        "name": "How are youth soccer age divisions organized in Cincinnati?",
+        "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Cincinnati youth soccer divisions range from grassroots U7 and U8 developmental leagues up to competitive U19 and High School brackets, categorized by birth year and gender across CPL, BPYSL, and OSSL."
+        }
+    });
+
+    faqEntities.push({
+        "@type": "Question",
+        "name": "Where can I view standings and team lists for a specific age group?",
+        "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Use the Age Divisions directory on cincinnati.soccer to view all active boys and girls teams competing in any specific age bracket."
+        }
+    });
+
+} else if (typeof type !== 'undefined' && type === 'leagues') {
+    faqEntities.push({
+        "@type": "Question",
+        "name": "What competitive youth soccer leagues are active in Southwestern Ohio?",
+        "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Key youth soccer leagues in the Cincinnati area include Cardinal Premier League (CPL), Buckeye Premier Youth Soccer League (BPYSL), Ohio Soccer State League (OSSL), and Club v Club (CvC)."
+        }
+    });
+
+    faqEntities.push({
+        "@type": "Question",
+        "name": "How do local leagues compare in competitive level?",
+        "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Cardinal Premier League (CPL) serves as the primary regional league for local Cincinnati squads, Buckeye Premier (BPYSL) offers state-level competition across Central and Southern Ohio, and OSSL provides elite statewide league play."
+        }
+    });
+
 } else {
     // Default / Homepage FAQ
     faqEntities.push({
@@ -270,26 +490,119 @@ schemaBlocks.push({
 
 // C. BreadcrumbList Schema
 if (currentUrl !== (domain + '/')) {
+    let breadcrumbItems = [
+        {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": domain + '/'
+        }
+    ];
+
+    if (typeof type !== 'undefined' && type === 'tournament') {
+        const tObj = typeof tournament !== 'undefined' ? tournament : {};
+        breadcrumbItems.push({
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Tournaments",
+            "item": domain + '/tournaments.html'
+        });
+        breadcrumbItems.push({
+            "@type": "ListItem",
+            "position": 3,
+            "name": tObj.name || title,
+            "item": currentUrl
+        });
+    } else if (typeof type !== 'undefined' && type === 'tournaments') {
+        breadcrumbItems.push({
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Tournaments",
+            "item": currentUrl
+        });
+    } else if (typeof type !== 'undefined' && type === 'team') {
+        const rawName = typeof teamName !== 'undefined' ? teamName : title;
+        const firstR = typeof teamRows !== 'undefined' && teamRows && teamRows[0] ? teamRows[0] : {};
+        const teamClub = firstR.CLUB && firstR.CLUB !== 'Independent' ? firstR.CLUB : null;
+        
+        if (teamClub) {
+            const clubSlug = teamClub.toLowerCase().replace(/[^a-z0-9]/g, '-');
+            breadcrumbItems.push({
+                "@type": "ListItem",
+                "position": 2,
+                "name": teamClub,
+                "item": `${domain}/club-${clubSlug}.html`
+            });
+        } else {
+            breadcrumbItems.push({
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Clubs",
+                "item": `${domain}/clubs.html`
+            });
+        }
+        breadcrumbItems.push({
+            "@type": "ListItem",
+            "position": 3,
+            "name": rawName,
+            "item": currentUrl
+        });
+    } else if (typeof type !== 'undefined' && type === 'club') {
+        breadcrumbItems.push({
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Clubs",
+            "item": domain + '/clubs.html'
+        });
+        breadcrumbItems.push({
+            "@type": "ListItem",
+            "position": 3,
+            "name": title,
+            "item": currentUrl
+        });
+    } else if (typeof type !== 'undefined' && type === 'league') {
+        breadcrumbItems.push({
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Leagues",
+            "item": domain + '/leagues.html'
+        });
+        breadcrumbItems.push({
+            "@type": "ListItem",
+            "position": 3,
+            "name": title,
+            "item": currentUrl
+        });
+    } else if (typeof type !== 'undefined' && type === 'age') {
+        breadcrumbItems.push({
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Age Divisions",
+            "item": domain + '/ages.html'
+        });
+        breadcrumbItems.push({
+            "@type": "ListItem",
+            "position": 3,
+            "name": title,
+            "item": currentUrl
+        });
+    } else {
+        breadcrumbItems.push({
+            "@type": "ListItem",
+            "position": 2,
+            "name": title,
+            "item": currentUrl
+        });
+    }
+
     schemaBlocks.push({
         "@context": "https://schema.org",
         "@type": "BreadcrumbList",
-        "itemListElement": [
-            {
-                "@type": "ListItem",
-                "position": 1,
-                "name": "Home",
-                "item": domain + '/'
-            },
-            {
-                "@type": "ListItem",
-                "position": 2,
-                "name": title,
-                "item": currentUrl
-            }
-        ]
+        "itemListElement": breadcrumbItems
     });
 }
 %>
 <script type="application/ld+json">
 <%- JSON.stringify(schemaBlocks, null, 2) %>
 </script>
+

@@ -1,16 +1,63 @@
 const puppeteer = require('puppeteer');
 const createCsvWriter = require('csv-writer').createObjectCsvWriter;
+const csv = require('csv-parser');
+const fs = require('fs');
 const path = require('path');
 
-const TOURNAMENTS = require(path.join(__dirname, '../data/tournaments.js'));
+const { parseTournamentArgs, printTournamentList } = require('./tournamentFilter.js');
 
 const gotsportAdapter = require('./adapters/gotsport.js');
 const exposureAdapter = require('./adapters/exposure.js');
 const tourneycentralAdapter = require('./adapters/tourneycentral.js');
 
 async function startTournamentScout() {
+    const { isList, rawTargets, matchedTournaments, allTournaments } = parseTournamentArgs();
+
+    if (isList) {
+        printTournamentList(allTournaments);
+        return;
+    }
+
+    if (matchedTournaments.length === 0) {
+        console.error(`\n❌ No configured tournaments matched query: "${rawTargets.join(', ')}"`);
+        console.log("Run with --list to see all available tournament IDs and names.\n");
+        process.exit(1);
+    }
+
+    const isFiltered = rawTargets.length > 0;
+    const targetIds = new Set(matchedTournaments.map(t => t.id));
+
+    console.log("=======================================================");
     console.log("🏆 Tournament Scout Robot starting...");
-    
+    if (isFiltered) {
+        console.log(`🎯 Targeted Tournaments (${matchedTournaments.length}): ${matchedTournaments.map(t => t.name).join(', ')}`);
+    } else {
+        console.log(`🎯 Scanning all ${matchedTournaments.length} configured tournaments.`);
+    }
+    console.log("=======================================================");
+
+    // Load existing divisions if doing a targeted subset crawl
+    const divisionsFilePath = path.join(__dirname, '../data/scraped_tournament_divisions.csv');
+    const retainedDivisions = [];
+    if (isFiltered && fs.existsSync(divisionsFilePath)) {
+        await new Promise((resolve) => {
+            fs.createReadStream(divisionsFilePath)
+                .pipe(csv())
+                .on('data', (row) => {
+                    if (row.TOURNAMENT && !targetIds.has(row.TOURNAMENT)) {
+                        retainedDivisions.push({
+                            tournament: row.TOURNAMENT,
+                            division: row.DIVISION_NAME || row.division,
+                            url: row.LINK_URL || row.url,
+                            platform: row.PLATFORM || row.platform
+                        });
+                    }
+                })
+                .on('end', resolve);
+        });
+        console.log(`📂 Preserving ${retainedDivisions.length} existing divisions for untouched tournaments.`);
+    }
+
     const browser = await puppeteer.launch({
         args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
         headless: 'new'
@@ -31,9 +78,9 @@ async function startTournamentScout() {
         }
     });
 
-    const masterList = [];
+    const newlyScrapedList = [];
 
-    for (const tournament of TOURNAMENTS) {
+    for (const tournament of matchedTournaments) {
         if (!tournament.url || tournament.url.includes('REPLACE') || tournament.url === 'TBD') {
             console.log(`ℹ️ Skipping team crawl for ${tournament.name} (Announcement mode / URL pending)`);
             continue;
@@ -61,7 +108,7 @@ async function startTournamentScout() {
                 }
 
                 console.log(`   ✅ Found ${divisions.length} divisions for ${tournament.name}.`);
-                masterList.push(...divisions);
+                newlyScrapedList.push(...divisions);
                 success = true;
 
             } catch (error) {
@@ -73,8 +120,12 @@ async function startTournamentScout() {
         }
     }
 
+    await browser.close();
+
+    const masterList = [...retainedDivisions, ...newlyScrapedList];
+
     const csvWriter = createCsvWriter({
-        path: path.join(__dirname, '../data/scraped_tournament_divisions.csv'),
+        path: divisionsFilePath,
         header: [
             { id: 'tournament', title: 'TOURNAMENT' },
             { id: 'division', title: 'DIVISION_NAME' },
@@ -84,9 +135,10 @@ async function startTournamentScout() {
     });
 
     await csvWriter.writeRecords(masterList);
-    console.log(`💾 Saved ${masterList.length} tournament divisions to 'scraped_tournament_divisions.csv'`);
-
-    await browser.close();
+    console.log(`💾 Saved ${masterList.length} total tournament divisions (${newlyScrapedList.length} fresh + ${retainedDivisions.length} retained) to 'scraped_tournament_divisions.csv'\n`);
 }
 
-startTournamentScout();
+startTournamentScout().catch((err) => {
+    console.error(err);
+    process.exitCode = 1;
+});

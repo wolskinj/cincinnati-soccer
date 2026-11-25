@@ -30,4 +30,7 @@ async function runDebug() {
     await browser.close();
 }
 
-runDebug();
+runDebug().catch((err) => {
+    console.error(err);
+    process.exitCode = 1;
+});

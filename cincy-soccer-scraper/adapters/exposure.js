@@ -2,35 +2,81 @@
  * Exposure Events Platform Adapter for Tournaments
  */
 
+function cleanDivisionName(raw) {
+    if (!raw) return '';
+    return raw
+        .replace(/\s*\(\s*\d+\s*\/\s*\d+\s*teams\s*\)/i, '')
+        .replace(/\s*\(\s*\d+\s*teams\s*\)/i, '')
+        .trim();
+}
+
+function isDivisionHeading(text) {
+    if (!text) return false;
+    const t = text.trim();
+    if (/^(MESSAGES|DESCRIPTION|GENERAL INFORMATION|REGISTRATION|LOCATION|CONTACT|SOCIAL|DOCUMENTS|VENUES|SCHEDULE|TEAMS|INFO|ATTACHMENT)/i.test(t)) {
+        return false;
+    }
+    return /\b(GIRLS|BOYS|U\d+|B\d+|G\d+|COED|VARSITY|HIGH SCHOOL)\b/i.test(t) || /\(\s*\d+\s*\/\s*\d+\s*teams\s*\)/i.test(t);
+}
+
 async function discoverDivisions(page, tournament) {
-    return await page.evaluate((tournamentId) => {
+    const baseUrl = tournament.url.replace(/\/+$/, '');
+    const teamsUrl = baseUrl.endsWith('/teams') ? baseUrl : `${baseUrl}/teams`;
+
+    console.log(`      -> Navigating Exposure portal: ${teamsUrl}`);
+    try {
+        await page.goto(teamsUrl, { waitUntil: 'domcontentloaded', timeout: 40000 });
+    } catch (e) {
+        console.log(`      ⚠️ Warning: Initial goto failed (${e.message}), retrying...`);
+        await page.goto(teamsUrl, { waitUntil: 'load', timeout: 45000 });
+    }
+
+    const divisions = await page.evaluate((tournamentId, currentUrl) => {
         const results = [];
-        // Look for division links or bracket links
-        const divisionLinks = document.querySelectorAll('a[href*="/divisions/"], a[href*="/division/"], a[href*="/brackets/"], a[href*="/teams/"]');
-        
-        divisionLinks.forEach(link => {
-            const name = link.innerText.trim();
-            const url = link.href;
-            if (name && url && !results.some(r => r.url === url)) {
+        const seenDivs = new Set();
+
+        const headings = Array.from(document.querySelectorAll('#content h2, #content h3, .container h2, .container h3'));
+
+        headings.forEach(h => {
+            const rawText = h.innerText.trim();
+            if (!rawText) return;
+
+            // Filter out navigation/announcement headings
+            if (/^(MESSAGES|DESCRIPTION|GENERAL INFORMATION|REGISTRATION|LOCATION|CONTACT|SOCIAL|DOCUMENTS|VENUES|SCHEDULE|TEAMS|INFO|ATTACHMENT)/i.test(rawText)) {
+                return;
+            }
+
+            if (!/\b(GIRLS|BOYS|U\d+|B\d+|G\d+|COED|VARSITY|HIGH SCHOOL)\b/i.test(rawText) && !/\(\s*\d+\s*\/\s*\d+\s*teams\s*\)/i.test(rawText)) {
+                return;
+            }
+
+            const cleanName = rawText
+                .replace(/\s*\(\s*\d+\s*\/\s*\d+\s*teams\s*\)/i, '')
+                .replace(/\s*\(\s*\d+\s*teams\s*\)/i, '')
+                .trim();
+
+            if (cleanName && !seenDivs.has(cleanName.toLowerCase())) {
+                seenDivs.add(cleanName.toLowerCase());
                 results.push({
                     tournament: tournamentId,
-                    division: name,
-                    url: url,
+                    division: cleanName,
+                    url: currentUrl,
                     platform: 'Exposure'
                 });
             }
         });
 
-        // Fallback: Check if the landing page already lists divisions and teams directly
+        // Fallback: If no h2/h3 headings found, look for registration links with divisionid
         if (results.length === 0) {
-            const headings = document.querySelectorAll('h3, h4, .division-header, .bracket-header');
-            headings.forEach(h => {
-                const name = h.innerText.trim();
-                if (name && name.length > 2) {
+            const regLinks = document.querySelectorAll('a[href*="divisionid="]');
+            regLinks.forEach(link => {
+                const name = link.innerText.trim();
+                if (name && !seenDivs.has(name.toLowerCase())) {
+                    seenDivs.add(name.toLowerCase());
                     results.push({
                         tournament: tournamentId,
                         division: name,
-                        url: page.url(),
+                        url: currentUrl,
                         platform: 'Exposure'
                     });
                 }
@@ -38,30 +84,77 @@ async function discoverDivisions(page, tournament) {
         }
 
         return results;
-    }, tournament.id);
+    }, tournament.id, teamsUrl);
+
+    return divisions;
 }
 
 async function extractTeamsFromDivision(page, divisionName, tournamentId) {
-    return await page.evaluate((currentDiv, currentTournament) => {
+    return await page.evaluate((targetDiv, currentTournament) => {
         const uniqueTeams = new Map();
-        const teamLinks = document.querySelectorAll('a[href*="/team/"], a[href*="/teams/"], tr.team-row, .team-name');
+        const headings = Array.from(document.querySelectorAll('#content h2, #content h3, .container h2, .container h3'));
 
-        teamLinks.forEach(el => {
-            let teamName = el.innerText.trim();
-            let teamUrl = el.href || window.location.href;
-            
-            // Clean up multi-line text (e.g. team name + coach)
-            if (teamName.includes('\n')) {
-                teamName = teamName.split('\n')[0].trim();
+        // Normalize target division name for matching
+        const normTarget = targetDiv.toLowerCase().replace(/[^a-z0-9]/g, '');
+
+        let targetContainer = null;
+        for (const h of headings) {
+            const headingText = h.innerText.trim();
+            const cleanHeading = headingText
+                .replace(/\s*\(\s*\d+\s*\/\s*\d+\s*teams\s*\)/i, '')
+                .replace(/\s*\(\s*\d+\s*teams\s*\)/i, '')
+                .trim();
+            const normHeading = cleanHeading.toLowerCase().replace(/[^a-z0-9]/g, '');
+
+            if (normHeading === normTarget || normHeading.includes(normTarget) || normTarget.includes(normHeading)) {
+                targetContainer = h.parentElement;
+                break;
+            }
+        }
+
+        if (!targetContainer) {
+            return [];
+        }
+
+        const teamCards = targetContainer.querySelectorAll('.row > div, div[class*="col-"]');
+
+        teamCards.forEach(card => {
+            const teamLink = card.querySelector('a');
+            if (!teamLink) return;
+
+            let rawTeamName = teamLink.innerText.trim();
+            if (!rawTeamName || rawTeamName.toLowerCase().includes('placeholder')) return;
+
+            // Clean multi-line strings
+            if (rawTeamName.includes('\n')) {
+                rawTeamName = rawTeamName.split('\n')[0].trim();
             }
 
-            if (teamName && !uniqueTeams.has(teamName)) {
-                uniqueTeams.set(teamName, {
+            const teamUrl = teamLink.href || window.location.href;
+
+            // Extract state from <i> tag (e.g. <i>(OH)</i> -> "OH")
+            let state = '';
+            const stateEl = card.querySelector('i');
+            if (stateEl) {
+                state = stateEl.innerText.replace(/[()]/g, '').trim();
+            }
+
+            // Extract club name prefix guess
+            let clubRaw = '';
+            const words = rawTeamName.split(/\s+/);
+            if (words.length >= 2 && !/^(U\d+|B\d+|G\d+|20\d\d)/i.test(words[0])) {
+                clubRaw = `${words[0]} ${words[1]}`;
+            } else if (words.length >= 1) {
+                clubRaw = words[0];
+            }
+
+            if (!uniqueTeams.has(rawTeamName)) {
+                uniqueTeams.set(rawTeamName, {
                     tournament: currentTournament,
-                    division: currentDiv,
-                    team: teamName,
-                    clubRaw: '',
-                    state: '',
+                    division: targetDiv,
+                    team: rawTeamName,
+                    clubRaw: clubRaw,
+                    state: state,
                     scheduleLink: teamUrl,
                     platform: 'Exposure'
                 });
@@ -76,3 +169,4 @@ module.exports = {
     discoverDivisions,
     extractTeamsFromDivision
 };
+

@@ -86,4 +86,7 @@ async function run() {
     console.log(`\n💾 Saved all updates to data/clubs.json! (${updatedCount} clubs updated)`);
 }
 
-run();
+run().catch((err) => {
+    console.error(err);
+    process.exitCode = 1;
+});

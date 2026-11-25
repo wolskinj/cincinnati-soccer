@@ -49,7 +49,7 @@ function checkFileMetadata(filePath) {
     if (!html.includes('dateModified')) issues.push('Missing dateModified in JSON-LD schema');
 
     // Check for Duplicate Meta Tags
-    const metaTags = [...html.matchAll(/<meta\s+[^>]+>/gi)].map(m => m[0].toLowerCase().trim());
+    const metaTags = [...html.matchAll(/<meta\s+[^\s>][^>]*>/gi)].map(m => m[0].toLowerCase().trim());
     const seenMeta = new Set();
     metaTags.forEach(tag => {
         if (seenMeta.has(tag)) {
@@ -57,6 +57,32 @@ function checkFileMetadata(filePath) {
         }
         seenMeta.add(tag);
     });
+
+    // Check JSON-LD Syntax Validity
+    const jsonLdMatch = html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/i);
+    if (jsonLdMatch) {
+        try {
+            const parsed = JSON.parse(jsonLdMatch[1]);
+            if (!parsed || (Array.isArray(parsed) && parsed.length === 0) || (typeof parsed === 'object' && Object.keys(parsed).length === 0)) {
+                issues.push('JSON-LD schema is empty');
+            }
+        } catch (e) {
+            issues.push(`Malformed JSON-LD schema syntax: ${e.message}`);
+        }
+    } else if (!['404.html', 'privacy-policy.html', 'cookie-policy.html'].includes(relPath)) {
+        issues.push('Missing JSON-LD structured data script');
+    }
+
+    // Specialized Check for Tournaments
+    if (relPath.startsWith('tournament-') && relPath.endsWith('.html')) {
+        if (!html.includes('"@type": "SportsEvent"')) issues.push('Tournament page missing SportsEvent Schema.org type');
+        if (!html.includes('hub-tournaments.jpg')) issues.push('Tournament page missing dedicated hub-tournaments.jpg OG image');
+    }
+
+    if (relPath === 'tournaments.html') {
+        if (!html.includes('"@type": "ItemList"')) issues.push('Tournaments hub missing ItemList Schema.org type');
+        if (!html.includes('hub-tournaments.jpg')) issues.push('Tournaments hub missing dedicated hub-tournaments.jpg OG image');
+    }
 
     return { relPath, issues };
 }
@@ -82,7 +108,7 @@ function verifyAllDistFiles() {
     });
 
     if (failureCount === 0) {
-        console.log(`✅ ALL ${files.length} HTML files contain complete Open Graph, Twitter Card, Favicon, and Canonical metadata tags!`);
+        console.log(`✅ ALL ${files.length} HTML files contain complete Open Graph, Twitter Card, Favicon, Canonical, and Schema.org structured data!`);
     } else {
         console.error(`💥 ${failureCount} out of ${files.length} files failed metadata verification.`);
         process.exit(1);
@@ -90,3 +116,4 @@ function verifyAllDistFiles() {
 }
 
 verifyAllDistFiles();
+

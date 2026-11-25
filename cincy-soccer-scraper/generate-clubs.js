@@ -75,7 +75,7 @@ async function run() {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
 
-    const clubsList = Array.from(clubsSet).sort();
+    const clubsList = Array.from(clubsSet).sort((a, b) => a.localeCompare(b));
     console.log(`Found ${clubsList.length} unique canonical clubs across CSV & mapping definitions.`);
 
     const BATCH_SIZE = 50;
@@ -179,4 +179,7 @@ ${JSON.stringify(batchClubs)}
     console.log(`Saved to data/clubs.json`);
 }
 
-run();
+run().catch((err) => {
+    console.error(err);
+    process.exitCode = 1;
+});

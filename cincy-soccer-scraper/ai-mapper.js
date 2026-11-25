@@ -57,7 +57,7 @@ async function run() {
     });
 
     const canonicalEngine = buildCanonicalLookup(Array.from(discoveredClubs), clubContext);
-    const clubsList = Array.from(new Set(Object.values(canonicalEngine.stemToCanonical))).sort();
+    const clubsList = Array.from(new Set(Object.values(canonicalEngine.stemToCanonical))).sort((a, b) => a.localeCompare(b));
 
     // 4. Extract unique teams from CSVs
     const uniqueTeams = new Set();
@@ -189,4 +189,7 @@ ${JSON.stringify(batch)}
     console.log("✅ Finished mapping teams!");
 }
 
-run();
+run().catch((err) => {
+    console.error(err);
+    process.exitCode = 1;
+});

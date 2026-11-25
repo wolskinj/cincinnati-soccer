@@ -46,8 +46,8 @@ function sortAgeGroups(a, b) {
     if (isHighA && !isHighB) return 1;
     if (!isHighA && isHighB) return -1;
     if (isHighA && isHighB) return 0;
-    const numA = parseInt(a.replace(/\D/g, '')) || 0;
-    const numB = parseInt(b.replace(/\D/g, '')) || 0;
+    const numA = Number.parseInt(a.replace(/\D/g, ''), 10) || 0;
+    const numB = Number.parseInt(b.replace(/\D/g, ''), 10) || 0;
     return numA - numB;
 }
 
@@ -55,7 +55,7 @@ function normalizeDivision(divisionString) {
     if (!divisionString) return { gender: 'Unknown', age: '', label: 'Unknown' };
 
     // Format: 'BU9Premier', 'GU10Gold', 'BU1415Black'
-    const tcMatch = divisionString.match(/^([BG])(U\d+(?:\/\d+|\d+)?)(.*)$/i);
+    const tcMatch = divisionString.match(/^([BG])(U\d+(?:\/\d+)?)/i);
     if (tcMatch) {
         const gender = tcMatch[1].toUpperCase() === 'B' ? 'Boys' : 'Girls';
         const age = tcMatch[2].toUpperCase();
@@ -209,53 +209,56 @@ async function buildSite() {
     }
 
     // 4. READ MASTER TEAMS DATA
-    fs.createReadStream(TEAMS_FILE)
-        .pipe(csv())
-        .on('data', (row) => {
-            if (!row.TEAM_NAME) return;
+    await new Promise((resolve, reject) => {
+        fs.createReadStream(TEAMS_FILE)
+            .pipe(csv())
+            .on('data', (row) => {
+                if (!row.TEAM_NAME) return;
 
-            const teamKey = row.TEAM_NAME;
-            if (!teamGroups[teamKey]) teamGroups[teamKey] = [];
-            teamGroups[teamKey].push(row);
+                const teamKey = row.TEAM_NAME;
+                if (!teamGroups[teamKey]) teamGroups[teamKey] = [];
+                teamGroups[teamKey].push(row);
 
-            if (row.LEAGUE && row.LEAGUE !== 'Tournament Play Only') {
-                const divInfo = normalizeDivision(row.DIVISION);
-                const ageKey = divInfo.label;
-                if (!ageGroups[ageKey]) ageGroups[ageKey] = [];
-                ageGroups[ageKey].push(row);
+                if (row.LEAGUE && row.LEAGUE !== 'Tournament Play Only') {
+                    const divInfo = normalizeDivision(row.DIVISION);
+                    const ageKey = divInfo.label;
+                    if (!ageGroups[ageKey]) ageGroups[ageKey] = [];
+                    ageGroups[ageKey].push(row);
 
-                const leagueId = row.LEAGUE;
-                if (leagueGroups[leagueId]) {
-                    leagueGroups[leagueId].teams.push(row);
+                    const leagueId = row.LEAGUE;
+                    if (leagueGroups[leagueId]) {
+                        leagueGroups[leagueId].teams.push(row);
+                    }
                 }
-            }
 
-            const clubKey = row.CLUB;
-            if (clubKey && clubKey !== 'Independent') {
-                if (!clubGroups[clubKey]) clubGroups[clubKey] = [];
-                clubGroups[clubKey].push(row);
-            }
-        })
-        .on('end', () => {
-            console.log("📦 Master team data loaded.");
-            generateTeamPages(teamGroups, teamTournaments);
-            generatePages(ageGroups, 'age');
-            generatePages(clubGroups, 'club');
-            generateLeaguePages(leagueGroups);
-            generateTournamentPages(TOURNAMENTS_CONFIG, tournamentDivisionsMap);
-            generateHomepage(ageGroups, clubGroups, leagueGroups, teamGroups, TOURNAMENTS_CONFIG);
+                const clubKey = row.CLUB;
+                if (clubKey && clubKey !== 'Independent') {
+                    if (!clubGroups[clubKey]) clubGroups[clubKey] = [];
+                    clubGroups[clubKey].push(row);
+                }
+            })
+            .on('error', reject)
+            .on('end', resolve);
+    });
 
-            // 5. GENERATE SEO FILES & HEADERS
-            generateSitemap();
-            generateRobotsTxt();
-            generateHeaders();
-            generateRedirects();
-            generateWorker();
+    console.log("📦 Master team data loaded.");
+    await generateTeamPages(teamGroups, teamTournaments);
+    await generatePages(ageGroups, 'age');
+    await generatePages(clubGroups, 'club');
+    await generateLeaguePages(leagueGroups);
+    await generateTournamentPages(TOURNAMENTS_CONFIG, tournamentDivisionsMap);
+    await generateHomepage(ageGroups, clubGroups, leagueGroups, teamGroups, TOURNAMENTS_CONFIG);
 
-            // 6. VERIFY METADATA, FAVICONS & SITEMAP ACROSS ALL GENERATED PAGES
-            require('./verify_dist_metadata.js');
-            require('./validate_sitemap.js');
-        });
+    // 5. GENERATE SEO FILES & HEADERS
+    generateSitemap();
+    generateRobotsTxt();
+    generateHeaders();
+    generateRedirects();
+    generateWorker();
+
+    // 6. VERIFY METADATA, FAVICONS & SITEMAP ACROSS ALL GENERATED PAGES
+    require('./verify_dist_metadata.js');
+    require('./validate_sitemap.js');
 }
 
 function formatTeamTitle(teamName, clubName, divisionInfo) {
@@ -296,9 +299,7 @@ function formatTeamTitle(teamName, clubName, divisionInfo) {
     return `${truncated.trim()}...`;
 }
 
-function generateTeamPages(teamGroups, teamTournaments) {
-    const compiledTemplate = ejs.compile(fs.readFileSync(TEAM_TEMPLATE, 'utf8'), { filename: TEAM_TEMPLATE });
-
+async function generateTeamPages(teamGroups, teamTournaments) {
     for (const [teamName, rows] of Object.entries(teamGroups)) {
         let filename = `team-${makeFilename(teamName)}`;
         
@@ -353,7 +354,7 @@ function generateTeamPages(teamGroups, teamTournaments) {
             leaguesConfig: LEAGUES_CONFIG
         };
 
-        const pageHtml = compiledTemplate(templateData);
+        const pageHtml = await ejs.renderFile(TEAM_TEMPLATE, templateData, { cache: true });
         fs.writeFileSync(`${OUTPUT_DIR}/${filename}`, pageHtml);
         
         sitemapUrls.push(filename);
@@ -361,8 +362,7 @@ function generateTeamPages(teamGroups, teamTournaments) {
     console.log(`✅ TEAM pages generated.`);
 }
 
-function generatePages(groups, type) {
-    const compiledTemplate = ejs.compile(fs.readFileSync(TEMPLATE_FILE, 'utf8'), { filename: TEMPLATE_FILE });
+async function generatePages(groups, type) {
 
     for (const [groupName, teams] of Object.entries(groups)) {
         let filename;
@@ -563,7 +563,7 @@ function generatePages(groups, type) {
             normalizeDivision: normalizeDivision
         };
 
-        const pageHtml = compiledTemplate(templateData);
+        const pageHtml = await ejs.renderFile(TEMPLATE_FILE, templateData, { cache: true });
         fs.writeFileSync(`${OUTPUT_DIR}/${filename}`, pageHtml);
         
         sitemapUrls.push(filename);
@@ -571,9 +571,7 @@ function generatePages(groups, type) {
     console.log(`✅ ${type.toUpperCase()} pages generated.`);
 }
 
-function generateLeaguePages(leagueGroups) {
-    const compiledTemplate = ejs.compile(fs.readFileSync(TEMPLATE_FILE, 'utf8'), { filename: TEMPLATE_FILE });
-
+async function generateLeaguePages(leagueGroups) {
     for (const [leagueId, data] of Object.entries(leagueGroups)) {
         const leagueName = data.info.name;
         const season = data.info.season || '';
@@ -608,7 +606,7 @@ function generateLeaguePages(leagueGroups) {
             normalizeDivision: normalizeDivision
         };
 
-        const pageHtml = compiledTemplate(templateData);
+        const pageHtml = await ejs.renderFile(TEMPLATE_FILE, templateData, { cache: true });
         fs.writeFileSync(`${OUTPUT_DIR}/${filename}`, pageHtml);
         
         sitemapUrls.push(filename);
@@ -616,39 +614,63 @@ function generateLeaguePages(leagueGroups) {
     console.log("✅ LEAGUE pages generated.");
 }
 
-function generateTournamentPages(tournamentsData, tournamentDivisionsMap) {
-    const compiledListTemplate = ejs.compile(fs.readFileSync(TOURNAMENTS_TEMPLATE, 'utf8'), { filename: TOURNAMENTS_TEMPLATE });
-    const compiledDetailTemplate = ejs.compile(fs.readFileSync(TOURNAMENT_TEMPLATE, 'utf8'), { filename: TOURNAMENT_TEMPLATE });
+function formatTournamentTitle(tournament) {
+    const rawName = (tournament.name || '').trim();
+    const withSchedules = `${rawName} Schedules`;
+    const MAX_PAGE_TITLE_LEN = 38; // 38 + 20 (BRAND) <= 58 chars
 
+    if (withSchedules.length <= MAX_PAGE_TITLE_LEN) {
+        return withSchedules;
+    }
+    if (rawName.length <= MAX_PAGE_TITLE_LEN) {
+        return rawName;
+    }
+
+    let truncated = rawName.substring(0, MAX_PAGE_TITLE_LEN - 3);
+    const lastSpace = truncated.lastIndexOf(' ');
+    if (lastSpace > 12) {
+        truncated = truncated.substring(0, lastSpace);
+    }
+    return `${truncated.trim()}...`;
+}
+
+async function generateTournamentPages(tournamentsData, tournamentDivisionsMap) {
     // 1. Generate Hub Page (/tournaments.html)
     const hubFilename = 'tournaments.html';
     const hubCanonicalUrl = `${DOMAIN}/${hubFilename}`;
-    const hubHtml = compiledListTemplate({
+    const hubHtml = await ejs.renderFile(TOURNAMENTS_TEMPLATE, {
         title: "Cincinnati Youth Soccer Tournaments",
-        description: "Browse youth soccer tournaments, division brackets, schedules, and participating teams across Greater Cincinnati.",
+        description: "Browse competitive youth soccer tournaments across Greater Cincinnati. Explore division flights, participating local teams, and official schedule links.",
         canonicalUrl: hubCanonicalUrl,
-        type: 'website',
+        type: 'tournaments',
+        ogImage: `${DOMAIN}/assets/hub-tournaments.jpg`,
+        ogImageAlt: "Cincinnati Youth Soccer Tournaments Hub",
         domain: DOMAIN,
         lastUpdated: formattedDate,
         isoDate: isoDate,
         currentSeason: CURRENT_SEASON,
         tournamentsData: tournamentsData,
         makeFilename: makeFilename
-    });
+    }, { cache: true });
     fs.writeFileSync(`${OUTPUT_DIR}/${hubFilename}`, hubHtml);
     sitemapUrls.push(hubFilename);
 
     // 2. Generate Individual Tournament Event Pages (/tournament-[id].html)
-    tournamentsData.forEach(t => {
+    for (const t of tournamentsData) {
         const filename = `tournament-${t.id}.html`;
         const canonicalUrl = `${DOMAIN}/${filename}`;
         const divisionsList = tournamentDivisionsMap[t.id] || [];
+        const pageTitle = formatTournamentTitle(t);
+        const hostStr = t.hostClub ? `Hosted by ${t.hostClub}. ` : '';
+        const description = `Schedules, participating teams, and division brackets for ${t.name} (${t.dates}) in Greater Cincinnati. ${hostStr}Track local team flights on cincinnati.soccer.`;
 
-        const pageHtml = compiledDetailTemplate({
-            title: `${t.name} - Schedules & Teams`,
-            description: `Participating teams, division flights, and schedules for ${t.name} in Cincinnati, OH.`,
+        const pageHtml = await ejs.renderFile(TOURNAMENT_TEMPLATE, {
+            title: pageTitle,
+            description: description,
             canonicalUrl: canonicalUrl,
             type: 'tournament',
+            ogImage: `${DOMAIN}/assets/hub-tournaments.jpg`,
+            ogImageAlt: `${t.name} - Cincinnati Youth Soccer Tournament`,
             domain: DOMAIN,
             lastUpdated: formattedDate,
             isoDate: isoDate,
@@ -657,19 +679,18 @@ function generateTournamentPages(tournamentsData, tournamentDivisionsMap) {
             divisionsList: divisionsList,
             makeFilename: makeFilename,
             normalizeDivision: normalizeDivision
-        });
+        }, { cache: true });
 
         fs.writeFileSync(`${OUTPUT_DIR}/${filename}`, pageHtml);
         sitemapUrls.push(filename);
-    });
+    }
 
     console.log("✅ TOURNAMENT pages generated.");
 }
 
-function generateHomepage(ageGroups, clubGroups, leagueGroups, teamGroups, tournamentsData) {
+async function generateHomepage(ageGroups, clubGroups, leagueGroups, teamGroups, tournamentsData) {
     console.log("🏠 Building Dashboard Homepage...");
     const homeTemplatePath = HOMEPAGE_TEMPLATE;
-    const homeTemplate = fs.readFileSync(homeTemplatePath, 'utf8');
 
     // AGE Links
     const keys = Object.keys(ageGroups);
@@ -677,15 +698,15 @@ function generateHomepage(ageGroups, clubGroups, leagueGroups, teamGroups, tourn
     const girlsGroups = keys.filter(k => k.includes('Girls')).sort(sortAgeGroups);
 
     // CLUB Links
-    const clubsGroups = Object.keys(clubGroups).sort();
+    const clubsGroups = Object.keys(clubGroups).sort((a, b) => a.localeCompare(b));
 
     // LEAGUE Links
     const leaguesData = Object.values(leagueGroups);
 
     // TEAM Links
-    const teams = Object.keys(teamGroups).sort();
+    const teams = Object.keys(teamGroups).sort((a, b) => a.localeCompare(b));
 
-    const finalHtml = ejs.render(homeTemplate, {
+    const finalHtml = await ejs.renderFile(homeTemplatePath, {
         title: "Cincinnati Youth Soccer Directory",
         description: "The centralized directory for Cincinnati youth soccer schedules, standings, and tournaments. Track CPL, BPYSL, OSSL, and youth tournament teams in one place.",
         canonicalUrl: `${DOMAIN}/`,
@@ -701,7 +722,7 @@ function generateHomepage(ageGroups, clubGroups, leagueGroups, teamGroups, tourn
         isoDate: isoDate,
         currentSeason: CURRENT_SEASON,
         domain: DOMAIN
-    }, { filename: homeTemplatePath });
+    }, { cache: true });
 
     fs.writeFileSync(`${OUTPUT_DIR}/index.html`, finalHtml);
     console.log("✅ Homepage updated!");
@@ -709,34 +730,34 @@ function generateHomepage(ageGroups, clubGroups, leagueGroups, teamGroups, tourn
     // === GENERATE DIRECTORY PAGES & SEARCH INDEX ===
     try {
         const clubsPath = path.join(__dirname, 'clubs_template.ejs');
-        let clubsTemplate = fs.readFileSync(clubsPath, 'utf8');
-        fs.writeFileSync(`${OUTPUT_DIR}/clubs.html`, ejs.render(clubsTemplate, { 
+        const clubsHtml = await ejs.renderFile(clubsPath, { 
             title: "Cincinnati Soccer Clubs",
             description: "Explore all youth soccer clubs in the Greater Cincinnati area, including team counts and league affiliations.",
             canonicalUrl: `${DOMAIN}/clubs.html`,
-            type: "website",
+            type: "clubs",
             clubsGroups, makeFilename, lastUpdated: formattedDate, isoDate, domain: DOMAIN 
-        }, { filename: clubsPath }));
+        }, { cache: true });
+        fs.writeFileSync(`${OUTPUT_DIR}/clubs.html`, clubsHtml);
 
         const agesPath = path.join(__dirname, 'ages_template.ejs');
-        let agesTemplate = fs.readFileSync(agesPath, 'utf8');
-        fs.writeFileSync(`${OUTPUT_DIR}/ages.html`, ejs.render(agesTemplate, { 
+        const agesHtml = await ejs.renderFile(agesPath, { 
             title: "Cincinnati Soccer Divisions",
             description: "Browse youth soccer divisions by age group and gender across Cincinnati.",
             canonicalUrl: `${DOMAIN}/ages.html`,
-            type: "website",
+            type: "ages",
             boysGroups, girlsGroups, makeFilename, lastUpdated: formattedDate, isoDate, domain: DOMAIN 
-        }, { filename: agesPath }));
+        }, { cache: true });
+        fs.writeFileSync(`${OUTPUT_DIR}/ages.html`, agesHtml);
 
         const leaguesPath = path.join(__dirname, 'leagues_template.ejs');
-        let leaguesTemplate = fs.readFileSync(leaguesPath, 'utf8');
-        fs.writeFileSync(`${OUTPUT_DIR}/leagues.html`, ejs.render(leaguesTemplate, { 
+        const leaguesHtml = await ejs.renderFile(leaguesPath, { 
             title: "Cincinnati Soccer Leagues",
             description: "Discover local and regional youth soccer leagues operating in Greater Cincinnati, including CPL, BPYSL, OSSL, and CvC.",
             canonicalUrl: `${DOMAIN}/leagues.html`,
-            type: "website",
+            type: "leagues",
             leaguesData, makeFilename, lastUpdated: formattedDate, isoDate, domain: DOMAIN 
-        }, { filename: leaguesPath }));
+        }, { cache: true });
+        fs.writeFileSync(`${OUTPUT_DIR}/leagues.html`, leaguesHtml);
 
         console.log("✅ Directory Pages updated!");
 
@@ -882,4 +903,7 @@ function generateWorker() {
     console.log("✅ _worker.js created (Cloudflare Edge Worker 301 Redirect for pages.dev & www).");
 }
 
-buildSite();
+buildSite().catch((err) => {
+    console.error(err);
+    process.exitCode = 1;
+});

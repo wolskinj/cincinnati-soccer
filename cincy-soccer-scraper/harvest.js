@@ -1,8 +1,7 @@
-const puppeteer = require('puppeteer');
-const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 const csv = require('csv-parser');
 const fs = require('fs');
 const path = require('path');
+const { launchOptimizedPage, createCsvWriters } = require('./browserHelper');
 
 const BATCH_SIZE = 10;
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
@@ -19,48 +18,23 @@ async function startHarvester() {
     });
     console.log(`🗺️ Loaded map with ${divisions.length} divisions.`);
 
-    const initWriter = createCsvWriter({
-        path: path.join(__dirname, '../data/all_teams.csv'),
-        header: [
+    const { initWriter, appendWriter } = createCsvWriters(
+        path.join(__dirname, '../data/all_teams.csv'),
+        [
             {id: 'league', title: 'LEAGUE'},
             {id: 'division', title: 'DIVISION'},
             {id: 'team', title: 'TEAM_NAME'},
             {id: 'link', title: 'SCHEDULE_LINK'}
-        ],
-        append: false
-    });
-    await initWriter.writeRecords([]); 
-    
-    const appendWriter = createCsvWriter({
-        path: path.join(__dirname, '../data/all_teams.csv'),
-        header: [
-            {id: 'league', title: 'LEAGUE'},
-            {id: 'division', title: 'DIVISION'},
-            {id: 'team', title: 'TEAM_NAME'},
-            {id: 'link', title: 'SCHEDULE_LINK'}
-        ],
-        append: true
-    });
+        ]
+    );
+    await initWriter.writeRecords([]);
 
     for (let i = 0; i < divisions.length; i += BATCH_SIZE) {
         const batch = divisions.slice(i, i + BATCH_SIZE);
         console.log(`\n📦 Processing Batch ${Math.floor(i / BATCH_SIZE) + 1} (Items ${i + 1} to ${i + batch.length})...`);
         
-        const browser = await puppeteer.launch({
-            args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
-            protocolTimeout: 60000,
-        });
-        const page = await browser.newPage();
-
-        // RESOURCE OPTIMIZATION: Block unneeded assets
-        await page.setRequestInterception(true);
-        page.on('request', (req) => {
-            const resourceType = req.resourceType();
-            if (['image', 'stylesheet', 'font', 'media'].includes(resourceType)) {
-                req.abort();
-            } else {
-                req.continue();
-            }
+        const { browser, page } = await launchOptimizedPage({
+            blockedResourceTypes: ['image', 'stylesheet', 'font', 'media']
         });
         
         const batchResults = [];
@@ -119,4 +93,7 @@ async function startHarvester() {
     console.log("\n✅ ALL DONE! 'all_teams.csv' is complete.");
 }
 
-startHarvester();
+startHarvester().catch((err) => {
+    console.error(err);
+    process.exitCode = 1;
+});

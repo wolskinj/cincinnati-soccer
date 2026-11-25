@@ -49,13 +49,37 @@ The system executes a 4-step pipeline automatically:
 
 ---
 
+### Tournament Scraping (Standalone & Selective)
+You can scrape youth soccer tournaments independently without re-scraping leagues:
+
+```bash
+# 1. List all configured tournaments, platform IDs, and crawl status
+npm run scrape:tournaments -- --list
+
+# 2. Scrape all active tournaments
+npm run scrape:tournaments
+
+# 3. Scrape ONLY a specific tournament by ID, name, or substring
+npm run scrape:tournaments -- party-on-the-pitch-2026
+npm run scrape:tournaments -- party
+npm run scrape:tournaments -- summer
+
+# 4. Scrape multiple specific tournaments (comma-separated or multiple args)
+npm run scrape:tournaments -- summer,kickoff
+npm run scrape:tournaments -- summer party
+```
+*Incremental Merging*: When scraping a specific tournament, the scraper refreshes data for that tournament while automatically preserving previously harvested data for all other tournaments in `data/scraped_tournament_divisions.csv`, `data/all_tournament_teams.csv`, and `data/clean_tournament_teams.csv`!
+
+---
+
 ### Other Commands
 
+- **`npm run scrape:tournaments`**: Dedicated tournament pipeline (scout -> harvest -> clean).
 - **`npm run map-teams`**: Runs *only* the AI team mapper step independently (useful if you want to re-process `all_teams.csv` without scraping again).
 - **`npm run generate-clubs`**: Standalone AI script to generate fresh "about" descriptions for all standardized clubs in the database.
 - **`npm run build`**: Compiles `data/clean_teams.csv` into static HTML files inside `cincy-soccer-website/dist`.
 - **`npm run deploy`**: Deploys `cincy-soccer-website/dist` live to Cloudflare Pages.
-- **`npm run publish-all`**: Scrapes fresh data (including AI mapping), compiles the static site, and deploys to Cloudflare Pages in one automated command.
+- **`npm run publish-all`**: Scrapes fresh league & tournament data, compiles the static site, and deploys to Cloudflare Pages in one automated command.
 
 ---
 

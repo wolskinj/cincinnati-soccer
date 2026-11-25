@@ -93,4 +93,7 @@ async function startRobot() {
     await browser.close();
 }
 
-startRobot();
+startRobot().catch((err) => {
+    console.error(err);
+    process.exitCode = 1;
+});

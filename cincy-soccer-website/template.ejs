@@ -391,6 +391,42 @@
                             font-size: 1rem;
                         }
 
+                        /* BREADCRUMBS */
+                        .breadcrumb {
+                            margin-bottom: 25px;
+                            font-size: 0.9rem;
+                            color: var(--text-light);
+                        }
+
+                        .breadcrumb ol {
+                            list-style: none;
+                            padding: 0;
+                            margin: 0;
+                            display: flex;
+                            flex-wrap: wrap;
+                        }
+
+                        .breadcrumb li {
+                            display: flex;
+                            align-items: center;
+                        }
+
+                        .breadcrumb li:not(:last-child)::after {
+                            content: "›";
+                            margin: 0 8px;
+                            color: #94a3b8;
+                        }
+
+                        .breadcrumb a {
+                            color: var(--primary);
+                            text-decoration: none;
+                            font-weight: 500;
+                        }
+
+                        .breadcrumb a:hover {
+                            text-decoration: underline;
+                        }
+
                         /* FOOTER */
                         footer {
                             text-align: center;
@@ -405,8 +441,6 @@
 </head>
 
 <body>
-
-    <div class="container">
 
     <header class="compact-hero">
         <div class="compact-hero-top">
@@ -440,6 +474,22 @@
             <% } %>
         </div>
     </header>
+
+    <div class="container">
+        <main>
+            <nav aria-label="breadcrumb" class="breadcrumb">
+                <ol>
+                    <li><a href="index.html">Home</a></li>
+                    <% if (typeof type !== 'undefined' && type === 'club') { %>
+                        <li><a href="clubs.html">Clubs</a></li>
+                    <% } else if (typeof type !== 'undefined' && type === 'league') { %>
+                        <li><a href="leagues.html">Leagues</a></li>
+                    <% } else if (typeof type !== 'undefined' && type === 'age') { %>
+                        <li><a href="ages.html">Age Divisions</a></li>
+                    <% } %>
+                    <li aria-current="page"><%- title %></li>
+                </ol>
+            </nav>
 
             <div class="filter-bar">
                 <input type="text" id="team-filter" class="filter-input"
@@ -495,28 +545,9 @@
                             <% }); %>
             </div>
         </main>
-
     </div>
 
-    <footer>
-        <p>Updated for the current season. Not affiliated with CPL, BPYSL, or individual clubs.<br>
-            Built by parents and players for parents and players. <strong>Last verified: <%- lastUpdated %></strong></p>
-        <p style="margin-top: 15px; font-size: 0.8rem;"><a href="/privacy-policy.html"
-                style="color: inherit; text-decoration: underline;">Privacy Policy</a> | <a href="/cookie-policy.html"
-                style="color: inherit; text-decoration: underline;">Cookie Policy</a></p>
-        <p style="margin-top: 10px; font-size: 0.8rem;"><a href="https://cincinnati.soccer"
-                style="color: inherit; text-decoration: underline;">cincinnati.soccer</a> © 2026 by <a
-                href="https://cincinnati.soccer"
-                style="color: inherit; text-decoration: underline;">cincinnati.soccer</a> is
-            licensed under <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/"
-                style="color: inherit; text-decoration: underline;">CC BY-NC-ND 4.0</a><img src="/assets/cc.svg" alt=""
-                width="16" height="16" style="max-width: 1em;max-height:1em;margin-left: .2em;" loading="lazy"><img
-                src="/assets/by.svg" alt="" width="16" height="16"
-                style="max-width: 1em;max-height:1em;margin-left: .2em;" loading="lazy"><img src="/assets/nc.svg" alt=""
-                width="16" height="16" style="max-width: 1em;max-height:1em;margin-left: .2em;" loading="lazy"><img
-                src="/assets/nd.svg" alt="" width="16" height="16"
-                style="max-width: 1em;max-height:1em;margin-left: .2em;" loading="lazy"></p>
-    </footer>
+    <%- include('partials/footer') %>
 
     <script>
         function filterTeams() {

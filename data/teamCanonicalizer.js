@@ -18,7 +18,7 @@ function getTeamSuffix(teamName, clubName, clubAliasesMap) {
     let suffix = teamName.trim();
 
     // 1. Remove trailing state codes (OH), (KY), (IN), etc.
-    suffix = suffix.replace(/\s*\([A-Z]{2}\)\s*$/i, '');
+    suffix = suffix.trim().replace(/\([A-Z]{2}\)$/i, '').trim();
 
     const aliases = (clubAliasesMap && clubAliasesMap[clubName]) || (clubName ? [clubName] : []);
     
@@ -50,7 +50,7 @@ function getTeamSuffix(teamName, clubName, clubAliasesMap) {
 
 function getCanonicalTeamName(teamName, clubName, clubAliasesMap) {
     if (!teamName) return '';
-    let sanitized = teamName.trim().replace(/\s*\([A-Z]{2}\)\s*$/i, '');
+    let sanitized = teamName.trim().replace(/\([A-Z]{2}\)$/i, '').trim();
     
     // Remove repeated words at start
     sanitized = sanitized.replace(/^(\b[\w\s]{2,25}?\b)\s+\1\b/i, '$1');

@@ -77,7 +77,7 @@ function sanitizeTeamName(rawName) {
     let name = rawName.trim().replace(/\s+/g, ' ');
 
     // Remove trailing state codes like (OH), (KY), (IN)
-    name = name.replace(/\s*\([A-Z]{2}\)\s*$/i, '');
+    name = name.trim().replace(/\([A-Z]{2}\)$/i, '').trim();
 
     // Remove repeated club prefix tokens at beginning, e.g. "Impact GFC Impact GFC GU14 Premier" -> "Impact GFC GU14 Premier"
     name = name.replace(/^(\b[\w\s]{2,25}?\b)\s+\1\b/i, '$1');

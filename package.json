@@ -6,7 +6,7 @@
     "setup": "npm install && cd cincy-soccer-scraper && npm install && cd ../cincy-soccer-website && npm install",
     "test": "cd cincy-soccer-website && npm test",
     "scrape": "cd cincy-soccer-scraper && node scrape.js && node harvest.js && node ai-mapper.js && node clean.js",
-    "scrape:tournaments": "cd cincy-soccer-scraper && npm run scrape:tournaments",
+    "scrape:tournaments": "node cincy-soccer-scraper/run-tournaments.js",
     "map-teams": "cd cincy-soccer-scraper && npm run map-teams",
     "generate-clubs": "cd cincy-soccer-scraper && npm run generate-clubs",
     "confirm-websites": "cd cincy-soccer-scraper && node confirm-websites.js",

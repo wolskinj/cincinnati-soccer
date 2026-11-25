@@ -20,7 +20,7 @@ function sanitizeTeamName(rawName) {
     let name = rawName.trim().replace(/\s+/g, ' ');
 
     // Remove trailing state codes like (OH), (KY), (IN)
-    name = name.replace(/\s*\([A-Z]{2}\)\s*$/i, '');
+    name = name.trim().replace(/\([A-Z]{2}\)$/i, '').trim();
 
     // Remove repeated club prefix tokens at beginning, e.g. "Impact GFC Impact GFC GU14 Premier" -> "Impact GFC GU14 Premier"
     name = name.replace(/^(\b[\w\s]{2,25}?\b)\s+\1\b/i, '$1');
@@ -80,8 +80,15 @@ for (const [officialName, aliases] of Object.entries(CLUB_MAPPINGS)) {
 }
 sortedAliases.sort((a, b) => b.alias.length - a.alias.length);
 
+const { parseTournamentArgs } = require('./tournamentFilter.js');
+
 async function cleanTournamentTeams() {
+    const { isList } = parseTournamentArgs();
+    if (isList) return;
+
+    console.log("=======================================================");
     console.log("🧼 Tournament Refinery starting...");
+    console.log("=======================================================");
 
     if (!fs.existsSync(INPUT_FILE)) {
         console.log("ℹ️ No all_tournament_teams.csv found. Writing empty clean_tournament_teams.csv.");
@@ -106,17 +113,22 @@ async function cleanTournamentTeams() {
     const seenSignatures = new Set();
 
     // Read master clean_teams.csv (filtered for baseline league teams)
+    const baseLeagueTeams = [];
     const existingTeamKeys = new Map();
+
     if (fs.existsSync(MASTER_TEAMS_FILE)) {
         await new Promise(resolve => {
             fs.createReadStream(MASTER_TEAMS_FILE)
                 .pipe(csv())
                 .on('data', row => {
-                    if (row.TEAM_NAME && row.LEAGUE !== 'Tournament Play Only') {
-                        const normKey = getNormalizedTeamKey(row.TEAM_NAME, row.CLUB, clubAliasesMap);
-                        existingTeamKeys.set(normKey, row);
-                        existingTeamKeys.set(makeTeamSlug(row.TEAM_NAME), row);
-                        existingTeamKeys.set(row.TEAM_NAME.toLowerCase().trim(), row);
+                    if (row.TEAM_NAME) {
+                        if (row.LEAGUE !== 'Tournament Play Only') {
+                            baseLeagueTeams.push(row);
+                            const normKey = getNormalizedTeamKey(row.TEAM_NAME, row.CLUB, clubAliasesMap);
+                            existingTeamKeys.set(normKey, row);
+                            existingTeamKeys.set(makeTeamSlug(row.TEAM_NAME), row);
+                            existingTeamKeys.set(row.TEAM_NAME.toLowerCase().trim(), row);
+                        }
                     }
                 })
                 .on('end', resolve);
@@ -232,22 +244,24 @@ async function cleanTournamentTeams() {
     await csvWriter.writeRecords(cleanRecords);
     console.log(`✨ Cleaned & Deduplicated ${cleanRecords.length} tournament team records.`);
 
-    // If new local teams found, append to clean_teams.csv
-    if (newLocalTeamsToAdd.length > 0) {
-        const masterAppendWriter = createCsvWriter({
-            path: MASTER_TEAMS_FILE,
-            header: [
-                { id: 'LEAGUE', title: 'LEAGUE' },
-                { id: 'DIVISION', title: 'DIVISION' },
-                { id: 'TEAM_NAME', title: 'TEAM_NAME' },
-                { id: 'SCHEDULE_LINK', title: 'SCHEDULE_LINK' },
-                { id: 'CLUB', title: 'CLUB' }
-            ],
-            append: true
-        });
-        await masterAppendWriter.writeRecords(newLocalTeamsToAdd);
-        console.log(`🎉 Added ${newLocalTeamsToAdd.length} newly discovered local tournament teams to master team catalog.`);
-    }
+    // Rewrite clean_teams.csv with base league teams + deduplicated tournament-only teams
+    const masterTeamsList = [...baseLeagueTeams, ...newLocalTeamsToAdd];
+    const masterWriter = createCsvWriter({
+        path: MASTER_TEAMS_FILE,
+        header: [
+            { id: 'LEAGUE', title: 'LEAGUE' },
+            { id: 'DIVISION', title: 'DIVISION' },
+            { id: 'TEAM_NAME', title: 'TEAM_NAME' },
+            { id: 'SCHEDULE_LINK', title: 'SCHEDULE_LINK' },
+            { id: 'CLUB', title: 'CLUB' }
+        ],
+        append: false
+    });
+    await masterWriter.writeRecords(masterTeamsList);
+    console.log(`🎉 Master catalog synced: ${masterTeamsList.length} total unique teams (${baseLeagueTeams.length} league + ${newLocalTeamsToAdd.length} tournament-only).\n`);
 }
 
-cleanTournamentTeams();
+cleanTournamentTeams().catch((err) => {
+    console.error(err);
+    process.exitCode = 1;
+});

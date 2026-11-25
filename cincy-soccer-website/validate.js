@@ -215,4 +215,7 @@ async function runValidation() {
     }
 }
 
-runValidation();
+runValidation().catch((err) => {
+    console.error(err);
+    process.exitCode = 1;
+});

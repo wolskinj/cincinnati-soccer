@@ -1,21 +1,4 @@
 TOURNAMENT,DIVISION_NAME,LINK_URL,PLATFORM
-summer-end-showdown-2026,U10 Boys Orange,https://system.gotsport.com/org_event/events/55233/schedules?group=532976,GotSport
-summer-end-showdown-2026,U10 Boys Blue,https://system.gotsport.com/org_event/events/55233/schedules?group=532977,GotSport
-summer-end-showdown-2026,U11/U12 Boys Orange,https://system.gotsport.com/org_event/events/55233/schedules?group=532978,GotSport
-summer-end-showdown-2026,U11/U12 Boys Blue,https://system.gotsport.com/org_event/events/55233/schedules?group=532979,GotSport
-summer-end-showdown-2026,U13/U14 Boys Orange,https://system.gotsport.com/org_event/events/55233/schedules?group=532980,GotSport
-summer-end-showdown-2026,U13/U14 Boys Blue,https://system.gotsport.com/org_event/events/55233/schedules?group=532981,GotSport
-summer-end-showdown-2026,U13/U14 Boys White,https://system.gotsport.com/org_event/events/55233/schedules?group=533137,GotSport
-summer-end-showdown-2026,U13/U14 Boys Yellow,https://system.gotsport.com/org_event/events/55233/schedules?group=532983,GotSport
-summer-end-showdown-2026,U9 Girls Orange,https://system.gotsport.com/org_event/events/55233/schedules?group=532966,GotSport
-summer-end-showdown-2026,U10 Girls Orange,https://system.gotsport.com/org_event/events/55233/schedules?group=532967,GotSport
-summer-end-showdown-2026,U11/U12 Girls Orange,https://system.gotsport.com/org_event/events/55233/schedules?group=532969,GotSport
-summer-end-showdown-2026,U11/U12 Girls Blue,https://system.gotsport.com/org_event/events/55233/schedules?group=532970,GotSport
-summer-end-showdown-2026,U13 Girls Orange,https://system.gotsport.com/org_event/events/55233/schedules?group=532971,GotSport
-summer-end-showdown-2026,U13 Girls Blue,https://system.gotsport.com/org_event/events/55233/schedules?group=532972,GotSport
-summer-end-showdown-2026,U14/U15 Girls Orange,https://system.gotsport.com/org_event/events/55233/schedules?group=532973,GotSport
-summer-end-showdown-2026,U14/U15 Girls Blue,https://system.gotsport.com/org_event/events/55233/schedules?group=532974,GotSport
-summer-end-showdown-2026,U14/U15 Girls White,https://system.gotsport.com/org_event/events/55233/schedules?group=532975,GotSport
 party-on-the-pitch-2026,BU9Premier,https://partyonthepitch.tourneycentral.com/cgi-bin/teams.cgi?fnc=adiv&t_div=BU9Premier,TourneyCentral
 party-on-the-pitch-2026,BU9Gold,https://partyonthepitch.tourneycentral.com/cgi-bin/teams.cgi?fnc=adiv&t_div=BU9Gold,TourneyCentral
 party-on-the-pitch-2026,BU9Black,https://partyonthepitch.tourneycentral.com/cgi-bin/teams.cgi?fnc=adiv&t_div=BU9Black,TourneyCentral
@@ -71,3 +54,32 @@ party-on-the-pitch-2026,GU13Black,https://partyonthepitch.tourneycentral.com/cgi
 party-on-the-pitch-2026,GU14Premier,https://partyonthepitch.tourneycentral.com/cgi-bin/teams.cgi?fnc=adiv&t_div=GU14Premier,TourneyCentral
 party-on-the-pitch-2026,GU14Gold,https://partyonthepitch.tourneycentral.com/cgi-bin/teams.cgi?fnc=adiv&t_div=GU14Gold,TourneyCentral
 party-on-the-pitch-2026,GU1415Premier,https://partyonthepitch.tourneycentral.com/cgi-bin/teams.cgi?fnc=adiv&t_div=GU1415Premier,TourneyCentral
+community-kickoff-2026,GIRLS U9,https://soccer.exposureevents.com/271925/2026-community-kickoff/teams,Exposure
+community-kickoff-2026,GIRLS U10,https://soccer.exposureevents.com/271925/2026-community-kickoff/teams,Exposure
+community-kickoff-2026,GIRLS U11,https://soccer.exposureevents.com/271925/2026-community-kickoff/teams,Exposure
+community-kickoff-2026,GIRLS U12,https://soccer.exposureevents.com/271925/2026-community-kickoff/teams,Exposure
+community-kickoff-2026,GIRLS U13,https://soccer.exposureevents.com/271925/2026-community-kickoff/teams,Exposure
+community-kickoff-2026,GIRLS U14,https://soccer.exposureevents.com/271925/2026-community-kickoff/teams,Exposure
+community-kickoff-2026,BOYS U10,https://soccer.exposureevents.com/271925/2026-community-kickoff/teams,Exposure
+community-kickoff-2026,BOYS U11 GOLD,https://soccer.exposureevents.com/271925/2026-community-kickoff/teams,Exposure
+community-kickoff-2026,BOYS U11 SILVER,https://soccer.exposureevents.com/271925/2026-community-kickoff/teams,Exposure
+community-kickoff-2026,BOYS U12,https://soccer.exposureevents.com/271925/2026-community-kickoff/teams,Exposure
+community-kickoff-2026,BOYS U13-14,https://soccer.exposureevents.com/271925/2026-community-kickoff/teams,Exposure
+community-kickoff-2026,BOYS U14,https://soccer.exposureevents.com/271925/2026-community-kickoff/teams,Exposure
+summer-end-showdown-2026,U10 Boys Orange,https://system.gotsport.com/org_event/events/55233/schedules?group=532976,GotSport
+summer-end-showdown-2026,U10 Boys Blue,https://system.gotsport.com/org_event/events/55233/schedules?group=532977,GotSport
+summer-end-showdown-2026,U11/U12 Boys Orange,https://system.gotsport.com/org_event/events/55233/schedules?group=532978,GotSport
+summer-end-showdown-2026,U11/U12 Boys Blue,https://system.gotsport.com/org_event/events/55233/schedules?group=532979,GotSport
+summer-end-showdown-2026,U13/U14 Boys Orange,https://system.gotsport.com/org_event/events/55233/schedules?group=532980,GotSport
+summer-end-showdown-2026,U13/U14 Boys Blue,https://system.gotsport.com/org_event/events/55233/schedules?group=532981,GotSport
+summer-end-showdown-2026,U13/U14 Boys White,https://system.gotsport.com/org_event/events/55233/schedules?group=533137,GotSport
+summer-end-showdown-2026,U13/U14 Boys Yellow,https://system.gotsport.com/org_event/events/55233/schedules?group=532983,GotSport
+summer-end-showdown-2026,U9 Girls Orange,https://system.gotsport.com/org_event/events/55233/schedules?group=532966,GotSport
+summer-end-showdown-2026,U10 Girls Orange,https://system.gotsport.com/org_event/events/55233/schedules?group=532967,GotSport
+summer-end-showdown-2026,U11/U12 Girls Orange,https://system.gotsport.com/org_event/events/55233/schedules?group=532969,GotSport
+summer-end-showdown-2026,U11/U12 Girls Blue,https://system.gotsport.com/org_event/events/55233/schedules?group=532970,GotSport
+summer-end-showdown-2026,U13 Girls Orange,https://system.gotsport.com/org_event/events/55233/schedules?group=532971,GotSport
+summer-end-showdown-2026,U13 Girls Blue,https://system.gotsport.com/org_event/events/55233/schedules?group=532972,GotSport
+summer-end-showdown-2026,U14/U15 Girls Orange,https://system.gotsport.com/org_event/events/55233/schedules?group=532973,GotSport
+summer-end-showdown-2026,U14/U15 Girls Blue,https://system.gotsport.com/org_event/events/55233/schedules?group=532974,GotSport
+summer-end-showdown-2026,U14/U15 Girls White,https://system.gotsport.com/org_event/events/55233/schedules?group=532975,GotSport
