@@ -1,7 +1,6 @@
 const fs = require('fs');
 const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '.env') });
-const { GoogleGenerativeAI } = require('@google/generative-ai');
 const { buildCanonicalLookup } = require('./clubNormalizer');
 
 const CLUB_MAPPINGS_FILE = path.join(__dirname, 'club_mappings.json');
@@ -72,8 +71,8 @@ async function run() {
         }
     }
 
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
+    const { GoogleGenAI } = await import('@google/genai');
+    const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
     const clubsList = Array.from(clubsSet).sort((a, b) => a.localeCompare(b));
     console.log(`Found ${clubsList.length} unique canonical clubs across CSV & mapping definitions.`);
@@ -115,8 +114,11 @@ ${JSON.stringify(batchClubs)}
 
         while (!success && retries < 5) {
             try {
-                const result = await model.generateContent(prompt);
-                let responseText = result.response.text();
+                const response = await ai.models.generateContent({
+                    model: 'gemini-2.5-flash',
+                    contents: prompt
+                });
+                let responseText = response.text || '';
                 
                 responseText = responseText.replace(/```json/gi, '').replace(/```/g, '').trim();
                 

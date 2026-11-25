@@ -1,4 +1,3 @@
-const puppeteer = require('puppeteer');
 const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 const csv = require('csv-parser');
 const fs = require('fs');
@@ -58,9 +57,10 @@ async function startTournamentScout() {
         console.log(`📂 Preserving ${retainedDivisions.length} existing divisions for untouched tournaments.`);
     }
 
+    const { default: puppeteer } = await import('puppeteer');
     const browser = await puppeteer.launch({
         args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
-        headless: 'new'
+        headless: true
     });
     const page = await browser.newPage();
 

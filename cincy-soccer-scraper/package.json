@@ -14,11 +14,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@google/genai": "^2.15.0",
-    "@google/generative-ai": "^0.24.1",
+    "@google/genai": "^3.6.1",
     "csv-parser": "^3.2.0",
     "csv-writer": "^1.6.0",
     "dotenv": "^17.4.2",
-    "puppeteer": "^24.36.0"
+    "puppeteer": "^25.18.1"
   }
 }

@@ -2,7 +2,6 @@ const fs = require('fs');
 const path = require('path');
 const csv = require('csv-parser');
 require('dotenv').config({ path: path.join(__dirname, '.env') });
-const { GoogleGenerativeAI } = require('@google/generative-ai');
 const { buildCanonicalLookup } = require('./clubNormalizer');
 
 const INPUT_CSV = path.join(__dirname, '../data/all_teams.csv');
@@ -24,8 +23,8 @@ async function run() {
         return;
     }
 
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
+    const { GoogleGenAI } = await import('@google/genai');
+    const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
     // 1. Load existing mapped data
     let existingMappings = {};
@@ -145,8 +144,11 @@ ${JSON.stringify(batch)}
 
         while (!success && retries < 3) {
             try {
-                const result = await model.generateContent(prompt);
-                let responseText = result.response.text();
+                const response = await ai.models.generateContent({
+                    model: 'gemini-2.5-flash',
+                    contents: prompt
+                });
+                let responseText = response.text || '';
                 
                 responseText = responseText.replace(/```json/gi, '').replace(/```/g, '').trim();
                 

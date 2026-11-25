@@ -20,7 +20,7 @@
   "homepage": "https://github.com/wolskinj/cincinnati-soccer#readme",
   "dependencies": {
     "csv-parser": "^3.2.0",
-    "ejs": "^4.0.1",
+    "ejs": "^7.0.2",
     "fs-extra": "^11.3.3"
   }
 }

@@ -1,4 +1,3 @@
-const puppeteer = require('puppeteer');
 const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 
 /**
@@ -17,6 +16,7 @@ async function launchOptimizedPage({
     if (headless !== undefined) {
         launchOptions.headless = headless;
     }
+    const { default: puppeteer } = await import('puppeteer');
     const browser = await puppeteer.launch(launchOptions);
     const page = await browser.newPage();
     if (userAgent) {

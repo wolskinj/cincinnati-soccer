@@ -1,4 +1,3 @@
-const puppeteer = require('puppeteer');
 const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 const path = require('path');
 
@@ -7,6 +6,7 @@ const LEAGUES = require(path.join(__dirname, '../data/leagues.js'));
 async function startRobot() {
     console.log("🤖 Scout Robot (Multi-League Edition & Resource Optimized) starting...");
     
+    const { default: puppeteer } = await import('puppeteer');
     const browser = await puppeteer.launch({
         args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
     });
